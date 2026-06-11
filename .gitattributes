@@ -1,0 +1,11 @@
+# Normalize line endings
+* text=auto
+
+# Shell scripts must stay LF
+*.sh text eol=lf
+
+# Config files LF
+*.conf text eol=lf
+
+# Markdown and text files — auto
+*.md text eol=lf

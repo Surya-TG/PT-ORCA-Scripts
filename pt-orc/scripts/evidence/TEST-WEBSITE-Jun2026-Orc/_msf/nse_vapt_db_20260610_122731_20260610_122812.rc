@@ -1,0 +1,5 @@
+spool /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_db_20260610_122731_20260610_122812.log
+workspace -a TEST-WEBSITE-Jun2026-Orc
+db_nmap -sS -Pn --open -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 --exclude 10.0.2.15 -p 1433,3306,5432,27017 --script ms-sql-info,ms-sql-config,mysql-info,mysql-empty-password,mysql-vuln-cve2012-2122,pgsql-brute --script-timeout 20s -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_nse_sweep.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/nse_vapt_db_20260610_122731
+spool off
+exit

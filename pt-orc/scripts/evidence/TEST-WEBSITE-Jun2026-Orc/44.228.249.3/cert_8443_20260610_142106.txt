@@ -1,0 +1,5 @@
+# TLS Certificate — 44.228.249.3:8443
+# Engagement: TEST-WEBSITE-Jun2026-Orc
+# Date/Time:  2026-06-10 14:21:06
+---
+[WARN] openssl handshake failed or timed out

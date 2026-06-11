@@ -1,0 +1,10 @@
+[T17] /.well-known/openid-configuration → HTTP 404
+[T17] /.well-known/oauth-authorization-server → HTTP 404
+[T17] /.well-known/jwks.json → HTTP 404
+[T17] /oauth/token → HTTP 404
+[T17] /oauth/authorize → HTTP 404
+[T17] /oauth/introspect → HTTP 404
+[T17] /oauth/revoke → HTTP 404
+[T17] /auth/realms/master/.well-known/openid-configuration → HTTP 404
+[T17] /connect/discovery → HTTP 404
+[T17] /.well-known/uma2-configuration → HTTP 404

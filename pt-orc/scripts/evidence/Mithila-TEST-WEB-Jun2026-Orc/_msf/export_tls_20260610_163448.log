@@ -1,0 +1,12 @@
+[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/export_tls_20260610_163448.log...
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/export_tls_20260610_163448.rc)> workspace -a Mithila-TEST-WEB-Jun2026-Orc
+[0m[1m[34m[*][0m Workspace 'Mithila-TEST-WEB-Jun2026-Orc' already existed, switching to it.
+[1m[34m[*][0m Workspace: Mithila-TEST-WEB-Jun2026-Orc
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/export_tls_20260610_163448.rc)> hosts    -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_exports/hosts_tls_20260610_163448.csv
+[0m[1m[34m[*][0m Wrote hosts to /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_exports/hosts_tls_20260610_163448.csv
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/export_tls_20260610_163448.rc)> services -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_exports/services_tls_20260610_163448.csv
+[0m[1m[34m[*][0m Wrote services to /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_exports/services_tls_20260610_163448.csv
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/export_tls_20260610_163448.rc)> notes    -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_exports/notes_tls_20260610_163448.csv
+[0m[1m[34m[*][0m Wrote notes to /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_exports/notes_tls_20260610_163448.csv
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/export_tls_20260610_163448.rc)> spool off
+[0m

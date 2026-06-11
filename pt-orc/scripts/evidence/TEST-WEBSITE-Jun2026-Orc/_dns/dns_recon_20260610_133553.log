@@ -1,0 +1,39 @@
+[2026-06-10 13:35:53] ⚠ TESTER_IP not set — skipping source IP verification
+# Session Start — 01_dns_recon.sh
+# Time:      2026-06-10 13:35:53
+# Project:   TEST-WEBSITE-Jun2026-Orc
+# Domains:   testphp.vulnweb.com
+# Seed IPs:  44.228.249.3
+# Tester IP: unverified
+# Dry run:   0
+[2026-06-10 13:35:53]     IP: 44.228.249.3 [scope-provided]
+[2026-06-10 13:35:53] ════ Domain: testphp.vulnweb.com ════
+[2026-06-10 13:35:53]     IP: 44.228.249.3 [root-domain:testphp.vulnweb.com]
+[2026-06-10 13:35:53] crt.sh certificate transparency: testphp.vulnweb.com
+[2026-06-10 13:35:53] ✓ crt.sh → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_dns/crt_testphp.vulnweb.com_20260610_133553.txt
+[2026-06-10 13:35:54] ⚠ subfinder not found — skipping
+[2026-06-10 13:35:54] amass (passive): testphp.vulnweb.com
+[2026-06-10 13:35:54] ✓ amass: 0 hits → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_dns/amass_testphp.vulnweb.com_20260610_133553.txt
+[2026-06-10 13:35:54] AXFR attempts: testphp.vulnweb.com
+[2026-06-10 13:35:54] ✓ AXFR: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_dns/axfr_testphp.vulnweb.com_20260610_133553.txt
+[2026-06-10 13:35:54] DNSSEC check: testphp.vulnweb.com
+[2026-06-10 13:35:54] ⚠   DNSSEC not configured for testphp.vulnweb.com — DNS hijacking risk
+[2026-06-10 13:35:54] ✓ DNSSEC: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_dns/dnssec_testphp.vulnweb.com_20260610_133553.txt
+[2026-06-10 13:35:54] DNS-over-HTTPS probe: testphp.vulnweb.com
+[2026-06-10 13:35:55] ✓ DoH probe: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_dns/doh_testphp.vulnweb.com_20260610_133553.txt
+[2026-06-10 13:35:55] DNS brute: testphp.vulnweb.com (/usr/share/wordlists/dnsmap.txt)
+[2026-06-10 13:37:55] ✓ DNS brute: 0 hits → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_dns/brute_testphp.vulnweb.com_20260610_133553.txt
+[2026-06-10 13:37:55] ⚠ puredns not found — skipping bruteforce
+[2026-06-10 13:37:55] ✓ Domain testphp.vulnweb.com: 1 unique subdomains
+[2026-06-10 13:37:55]     IP: 44.228.249.3 [a:testphp.vulnweb.com]
+[2026-06-10 13:38:06] ⚠ dnsx not found — skipping fast resolution validation
+[2026-06-10 13:38:06] ✓ Resolution complete: testphp.vulnweb.com
+[2026-06-10 13:38:06] Live HTTP/S verification...
+[2026-06-10 13:38:06] ✓ httpx: 0 live → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_dns/httpx_20260610_133553.txt
+[2026-06-10 13:38:06] ✓ targets.txt: 1 IPs → /home/kali/audit-orc-vapt/pt-orc/scripts/targets.txt
+[2026-06-10 13:38:06] ✓ DNS summary: working/TEST-WEBSITE-Jun2026-Orc_dns_summary_20260610_133553.md
+# Session End — 01_dns_recon.sh
+# Time:            2026-06-10 13:38:06
+# IPs discovered:  1
+# Third-party:     0
+# Live hosts:      0

@@ -1,0 +1,54 @@
+[2026-06-10 16:23:12] ⚠ No --yes flag — scripts will pause for scope confirmation prompts
+=== PT-Orc Suite Start ===
+Project:   Mithila-TEST-WEB-Jun2026-Orc
+Mode:      pte
+Profile:   web
+Steps:     1 2 3 4 5 6 7 8 12
+Tier:      normal
+Session:   20260610_162312
+Auto-yes:  0
+Dry-run:   0
+[2026-06-10 16:23:12] Profile 'web' active — running steps: 1 2 3 4 5 6 7 8 12
+[2026-06-10 16:23:12]   Auto-skipping: 9
+[2026-06-10 16:23:12] START step 1 — DNS Recon — 01_dns_recon.sh
+[2026-06-10 16:23:12] Flags: 
+[2026-06-10 16:23:27] ✓ Step 1 (DNS Recon) completed — 0m15s
+[2026-06-10 16:23:27] START step 2 — IP Analysis — 02_ip_analysis.sh
+[2026-06-10 16:23:27] Flags: --mode pte
+[2026-06-10 16:23:33] ✓ Step 2 (IP Analysis) completed — 0m6s
+[2026-06-10 16:23:33] START step 3 — Comprehensive Scan — 03_comp_scan.sh
+[2026-06-10 16:23:33] Flags: --mode pte --tier normal
+[2026-06-10 16:23:43] ✓ Step 3 (Comprehensive Scan) completed — 0m10s
+[2026-06-10 16:23:43] START step 4 — TLS Scan — 04_tls_scan.sh
+[2026-06-10 16:23:43] Flags: 
+[2026-06-10 16:23:51] ✓ Step 4 (TLS Scan) completed — 0m8s
+[2026-06-10 16:23:51] START step 5 — Web Enumeration — 05_web_enum.sh
+[2026-06-10 16:23:51] Flags: --tier normal
+[2026-06-10 16:23:54] ✓ Step 5 (Web Enumeration) completed — 0m3s
+[2026-06-10 16:23:54] START step 6 — WPScan — 06_wpscan.sh
+[2026-06-10 16:23:54] Flags: --mode pte --tier normal --detect
+[2026-06-10 16:23:54] ✓ Step 6 (WPScan) completed — 0m0s
+[2026-06-10 16:23:54] START step 7 — Service Verify — 07_service_verify.sh
+[2026-06-10 16:23:54] Flags: --mode pte
+[2026-06-10 16:23:57] ✓ Step 7 (Service Verify) completed — 0m3s
+[2026-06-10 16:23:57] START step 8 — App / API Review — 08_app_api_review.sh
+[2026-06-10 16:23:57] Flags: --tier normal
+[2026-06-10 16:26:07] ✓ Step 8 (App / API Review) completed — 2m10s
+[2026-06-10 16:26:07]   Step 9: skipped
+[2026-06-10 16:26:07] START step 12 — Report Pack — 12_report_pack.sh
+[2026-06-10 16:26:07] Flags: 
+[2026-06-10 16:26:07] ✓ Step 12 (Report Pack) completed — 0m0s
+
+=== PT-Orc Suite Summary ===
+Project: Mithila-TEST-WEB-Jun2026-Orc
+Total elapsed: 2m55s
+  Step 1   DNS Recon               OK              0m15s
+  Step 2   IP Analysis             OK              0m6s
+  Step 3   Comprehensive Scan      OK              0m10s
+  Step 4   TLS Scan                OK              0m8s
+  Step 5   Web Enumeration         OK              0m3s
+  Step 6   WPScan                  OK              0m0s
+  Step 7   Service Verify          OK              0m3s
+  Step 8   App / API Review        OK              2m10s
+  Step 9   AI / LLM Review         SKIP            —
+  Step 12  Report Pack             OK              0m0s

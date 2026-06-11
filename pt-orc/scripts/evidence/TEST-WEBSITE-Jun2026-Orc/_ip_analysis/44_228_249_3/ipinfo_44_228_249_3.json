@@ -1,0 +1,12 @@
+{
+  "ip": "44.228.249.3",
+  "hostname": "ec2-44-228-249-3.us-west-2.compute.amazonaws.com",
+  "city": "Boardman",
+  "region": "Oregon",
+  "country": "US",
+  "loc": "45.8399,-119.7006",
+  "org": "AS16509 Amazon.com, Inc.",
+  "postal": "97818",
+  "timezone": "America/Los_Angeles",
+  "readme": "https://ipinfo.io/missingauth"
+}

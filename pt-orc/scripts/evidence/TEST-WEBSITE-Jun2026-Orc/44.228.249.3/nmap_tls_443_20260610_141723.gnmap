@@ -1,0 +1,4 @@
+# Nmap 7.99 scan initiated Wed Jun 10 14:17:58 2026 as: /usr/lib/nmap/nmap -Pn -p 443 --script ssl-enum-ciphers,ssl-cert --script-timeout 2m -T3 -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/nmap_tls_443_20260610_141723 -oX /root/.msf4/local/msf-db-nmap-20260610-91064-8go501.xml 44.228.249.3
+Host: 44.228.249.3 (ec2-44-228-249-3.us-west-2.compute.amazonaws.com)	Status: Up
+Host: 44.228.249.3 (ec2-44-228-249-3.us-west-2.compute.amazonaws.com)	Ports: 443/filtered/tcp//https///
+# Nmap done at Wed Jun 10 14:18:02 2026 -- 1 IP address (1 host up) scanned in 3.97 seconds

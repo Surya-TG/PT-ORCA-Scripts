@@ -1,0 +1,15 @@
+{
+  "project_ref": "Surya-test-vulnsite",
+  "engagement_profile": "web",
+  "testing_depth": "standard",
+  "auth_level": "none",
+  "targets": [
+    "44.228.249.3",
+    "testphp.vulnweb.com"
+  ],
+  "rules_of_engagement": "No DoS. Testing within agreed window only. No production data exfiltration.",
+  "window": {
+    "start": "2026-05-27",
+    "end": "2026-06-24"
+  }
+}

@@ -1,0 +1,8 @@
+# Legacy Protocol Check — 65.61.137.117:4443
+# Engagement: Mithila-TEST-WEB-Jun2026-Orc
+# Date/Time:  2026-06-10 16:32:29
+---
+[ssl2] NOT TESTED — local OpenSSL does not support -ssl2 (removed in OpenSSL 3.x)
+[ssl3] NOT TESTED — local OpenSSL does not support -ssl3 (removed in OpenSSL 3.x)
+[tls1] timeout/connection error
+[tls1_1] timeout/connection error

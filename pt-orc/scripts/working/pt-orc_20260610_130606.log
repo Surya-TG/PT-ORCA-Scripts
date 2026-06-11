@@ -1,0 +1,34 @@
+=== PT-Orc Suite Start ===
+Project:   TEST-WEBSITE-Jun2026-Orc
+Mode:      pte
+Profile:   web
+Steps:     1 2 3 4 5 6 7 8 12
+Tier:      normal
+Session:   20260610_130606
+Auto-yes:  1
+Dry-run:   0
+[2026-06-10 13:06:06] START step 1 — DNS Recon — 01_dns_recon.sh
+[2026-06-10 13:06:06] Flags: --yes
+[2026-06-10 13:08:05] ✓ Step 1 (DNS Recon) completed — 1m59s
+[2026-06-10 13:08:05] START step 2 — IP Analysis — 02_ip_analysis.sh
+[2026-06-10 13:08:05] Flags: --yes --mode pte
+[2026-06-10 13:08:21] ✓ Step 2 (IP Analysis) completed — 0m16s
+[2026-06-10 13:08:21]   Step 3: skipped
+[2026-06-10 13:08:21] START step 4 — TLS Scan — 04_tls_scan.sh
+[2026-06-10 13:08:21] Flags: --yes
+[2026-06-10 13:08:21] ✗ Step 4 (TLS Scan) failed — rc=1, elapsed=0m0s
+[2026-06-10 13:08:21] ✗ Suite aborted at step 4. Use --continue-on-error to proceed past failures.
+
+=== PT-Orc Suite Summary ===
+Project: TEST-WEBSITE-Jun2026-Orc
+Total elapsed: 2m15s
+  Step 1   DNS Recon               OK              1m59s
+  Step 2   IP Analysis             OK              0m16s
+  Step 3   Comprehensive Scan      SKIP            —
+  Step 4   TLS Scan                FAIL(rc=1)      0m0s
+  Step 5   Web Enumeration         —             —
+  Step 6   WPScan                  —             —
+  Step 7   Service Verify          —             —
+  Step 8   App / API Review        —             —
+  Step 9   AI / LLM Review         —             —
+  Step 12  Report Pack             —             —

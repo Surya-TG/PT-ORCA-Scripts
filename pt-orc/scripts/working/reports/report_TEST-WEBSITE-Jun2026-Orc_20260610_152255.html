@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Security Assessment Report — TEST-WEBSITE-Jun2026-Orc</title>
+<style>
+@page { margin: 20mm 18mm 20mm 18mm; size: A4; }
+@page :first { margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    color: #1a1a2e;
+    background: #ffffff;
+    line-height: 1.5;
+}
+
+/* ── Cover ── */
+.cover {
+    background: #0f1940;
+    color: #fff;
+    min-height: 297mm;
+    padding: 60px 70px;
+    page-break-after: always;
+}
+.cover-logo        { font-size: 13pt; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #90caf9; margin-bottom: 6px; }
+.cover-logo-sub    { font-size: 9pt; color: #7986cb; letter-spacing: 1px; }
+.cover-spacer      { height: 80px; }
+.cover-classif     { display: inline-block; background: #e53935; color: #fff; font-size: 9pt; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 5px 18px; border-radius: 2px; margin-bottom: 30px; }
+.cover-title       { font-size: 28pt; font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
+.cover-subtitle    { font-size: 14pt; color: #90caf9; margin-bottom: 44px; }
+.cover-meta        { border-top: 1px solid rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.2); padding: 20px 0; display: table; }
+.cover-row         { display: table-row; }
+.cover-lbl         { display: table-cell; color: #7986cb; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; padding: 4px 24px 4px 0; font-weight: 600; }
+.cover-val         { display: table-cell; color: #e8eaf6; font-size: 10pt; padding: 4px 0; }
+.cover-footer      { margin-top: 60px; color: rgba(255,255,255,0.4); font-size: 8pt; text-align: center; }
+
+/* ── Section headers ── */
+h2.sec-hdr {
+    background: #1a237e;
+    color: #fff;
+    padding: 10px 18px;
+    font-size: 13pt;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-radius: 3px;
+    page-break-before: always;
+}
+h2.sec-hdr .n { color: #7986cb; margin-right: 8px; }
+.page-section { padding-top: 4px; }
+
+/* ── Risk banner ── */
+.risk-banner { border-radius: 6px; padding: 12px 18px; margin-bottom: 18px; }
+.risk-banner.high     { background: #fff3e0; border-left: 6px solid #e64a19; }
+.risk-banner.medium   { background: #fffde7; border-left: 6px solid #f57f17; }
+.risk-banner.low      { background: #e8f5e9; border-left: 6px solid #2e7d32; }
+.risk-banner.critical { background: #ffebee; border-left: 6px solid #c62828; }
+.risk-banner-lbl   { font-size: 9pt; color: #546e7a; margin-right: 12px; }
+.risk-banner-val   { font-size: 14pt; font-weight: 800; }
+.risk-banner.critical .risk-banner-val { color: #c62828; }
+.risk-banner.high     .risk-banner-val { color: #e64a19; }
+.risk-banner.medium   .risk-banner-val { color: #f57f17; }
+.risk-banner.low      .risk-banner-val { color: #2e7d32; }
+.risk-banner-just  { font-size: 9pt; color: #546e7a; margin-left: 14px; }
+
+/* ── Executive summary text ── */
+.exec-text {
+    background: #f8f9ff;
+    border-left: 4px solid #3f51b5;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: #1a1a2e;
+    border-radius: 0 4px 4px 0;
+}
+
+/* ── Severity cards ── */
+.sev-cards { display: table; width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 24px; }
+.sev-row   { display: table-row; }
+.sev-card  { display: table-cell; text-align: center; padding: 16px 8px; border-radius: 8px; width: 20%; }
+.sev-card.critical     { background: #ffebee; }
+.sev-card.high         { background: #fff3e0; }
+.sev-card.medium       { background: #fffde7; }
+.sev-card.low          { background: #e3f2fd; }
+.sev-card.informational{ background: #eceff1; }
+.sev-count { font-size: 28pt; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.sev-card.critical     .sev-count { color: #c62828; }
+.sev-card.high         .sev-count { color: #e64a19; }
+.sev-card.medium       .sev-count { color: #f57f17; }
+.sev-card.low          .sev-count { color: #1565c0; }
+.sev-card.informational .sev-count{ color: #546e7a; }
+.sev-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; color: #546e7a; }
+
+/* ── Generic data table ── */
+table.dt { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9.5pt; }
+table.dt th { background: #283593; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; font-size: 9pt; }
+table.dt td { padding: 8px 12px; border-bottom: 1px solid #e8eaf6; vertical-align: top; }
+table.dt tr:nth-child(even) td { background: #f5f5ff; }
+table.dt tr:last-child td { border-bottom: none; }
+
+/* ── Risk matrix ── */
+.rm-wrap { margin-bottom: 24px; }
+.rm-wrap h3 { font-size: 10pt; color: #546e7a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+table.rm { border-collapse: collapse; width: 100%; font-size: 9pt; }
+table.rm td, table.rm th { border: 2px solid #fff; padding: 10px 8px; text-align: center; vertical-align: middle; }
+table.rm th { background: #37474f; color: #fff; font-weight: 600; }
+table.rm .rh { background: #37474f; color: #fff; font-weight: 600; width: 90px; font-size: 8.5pt; }
+.rm-crit   { background: #ffcdd2; color: #b71c1c; font-weight: 700; }
+.rm-high   { background: #ffe0b2; color: #bf360c; font-weight: 600; }
+.rm-medium { background: #fff9c4; color: #7c5b00; }
+.rm-low    { background: #e3f2fd; color: #1565c0; }
+.rm-info   { background: #eceff1; color: #546e7a; }
+.rm-lbl { font-size: 8pt; font-weight: 700; text-transform: uppercase; }
+.rm-ids { font-size: 7.5pt; margin-top: 4px; color: #455a64; }
+
+/* ── OWASP coverage ── */
+table.owasp { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9pt; }
+table.owasp th { background: #1a237e; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+table.owasp td { padding: 7px 12px; border-bottom: 1px solid #e8eaf6; }
+table.owasp tr:nth-child(even) td { background: #f5f5ff; }
+.bar-wrap { background: #e8eaf6; border-radius: 10px; height: 8px; width: 120px; display: inline-block; vertical-align: middle; overflow: hidden; }
+.bar-fill { height: 100%; background: #3f51b5; border-radius: 10px; }
+.cnt { display: inline-block; background: #3f51b5; color: #fff; font-size: 8pt; font-weight: 700; padding: 2px 8px; border-radius: 10px; min-width: 24px; text-align: center; }
+.cnt.zero { background: #cfd8dc; color: #546e7a; }
+
+/* ── Finding card ── */
+.fc { border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 28px; overflow: hidden; page-break-inside: avoid; }
+.fc-hdr { padding: 12px 16px; display: table; width: 100%; }
+.fc-hdr.critical     { background: #ffebee; border-left: 5px solid #c62828; }
+.fc-hdr.high         { background: #fff3e0; border-left: 5px solid #e64a19; }
+.fc-hdr.medium       { background: #fffde7; border-left: 5px solid #f9a825; }
+.fc-hdr.low          { background: #e3f2fd; border-left: 5px solid #1565c0; }
+.fc-hdr.informational{ background: #eceff1; border-left: 5px solid #546e7a; }
+.fc-hdr-inner { display: table-row; }
+.fc-id    { display: table-cell; font-size: 9pt; font-weight: 700; color: #546e7a; vertical-align: middle; width: 52px; }
+.fc-title { display: table-cell; font-size: 11pt; font-weight: 700; vertical-align: middle; padding-right: 12px; }
+.fc-hdr.critical     .fc-title { color: #c62828; }
+.fc-hdr.high         .fc-title { color: #bf360c; }
+.fc-hdr.medium       .fc-title { color: #6d4c00; }
+.fc-hdr.low          .fc-title { color: #1565c0; }
+.fc-hdr.informational .fc-title{ color: #37474f; }
+.fc-badge-cell { display: table-cell; vertical-align: middle; width: 90px; text-align: right; }
+.sev-badge { display: inline-block; font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 12px; border-radius: 12px; color: #fff; }
+.sev-badge.critical     { background: #c62828; }
+.sev-badge.high         { background: #e64a19; }
+.sev-badge.medium       { background: #f9a825; color: #3e2000; }
+.sev-badge.low          { background: #1565c0; }
+.sev-badge.informational{ background: #546e7a; }
+
+.fc-meta { display: table; width: 100%; background: #fafafa; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 10px 16px; }
+.fc-meta-row { display: table-row; }
+.fc-meta-cell { display: table-cell; padding: 3px 20px 3px 0; font-size: 8.5pt; }
+.fc-meta-cell .lbl { color: #78909c; font-weight: 600; text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.5px; display: block; }
+.fc-meta-cell .val { color: #1a1a2e; font-weight: 500; }
+.cvss-score { font-size: 14pt; font-weight: 800; }
+.cvss-score.critical     { color: #c62828; }
+.cvss-score.high         { color: #e64a19; }
+.cvss-score.medium       { color: #f9a825; }
+.cvss-score.low          { color: #1565c0; }
+.cvss-score.informational{ color: #546e7a; }
+
+.fc-body { padding: 16px; }
+.fc-sec { margin-bottom: 14px; }
+.fc-sec-title { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #455a64; margin-bottom: 5px; padding-bottom: 3px; border-bottom: 1px solid #eceff1; }
+.fc-sec p { font-size: 9.5pt; line-height: 1.55; color: #263238; }
+.tag { display: inline-block; font-size: 7.5pt; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin: 2px 2px 2px 0; }
+.tag.cve  { background: #fce4ec; color: #880e4f; }
+.tag.host { background: #e8f5e9; color: #1b5e20; }
+.tag.ref  { background: #e8eaf6; color: #3949ab; }
+ol.steps { margin: 6px 0 0 18px; font-size: 9.5pt; line-height: 1.6; }
+ol.steps li { margin-bottom: 3px; }
+.ref-link { color: #1565c0; font-size: 8.5pt; display: block; margin-bottom: 2px; }
+
+/* ── Remediation roadmap ── */
+table.roadmap { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 20px; }
+table.roadmap th { background: #1a237e; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+table.roadmap td { padding: 8px 12px; border-bottom: 1px solid #e8eaf6; vertical-align: top; }
+table.roadmap tr:nth-child(even) td { background: #f5f5ff; }
+.effort-Low    { color: #2e7d32; font-weight: 600; }
+.effort-Medium { color: #f57f17; font-weight: 600; }
+.effort-High   { color: #c62828; font-weight: 600; }
+
+/* ── Disclaimer ── */
+.disc { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 16px 20px; font-size: 9pt; color: #4e3400; line-height: 1.6; }
+.disc h3 { color: #f57f17; font-size: 10pt; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Footer ── */
+.footer { margin-top: 40px; border-top: 2px solid #1a237e; padding-top: 12px; text-align: center; font-size: 8pt; color: #78909c; }
+
+/* ── Scope section ── */
+.scope-h3 { font-size: 9.5pt; font-weight: 700; color: #283593; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.scope-block { margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div>
+    <div class="cover-logo">TechGuard Labs</div>
+    <div class="cover-logo-sub">Security Intelligence &amp; Penetration Testing</div>
+  </div>
+  <div class="cover-spacer"></div>
+  <div>
+    <div class="cover-classif">CONFIDENTIAL</div>
+    <div class="cover-title">Security Assessment<br/>Report</div>
+    <div class="cover-subtitle">Web Application Penetration Test</div>
+    <div class="cover-meta">
+      <div class="cover-row"><div class="cover-lbl">Project</div><div class="cover-val">TEST-WEBSITE-Jun2026-Orc</div></div>
+      <div class="cover-row"><div class="cover-lbl">Target(s)</div><div class="cover-val">44.228.249.3:80, 44.228.249.3:443, 44.228.249.3:4443, 44.228.249.3:8443</div></div>
+      <div class="cover-row"><div class="cover-lbl">Assessment Type</div><div class="cover-val">External Web Application Penetration Test</div></div>
+      <div class="cover-row"><div class="cover-lbl">Testing Period</div><div class="cover-val">June 2026</div></div>
+      <div class="cover-row"><div class="cover-lbl">Report Date</div><div class="cover-val">10 June 2026</div></div>
+      <div class="cover-row"><div class="cover-lbl">Overall Risk</div><div class="cover-val"><strong>Medium</strong></div></div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <p>This report contains confidential information. Distribution is restricted to authorized personnel only.</p>
+    <p>TechGuard Labs &bull; hari@techguardlabs.com</p>
+  </div>
+</div>
+
+<!-- 01 EXECUTIVE SUMMARY -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">01</span>Executive Summary</h2>
+
+<div class="risk-banner medium">
+  <span class="risk-banner-lbl">Overall Risk Rating</span>
+  <span class="risk-banner-val">MEDIUM</span>
+  <span class="risk-banner-just">The overall risk is rated Medium because the single confirmed finding — missing HTTP security headers — does not provide direct system compromise capability but meaningfully increases user exposure to clickjacking, MIME-sniffing, and cross-site scripting attacks, particularly in the absence of compensating controls.</span>
+</div>
+
+<div class="exec-text">TechGuard Labs conducted an external web application penetration test against testphp.vulnweb.com (44.228.249.3) during June 2026. The assessment covered DNS reconnaissance, network port scanning, TLS configuration review, web application enumeration, and API security testing across 18 web and 20 API test cases. One medium-severity finding was identified: the absence of multiple HTTP security headers that protect end users from common browser-based attacks. No critical or high-severity vulnerabilities were confirmed during automated testing; however, the missing security headers represent a tangible and easily remediated exposure that should be addressed promptly.</div>
+
+<div class="sev-cards">
+  <div class="sev-row">
+    <div class="sev-card critical"><div class="sev-count">0</div><div class="sev-label">Critical</div></div>
+    <div class="sev-card high"><div class="sev-count">0</div><div class="sev-label">High</div></div>
+    <div class="sev-card medium"><div class="sev-count">1</div><div class="sev-label">Medium</div></div>
+    <div class="sev-card low"><div class="sev-count">0</div><div class="sev-label">Low</div></div>
+    <div class="sev-card informational"><div class="sev-count">1</div><div class="sev-label">Info</div></div>
+  </div>
+</div>
+</div>
+
+<!-- 02 SCOPE & METHODOLOGY -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">02</span>Scope &amp; Methodology</h2>
+
+<div class="scope-block">
+<div class="scope-h3">Target Scope</div>
+<table class="dt">
+  <tr><th>Host / IP</th><th>Port(s)</th><th>Protocol</th><th>Application</th></tr>
+  
+  <tr><td>44.228.249.3</td><td>443, 4443, 8443</td><td>HTTPS</td><td>Web Application</td></tr>
+  
+  <tr><td>testphp.vulnweb.com</td><td>443</td><td>HTTPS</td><td>Web Application</td></tr>
+  
+</table>
+</div>
+
+<div class="scope-block">
+<div class="scope-h3">Testing Phases</div>
+<table class="dt">
+  <tr><th>Phase</th><th>Activity</th><th>Tools</th></tr>
+  <tr><td>01 DNS Recon</td><td>Domain enumeration, subdomain discovery</td><td>dig, subfinder, dnsx</td></tr>
+  <tr><td>02 IP Analysis</td><td>ASN, geolocation, cloud provider, WHOIS</td><td>whois, ipinfo</td></tr>
+  <tr><td>03 Network Scan</td><td>Port scanning, service fingerprinting</td><td>nmap</td></tr>
+  <tr><td>04 TLS Assessment</td><td>Certificate analysis, cipher enumeration</td><td>testssl.sh</td></tr>
+  <tr><td>05 Web Enumeration</td><td>Header analysis, WAF detection, content discovery</td><td>curl, wafw00f, gobuster, nikto</td></tr>
+  <tr><td>06 WordPress Scan</td><td>Plugin/theme enumeration, CVE checks</td><td>wpscan</td></tr>
+  <tr><td>07 Service Verification</td><td>Manual probing of open services</td><td>Manual</td></tr>
+  <tr><td>08 Application API</td><td>Rate limiting, auth bypass, API enumeration</td><td>curl, python-requests</td></tr>
+  <tr><td>09 AI/LLM Endpoints</td><td>Prompt injection, data exfiltration probes</td><td>PT-Orc AI Skill</td></tr>
+</table>
+</div>
+
+
+<div class="scope-block">
+<div class="scope-h3">Tools &amp; Frameworks</div>
+<p style="font-size:9.5pt;line-height:1.8;"><span class="tag ref">nmap</span><span class="tag ref">masscan</span><span class="tag ref">nikto</span><span class="tag ref">testssl.sh</span><span class="tag ref">wafw00f</span><span class="tag ref">gobuster</span><span class="tag ref">ffuf</span><span class="tag ref">httpx</span><span class="tag ref">amass</span><span class="tag ref">nuclei</span><span class="tag ref">metasploit-framework</span></p>
+</div>
+
+</div>
+
+<!-- 03 RISK ANALYSIS -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">03</span>Risk Analysis</h2>
+
+<div class="rm-wrap">
+<h3>Risk Matrix — Likelihood × Impact</h3>
+<table class="rm">
+  <tr>
+    <th class="rh"></th>
+    <th>LOW IMPACT</th>
+    <th>MEDIUM IMPACT</th>
+    <th>HIGH IMPACT</th>
+  </tr>
+  <tr>
+    <th class="rh">HIGH<br/>LIKELIHOOD</th>
+    <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids"></div></td>
+    <td class="rm-high"><div class="rm-lbl">High</div><div class="rm-ids"></div></td>
+    <td class="rm-crit"><div class="rm-lbl">Critical</div><div class="rm-ids"></div></td>
+  </tr>
+  <tr>
+    <th class="rh">MEDIUM<br/>LIKELIHOOD</th>
+    <td class="rm-low"><div class="rm-lbl">Low</div><div class="rm-ids"></div></td>
+    <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids">F-001</div></td>
+    <td class="rm-high"><div class="rm-lbl">High</div><div class="rm-ids"></div></td>
+  </tr>
+  <tr>
+    <th class="rh">LOW<br/>LIKELIHOOD</th>
+    <td class="rm-info"><div class="rm-lbl">Info</div><div class="rm-ids"></div></td>
+    <td class="rm-low"><div class="rm-lbl">Low</div><div class="rm-ids"></div></td>
+    <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids"></div></td>
+  </tr>
+</table>
+</div>
+
+<div class="scope-block">
+<div class="scope-h3">OWASP Top 10 2021 — Coverage Map</div>
+<table class="owasp">
+  <tr><th style="width:60px;">Code</th><th>Category</th><th style="width:160px;">Coverage</th><th style="width:60px;">Count</th></tr>
+  
+  <tr>
+    <td><strong>A01</strong></td>
+    <td>Broken Access Control</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A02</strong></td>
+    <td>Cryptographic Failures</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A03</strong></td>
+    <td>Injection</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A04</strong></td>
+    <td>Insecure Design</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A05</strong></td>
+    <td>Security Misconfiguration</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:100%;"></div></div></td>
+    <td><span class="cnt ">2</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A06</strong></td>
+    <td>Vulnerable and Outdated Components</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A07</strong></td>
+    <td>Identification and Authentication Failures</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A08</strong></td>
+    <td>Software and Data Integrity Failures</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A09</strong></td>
+    <td>Security Logging and Monitoring Failures</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+  <tr>
+    <td><strong>A10</strong></td>
+    <td>Server-Side Request Forgery</td>
+    <td><div class="bar-wrap"><div class="bar-fill" style="width:0%;"></div></div></td>
+    <td><span class="cnt zero">0</span></td>
+  </tr>
+  
+</table>
+</div>
+</div>
+
+<!-- 04 DETAILED FINDINGS -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">04</span>Detailed Findings</h2>
+
+
+<div class="fc">
+  <div class="fc-hdr medium">
+    <div class="fc-hdr-inner">
+      <div class="fc-id">F-001</div>
+      <div class="fc-title">Multiple HTTP Security Headers Missing</div>
+      <div class="fc-badge-cell"><span class="sev-badge medium">Medium</span></div>
+    </div>
+  </div>
+
+  <div class="fc-meta">
+    <div class="fc-meta-row">
+      <div class="fc-meta-cell">
+        <span class="lbl">CVSS 3.1</span>
+        <span class="val cvss-score medium">5.4</span>
+      </div>
+      <div class="fc-meta-cell">
+        <span class="lbl">OWASP 2021</span>
+        <span class="val">A05 — Security Misconfiguration</span>
+      </div>
+      <div class="fc-meta-cell">
+        <span class="lbl">CWE</span>
+        <span class="val">CWE-693 — Protection Mechanism Failure</span>
+      </div>
+      <div class="fc-meta-cell">
+        <span class="lbl">Confidence</span>
+        <span class="val">Confirmed</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-body">
+    
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Affected Hosts</div>
+      <span class="tag host">44.228.249.3:443</span><span class="tag host">44.228.249.3:4443</span><span class="tag host">44.228.249.3:8443</span>
+      
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Description</div>
+      <p>Security header analysis identified 14 missing HTTP response security headers across the web application hosted at testphp.vulnweb.com. The absent headers include, but are not limited to: Content-Security-Policy (CSP), X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security (HSTS), X-XSS-Protection, Referrer-Policy, Permissions-Policy, and Cross-Origin resource policy headers. These headers instruct the browser to enforce security constraints that mitigate a wide class of client-side attacks. Their collective absence means that no browser-enforced defence layer exists against clickjacking, MIME-type confusion attacks, reflected or stored cross-site scripting, protocol downgrade attacks, and sensitive data leakage via the Referer header.</p>
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Technical Detail</div>
+      <p>Automated security header analysis (evidence file: sec_headers_4443_20260610_141914.txt) confirmed the absence of 14 security-relevant HTTP response headers on port 4443 (and corroborated on ports 443 and 8443 per TLS assessment session 20260610_141722). A representative curl response demonstrated no Content-Security-Policy, no X-Frame-Options, no X-Content-Type-Options, no Strict-Transport-Security, no X-XSS-Protection, no Referrer-Policy, and no Permissions-Policy headers present in server responses. The omission of HSTS is particularly notable given that TLS is available on multiple ports, as it permits protocol downgrade by an active network attacker. The omission of X-Frame-Options and CSP frame-ancestors allows the application to be embedded in third-party iframes, enabling clickjacking attacks against authenticated users.</p>
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Business Impact</div>
+      <p>Without these protective headers, users visiting the website are more vulnerable to attacks carried out through their own web browser. For example, an attacker could embed the site invisibly inside another page and trick a logged-in user into clicking buttons they cannot see (clickjacking), potentially triggering account changes or financial transactions without their knowledge. Malicious scripts could also execute within the context of the site more easily, risking theft of session tokens or user credentials. These weaknesses could expose the organisation to regulatory scrutiny under data protection frameworks such as GDPR if user data is compromised as a result.</p>
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Remediation</div>
+      <p><strong>Configure the web server or application to return all recommended HTTP security headers with appropriately strict values on every response.</strong></p>
+      
+      <ol class="steps">
+        <li>Add 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload' to all HTTPS responses to enforce HTTPS and prevent protocol downgrade attacks.</li><li>Add 'Content-Security-Policy: default-src \'self\'; script-src \'self\'; object-src \'none\'; frame-ancestors \'none\';' — adjust source directives to match the application's legitimate content origins before enforcing, using report-only mode initially.</li><li>Add 'X-Frame-Options: DENY' or 'X-Frame-Options: SAMEORIGIN' to prevent clickjacking; note that CSP frame-ancestors supersedes this header in modern browsers but both should be set for legacy compatibility.</li><li>Add 'X-Content-Type-Options: nosniff' to prevent browsers from MIME-sniffing responses away from the declared Content-Type.</li><li>Add 'X-XSS-Protection: 1; mode=block' for legacy browser compatibility (modern browsers rely on CSP instead).</li><li>Add 'Referrer-Policy: strict-origin-when-cross-origin' to limit Referer header leakage to third-party origins.</li><li>Add 'Permissions-Policy: geolocation=(), microphone=(), camera=()' restricting access to sensitive browser APIs not required by the application.</li><li>For Apache, add header directives in httpd.conf or .htaccess using the mod_headers module. For Nginx, use the add_header directive in the server or location block. For application-layer injection, implement a middleware or filter that sets headers on all outgoing responses.</li><li>After deployment, validate the configuration using a browser developer tools network tab or an automated tool such as securityheaders.com and re-run the security header scan to confirm all 14 previously absent headers are now present with correct values.</li><li>Integrate security header validation into the CI/CD pipeline so that missing or misconfigured headers fail the build before deployment to production.</li>
+      </ol>
+      
+    </div>
+
+    
+    <div class="fc-sec">
+      <div class="fc-sec-title">References</div>
+      <a class="ref-link" href="https://owasp.org/www-project-secure-headers/">https://owasp.org/www-project-secure-headers/</a><a class="ref-link" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy</a><a class="ref-link" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security</a><a class="ref-link" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options</a><a class="ref-link" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options</a><a class="ref-link" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy</a><a class="ref-link" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy">https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy</a><a class="ref-link" href="https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html</a><a class="ref-link" href="https://securityheaders.com">https://securityheaders.com</a>
+    </div>
+    
+  </div>
+</div>
+
+<div class="fc">
+  <div class="fc-hdr informational">
+    <div class="fc-hdr-inner">
+      <div class="fc-id">F-002</div>
+      <div class="fc-title">Target Hosted on AWS EC2 — Cloud Ownership Verification Required</div>
+      <div class="fc-badge-cell"><span class="sev-badge informational">Informational</span></div>
+    </div>
+  </div>
+
+  <div class="fc-meta">
+    <div class="fc-meta-row">
+      <div class="fc-meta-cell">
+        <span class="lbl">CVSS 3.1</span>
+        <span class="val cvss-score informational">0.0</span>
+      </div>
+      <div class="fc-meta-cell">
+        <span class="lbl">OWASP 2021</span>
+        <span class="val">A05 — Security Misconfiguration</span>
+      </div>
+      <div class="fc-meta-cell">
+        <span class="lbl">CWE</span>
+        <span class="val">CWE-200 — Exposure of Sensitive Information to an Unauthorized Actor</span>
+      </div>
+      <div class="fc-meta-cell">
+        <span class="lbl">Confidence</span>
+        <span class="val">Confirmed</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-body">
+    
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Affected Hosts</div>
+      <span class="tag host">44.228.249.3</span>
+      
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Description</div>
+      <p>IP analysis confirmed that the target host 44.228.249.3 resolves to an Amazon Web Services EC2 instance in the us-west-2 (Oregon) region (PTR record: ec2-44-228-249-3.us-west-2.compute.amazonaws.com, ASN AS16509, Amazon.com Inc.). Cloud-hosted infrastructure carries specific engagement considerations: the IP may be a shared elastic address, the instance could be terminated and re-assigned, and AWS's Penetration Testing Policy requires that testing activities comply with their Acceptable Use Policy. This is recorded as informational to document that the RoE advisory was acknowledged and that written authorisation confirming client ownership or control of this AWS asset was a prerequisite for active scanning.</p>
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Technical Detail</div>
+      <p>PTR lookup and WHOIS/ASN enrichment performed by 02_ip_analysis.sh (session 20260610_133806) returned: PTR=ec2-44-228-249-3.us-west-2.compute.amazonaws.com, ASN=AS16509, Org=Amazon.com Inc., Country=United States. No Shodan enrichment was available (API key not configured). Traceroute hop count returned an anomalous value of 0, which may indicate ICMP filtering between the tester and target or a misconfiguration in the traceroute capture.</p>
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Business Impact</div>
+      <p>This is an informational note with no direct security risk. It documents that the application infrastructure runs on a major public cloud provider, which is a common and generally acceptable architectural choice. The client should maintain accurate records of cloud asset ownership to support future penetration testing authorisation and incident response activities.</p>
+    </div>
+
+    <div class="fc-sec">
+      <div class="fc-sec-title">Remediation</div>
+      <p><strong>Ensure documented records of AWS account ownership and asset inventory are maintained and shared with penetration testing vendors at engagement commencement to streamline authorisation.</strong></p>
+      
+      <ol class="steps">
+        <li>Confirm with the client that AWS account ownership of the EC2 instance at 44.228.249.3 is documented and that the engagement authorisation letter explicitly references this asset.</li><li>Review AWS's current Penetration Testing Policy (https://aws.amazon.com/security/penetration-testing/) to ensure all testing activities performed during this engagement were compliant.</li><li>Consider configuring Elastic IP addresses for externally tested EC2 instances to prevent IP reassignment between engagement sessions.</li><li>Enable AWS Config and CloudTrail on the AWS account to maintain an auditable inventory of cloud assets and detect unexpected configuration changes during and after the test.</li><li>If Shodan enrichment is desired for future engagements, configure SHODAN_API_KEY in pt-orc.conf to cross-reference open port listings against active scan results.</li>
+      </ol>
+      
+    </div>
+
+    
+    <div class="fc-sec">
+      <div class="fc-sec-title">References</div>
+      <a class="ref-link" href="https://aws.amazon.com/security/penetration-testing/">https://aws.amazon.com/security/penetration-testing/</a><a class="ref-link" href="https://aws.amazon.com/aup/">https://aws.amazon.com/aup/</a><a class="ref-link" href="https://docs.aws.amazon.com/config/latest/developerguide/what-is-AWS-Config.html">https://docs.aws.amazon.com/config/latest/developerguide/what-is-AWS-Config.html</a>
+    </div>
+    
+  </div>
+</div>
+
+</div>
+
+<!-- 05 REMEDIATION ROADMAP -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">05</span>Remediation Roadmap</h2>
+<table class="roadmap">
+  <tr>
+    <th style="width:60px;">ID</th>
+    <th>Finding</th>
+    <th style="width:90px;">Severity</th>
+    <th style="width:80px;">Effort</th>
+    <th style="width:170px;">Timeframe</th>
+  </tr>
+  
+  
+  <tr>
+    <td>F-001</td>
+    <td>Multiple HTTP Security Headers Missing</td>
+    <td><span class="sev-badge medium" style="font-size:7.5pt;">Medium</span></td>
+    <td><span class="effort-Low">Low</span></td>
+    <td>Short-term (1-4 weeks)</td>
+  </tr>
+  
+  
+  
+  
+</table>
+</div>
+
+<!-- 06 DISCLAIMER -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">06</span>Disclaimer &amp; Legal</h2>
+<div class="disc">
+  <h3>Important Notice</h3>
+  <p>This report has been prepared solely for the use of the client organisation named in the engagement configuration and is intended to communicate the findings of a time-boxed penetration test conducted under formal written authorisation. The security posture described herein reflects the state of the target environment as observed during the testing window (June 2026) only and may not reflect vulnerabilities introduced or remediated after that date. Penetration testing is inherently a point-in-time assessment and cannot guarantee the discovery of all vulnerabilities present in the target environment. The absence of a finding in this report should not be interpreted as a confirmation that no vulnerability exists. TechGuard Labs has exercised professional care in the preparation of this report; however, no warranty, express or implied, is made as to the accuracy or completeness of the information contained herein. All testing was performed in accordance with the agreed Rules of Engagement, applicable laws, and the AWS Penetration Testing Policy. Redistribution of this report to third parties requires prior written consent from TechGuard Labs and the client organisation. Evidence files and working data referenced in this report should be stored securely and disposed of in accordance with the client's data retention and classification policies.</p>
+</div>
+
+
+<div style="margin-top:20px;">
+  <div class="scope-h3" style="margin-bottom:8px;">Methodology Notes</div>
+  <p style="font-size:9.5pt;line-height:1.6;">This assessment was conducted as an external black-box web application penetration test (mode: pte) against the single in-scope target testphp.vulnweb.com (44.228.249.3) during June 2026. Testing followed a structured pipeline: (1) DNS reconnaissance and subdomain enumeration using amass, httpx, and certificate transparency logs; (2) IP ownership and ASN analysis with PTR, WHOIS, and traceroute enrichment; (3) Comprehensive TCP and UDP port scanning using masscan (rate 5000 pps) and nmap with NSE scripts covering common vulnerability categories including SSL/TLS weaknesses, SMB, RDP, shellshock, and FTP; (4) TLS configuration assessment across discovered HTTPS ports (443, 4443, 8443) using testssl.sh; (5) Web application enumeration covering 18 test cases including header and technology fingerprinting, security header and CSP analysis, CORS misconfiguration testing, WAF detection, directory and path discovery (gobuster + ffuf against dirb common wordlist), Nikto scanning, JavaScript secret extraction, cookie security analysis, open redirect detection, login page analysis, CMS detection, GraphQL introspection, OAuth2/OIDC discovery, and client-side security indicators; (6) API security review covering 20 test cases aligned to the OWASP API Security Top 10 (2023) including HTTP method enumeration, schema discovery, authentication bypass, rate limiting, CORS, BOLA/IDOR, mass assignment, JWT attacks, GraphQL attacks, SSRF/IMDS, XXE, SSTI, host header injection, shadow API discovery, sensitive data exposure, business logic flaws, WebSocket detection, and TLS checks; (7) Service vulnerability verification using Metasploit Framework with MSF database integration. Testing was conducted in accordance with the Rules of Engagement: no Denial of Service activity, testing restricted to the agreed window, and no production data exfiltration. Authentication level was none (unauthenticated testing only). The OWASP Testing Guide v4.2 and OWASP API Security Top 10 (2023) were used as the primary methodology references.</p>
+</div>
+
+
+<div class="footer">
+  <strong>TechGuard Labs</strong> &bull; hari@techguardlabs.com &bull;
+  Report generated 10 June 2026 &bull; PT-Orc Suite v1.0
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+[2026-06-10 16:54:38] PT-Orc 09_ai_llm_review.sh v2.0 — OWASP LLM Top 10 (2025)
+[2026-06-10 16:54:38] Session: 20260610_165438 | Profile: standard | Tier: normal
+[2026-06-10 16:54:38]   Inject marker: TG_VAPT_1781090678_MARKER
+[2026-06-10 16:54:38]   Profile: standard
+[2026-06-10 16:54:38] ⚠ === SCOPE CONFIRMATION — AI/LLM Review v2.0 ===
+[2026-06-10 16:54:38] ⚠ Profile: standard | Tier: normal | Tests: T01-T15
+[2026-06-10 16:54:38] ⚠ Targets (1):
+[2026-06-10 16:54:38] ⚠   → 65.61.137.117:443
+[2026-06-10 16:54:38] ✓ Auto-confirmed (--yes)
+[2026-06-10 16:54:38] ========================================================
+[2026-06-10 16:54:38] TARGET: https://65.61.137.117:443 | Profile: standard | Tier: normal
+[2026-06-10 16:54:38] ========================================================
+[2026-06-10 16:54:39] ✓ Target reachable: HTTP 200
+[2026-06-10 16:54:39] T01: LLM Endpoint Discovery — https://65.61.137.117:443
+[2026-06-10 16:55:35] ✓ T01: No LLM endpoints detected on https://65.61.137.117:443
+[2026-06-10 16:55:35] T02: Authentication Testing — https://65.61.137.117:443
+[2026-06-10 16:55:35]   T02: No LLM endpoint found — skip
+[2026-06-10 16:55:35] T03: Rate Limiting — https://65.61.137.117:443
+[2026-06-10 16:55:35]   T03: No LLM endpoint — skip
+[2026-06-10 16:55:35] T04: Direct Prompt Injection — https://65.61.137.117:443
+[2026-06-10 16:55:35]   T04: No LLM endpoint — skip
+[2026-06-10 16:55:35] T05: Indirect Prompt Injection (RAG/Tool Context) — https://65.61.137.117:443
+[2026-06-10 16:55:35]   T05: No LLM endpoint — skip
+[2026-06-10 16:55:35] T06: System Prompt Leakage — https://65.61.137.117:443
+[2026-06-10 16:55:35]   T06: No LLM endpoint — skip
+[2026-06-10 16:55:35] T07: Jailbreaking / Safety Bypass — https://65.61.137.117:443
+[2026-06-10 16:55:35]   T07: No LLM endpoint — skip
+[2026-06-10 16:55:35] T08: Excessive Agency / Tool Discovery — https://65.61.137.117:443
+[2026-06-10 16:55:59] T09: Sensitive Data Extraction — https://65.61.137.117:443
+[2026-06-10 16:55:59]   T09: No LLM endpoint — skip
+[2026-06-10 16:55:59] T11: Insecure Output Handling — https://65.61.137.117:443
+[2026-06-10 16:55:59]   T11: No LLM endpoint — skip
+[2026-06-10 16:55:59] T12: API Key / Secret Exposure — https://65.61.137.117:443
+[2026-06-10 16:56:13] T13: Model Fingerprinting — https://65.61.137.117:443
+[2026-06-10 16:56:21] T14: CORS and Security Headers — https://65.61.137.117:443
+[2026-06-10 16:56:23] ! FINDING [LOW]: Missing Security Headers on LLM API (65.61.137.117:443)
+[2026-06-10 16:56:23] T15: Plugin / Function Calling Enumeration — https://65.61.137.117:443
+[2026-06-10 16:56:31] ✓ Target https://65.61.137.117:443 complete — 1 finding(s)
+[2026-06-10 16:56:31] ✓ Summary: /home/kali/audit-orc-vapt/pt-orc/scripts/working/Mithila-TEST-WEB-Jun2026-Orc_ai_llm_summary_20260610_165438.md
+[2026-06-10 16:56:31] ✓ Findings: /home/kali/audit-orc-vapt/pt-orc/scripts/working/Mithila-TEST-WEB-Jun2026-Orc_09_ai_llm_findings_20260610_165438.jsonl (0 total)
+[2026-06-10 16:56:31] ✓ Evidence: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc

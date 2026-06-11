@@ -1,0 +1,6 @@
+# DNS-over-HTTPS probe — testphp.vulnweb.com — 2026-06-10 13:06:08
+---
+DoH [] Status=0
+  A: 44.228.249.3
+DoH [] Status=0
+  A: 44.228.249.3

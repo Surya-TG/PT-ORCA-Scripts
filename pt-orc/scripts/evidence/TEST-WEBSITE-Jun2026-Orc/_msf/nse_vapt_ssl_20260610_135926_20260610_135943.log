@@ -1,0 +1,16 @@
+[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_ssl_20260610_135926_20260610_135943.log...
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_ssl_20260610_135926_20260610_135943.rc)> workspace -a TEST-WEBSITE-Jun2026-Orc
+[0m[1m[34m[*][0m Workspace 'TEST-WEBSITE-Jun2026-Orc' already existed, switching to it.
+[1m[34m[*][0m Workspace: TEST-WEBSITE-Jun2026-Orc
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_ssl_20260610_135926_20260610_135943.rc)> db_nmap -sS -Pn --open -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 --exclude 10.0.2.15 -p 443,465,636,993,995,8080,8443 --script ssl-heartbleed,ssl-poodle,ssl-drown,ssl-ccs-injection,ssl-known-key --script-timeout 30s -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_nse_sweep.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/nse_vapt_ssl_20260610_135926
+[0m[1m[34m[*][0m Nmap: Starting Nmap 7.99 ( https://nmap.org ) at 2026-06-10 13:59 +0530
+[1m[34m[*][0m Nmap: 'NSE: failed to initialize the script engine:'
+[1m[34m[*][0m Nmap: '/usr/share/nmap/nse_main.lua:829: 'ssl-drown' did not match a category, filename, or directory'
+[1m[34m[*][0m Nmap: 'stack traceback:'
+[1m[34m[*][0m Nmap: '[C]: in function 'error''
+[1m[34m[*][0m Nmap: '/usr/share/nmap/nse_main.lua:829: in local 'get_chosen_scripts''
+[1m[34m[*][0m Nmap: '/usr/share/nmap/nse_main.lua:1364: in main chunk'
+[1m[34m[*][0m Nmap: '[C]: in ?'
+[1m[34m[*][0m Nmap: 'QUITTING!'
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_ssl_20260610_135926_20260610_135943.rc)> spool off
+[0m

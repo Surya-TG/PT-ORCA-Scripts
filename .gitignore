@@ -1,0 +1,9 @@
+# nav — managed
+.work/
+.profile/
+.backup/
+.claude/
+__pycache__/
+*.pyc
+MAIN-INDEX.md
+INDEX.md

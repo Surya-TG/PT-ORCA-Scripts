@@ -1,0 +1,3 @@
+# AXFR Attempts — testphp.vulnweb.com — 2026-06-10 13:35:54
+---
+No NS records found

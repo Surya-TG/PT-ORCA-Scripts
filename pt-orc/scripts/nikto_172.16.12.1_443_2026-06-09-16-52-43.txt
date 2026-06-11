@@ -1,0 +1,11 @@
+- Nikto v2.6.0/
++ Target Host: 172.16.12.1
++ Target Port: 443
++ SSL Info:           Subject:  /C=IN/ST=TAMILNADU/L=COIMBATOTRE/O=Sri Ramakrishna Eng'g Coll./OU=OU/CN=SophosApplianceCertificate_C4307B9FM6BR61B/emailAddress=hs@srec.ac.in
+                      CN:       SophosApplianceCertificate_C4307B9FM6BR61B
+                      Ciphers:  ECDHE-RSA-AES256-GCM-SHA384
+                      Issuer:   /C=IN/ST=TAMILNADU/L=COIMBATOTRE/O=Sri Ramakrishna Eng'g Coll./OU=OU/CN=Sophos_CA_C4307B9FM6BR61B/emailAddress=hs@srec.ac.in
++ GET /: Hostname '172.16.12.1' does not match certificate names (CN: SophosApplianceCertificate_C4307B9FM6BR61B, SAN: none). See: https://cwe.mitre.org/data/definitions/297.html: 
++ GET /: Suggested security header missing: permissions-policy. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy: 
++ GET /README.md: Readme Found.
++ GET /: The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type. See: https://www.netsparker.com/web-vulnerability-scanner/vulnerabilities/missing-content-type-header/: 

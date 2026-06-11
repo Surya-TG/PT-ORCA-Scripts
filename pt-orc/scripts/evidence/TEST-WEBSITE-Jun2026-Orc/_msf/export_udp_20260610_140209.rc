@@ -1,0 +1,7 @@
+spool /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/export_udp_20260610_140209.log
+workspace -a TEST-WEBSITE-Jun2026-Orc
+hosts    -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_exports/hosts_udp_20260610_140209.csv
+services -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_exports/services_udp_20260610_140209.csv
+notes    -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_exports/notes_udp_20260610_140209.csv
+spool off
+exit

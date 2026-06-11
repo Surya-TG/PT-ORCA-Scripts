@@ -1,0 +1,1 @@
+[T15] WordPress: wp-login.php=404 readme.html=404 wp-json/users=404

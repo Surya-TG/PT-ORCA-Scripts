@@ -1,0 +1,27 @@
+[T14] CORS probe: HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Set-Cookie: JSESSIONID=327D5A7D02F767239C4173A6FF4416D4; Path=/; Secure; HttpOnly
+Content-Type: text/html;charset=ISO-8859-1
+Transfer-Encoding: chunked
+Date: Wed, 10 Jun 2026 11:26:21 GMT
+
+
+
+
+
+
+
+ 
+    
+
+ 
+
+<!-- BEGIN HEADER -->
+<!DOCTYPE h
+[T14] Headers: HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Set-Cookie: JSESSIONID=4AB29B14D2A8D5DAFD4B65661BE05783; Path=/; Secure; HttpOnly
+Content-Type: text/html;charset=ISO-8859-1
+Transfer-Encoding: chunked
+Date: Wed, 10 Jun 2026 11:26:22 GMT
+

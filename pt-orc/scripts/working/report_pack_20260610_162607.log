@@ -1,0 +1,41 @@
+[2026-06-10 16:26:07] 12_report_pack.sh — TechGuard. | Project: Mithila-TEST-WEB
+[2026-06-10 16:26:07] Evidence base: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc
+[2026-06-10 16:26:07] Output dir:    /home/kali/audit-orc-vapt/pt-orc/scripts/run
+# Session Start — 12_report_pack.sh
+# Time:        2026-06-10 16:26:07
+# Project:     Mithila-TEST-WEB
+# Profile:     web
+# Dry run:     0
+# Retest:      0
+# AI Report:   1
+# AI Model:    claude-sonnet-4-6
+# Evidence:    /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc
+[2026-06-10 16:26:07] Building scope.json ...
+[2026-06-10 16:26:07]     targets.txt: 1 entries
+[2026-06-10 16:26:07] [OK]   Targets consolidated: 3 unique entries
+[2026-06-10 16:26:07] [WARN]   WINDOW_START not set — using 2026-05-27 (today-14d)
+[2026-06-10 16:26:07] [WARN]   WINDOW_END not set — using 2026-06-24 (today+14d)
+[2026-06-10 16:26:07] [OK] scope.json built — 3 targets, window 2026-05-27 → 2026-06-24
+[2026-06-10 16:26:07] Building evidence_manifest.jsonl ...
+[2026-06-10 16:26:07] [OK] Evidence manifest built — 0 items
+[2026-06-10 16:26:07] Collecting findings ...
+[2026-06-10 16:26:07]   Step 1: pre-generated findings from phase scripts ...
+[2026-06-10 16:26:07]     Pre-generated findings loaded: 0
+[2026-06-10 16:26:07]   Step 2: pattern-based detection across evidence files ...
+[2026-06-10 16:26:07] [OK] Findings collected — 0 total
+[2026-06-10 16:26:07] Building report_bundle.json ...
+[2026-06-10 16:26:07] [OK] report_bundle.json built — residual: None identified
+[2026-06-10 16:26:07] Writing output to /home/kali/audit-orc-vapt/pt-orc/scripts/run/Mithila-TEST-WEB_20260610_162607/ ...
+[2026-06-10 16:26:07] [OK]   scope.json written
+[2026-06-10 16:26:07] [OK]   evidence_manifest.jsonl written (0 items)
+[2026-06-10 16:26:07] [OK]   findings.jsonl written (0 findings)
+[2026-06-10 16:26:07] [OK]   report_bundle.json written
+# Session End — 12_report_pack.sh
+# Time:        2026-06-10 16:26:07
+# Project:     Mithila-TEST-WEB
+# Run dir:     /home/kali/audit-orc-vapt/pt-orc/scripts/run/Mithila-TEST-WEB_20260610_162607
+# Evidence:    0
+# Findings:    0 (C:0 H:0 M:0 L:0 I:0)
+# Residual:    None identified
+[2026-06-10 16:26:07] [ERR] ANTHROPIC_API_KEY not set — add it to audit-orc-vapt/.env
+[2026-06-10 16:26:07] [WARN] AI report skipped. Set ANTHROPIC_API_KEY and re-run.

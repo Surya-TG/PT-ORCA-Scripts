@@ -1,0 +1,10 @@
+[T12] Response headers:
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Set-Cookie: JSESSIONID=54B906821F68B7480BF9EDB4D0419F27; Path=/; Secure; HttpOnly
+Content-Type: text/html;charset=ISO-8859-1
+Transfer-Encoding: chunked
+Date: Wed, 10 Jun 2026 11:17:56 GMT
+
+[T12] Cookies: Set-Cookie: JSESSIONID=54B906821F68B7480BF9EDB4D0419F27; Path=/; Secure; HttpOnly
+[T12] Cookie: JSESSIONID

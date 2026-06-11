@@ -1,0 +1,8 @@
+- Nikto v2.6.0/
++ Target Host: 65.61.137.117
++ Target Port: 443
++ SSL Info:           Subject:  /CN=demo.testfire.net
+                      CN:       demo.testfire.net
+                      SAN:      demo.testfire.net
+                      Ciphers:  ECDHE-RSA-AES256-GCM-SHA384
+                      Issuer:   /C=GB/ST=Greater Manchester/L=Salford/O=Sectigo Limited/CN=Sectigo RSA Domain Validation Secure Server CA

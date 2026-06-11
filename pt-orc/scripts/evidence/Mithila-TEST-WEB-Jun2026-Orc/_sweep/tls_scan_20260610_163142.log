@@ -1,0 +1,44 @@
+[2026-06-10 16:31:42] [ALERT] _db_get_workspace_id: no workspace found for name='Mithila-TEST-WEB-Jun2026-Orc'
+[2026-06-10 16:31:42] ⚠ Targets file not found: working/Mithila-TEST-WEB-Jun2026-Orc_tls_targets.txt
+[2026-06-10 16:31:42] ⚠ No TLS-specific targets file — falling back to /home/kali/audit-orc-vapt/pt-orc/scripts/targets.txt (1 IP(s)) with ports 443 8443 4443
+[2026-06-10 16:31:42] TLS targets: 3
+[2026-06-10 16:31:42] Assessing TLS: 65.61.137.117:443
+[2026-06-10 16:31:44] ✓   Certificate: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/cert_443_20260610_163142.txt
+[2026-06-10 16:31:44]     Subject:         Subject: CN=demo.testfire.net
+[2026-06-10 16:31:44]     Expiry:              Not After : Jun 21 23:59:59 2026 GMT
+[2026-06-10 16:31:46] ✓   Legacy check: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/tls_legacy_443_20260610_163142.txt
+[2026-06-10 16:31:46] ⚠   testssl not found — falling back to nmap ssl-enum-ciphers
+[2026-06-10 16:31:46]   rc_scan [ssl-ciphers_65.61.137.117_443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_443_20260610_163146.rc
+[2026-06-10 16:31:46]   spool  [ssl-ciphers_65.61.137.117_443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_443_20260610_163146.log  (tail -f to follow)
+[2026-06-10 16:32:07] ✓   rc_scan done [ssl-ciphers_65.61.137.117_443]
+[2026-06-10 16:32:07] ✓   Cipher enum: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/nmap_tls_443_20260610_163142.nmap
+[2026-06-10 16:32:13] ✓   Extended cert analysis: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/cert_ext_443_20260610_163142.txt
+[2026-06-10 16:32:14] ✓   Headers: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/sec_headers_443_20260610_163142.txt
+[2026-06-10 16:32:14] Assessing TLS: 65.61.137.117:4443
+[2026-06-10 16:32:29] ✓   Certificate: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/cert_4443_20260610_163214.txt
+[2026-06-10 16:32:29]     Subject: unknown
+[2026-06-10 16:32:29]     Expiry:  unknown
+[2026-06-10 16:32:45] ✓   Legacy check: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/tls_legacy_4443_20260610_163214.txt
+[2026-06-10 16:32:45] ⚠   testssl not found — falling back to nmap ssl-enum-ciphers
+[2026-06-10 16:32:45]   rc_scan [ssl-ciphers_65.61.137.117_4443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_4443_20260610_163245.rc
+[2026-06-10 16:32:45]   spool  [ssl-ciphers_65.61.137.117_4443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_4443_20260610_163245.log  (tail -f to follow)
+[2026-06-10 16:32:56] ✓   rc_scan done [ssl-ciphers_65.61.137.117_4443]
+[2026-06-10 16:32:56] ✓   Cipher enum: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/nmap_tls_4443_20260610_163214.nmap
+[2026-06-10 16:33:57] ✓   Extended cert analysis: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/cert_ext_4443_20260610_163214.txt
+[2026-06-10 16:34:08] ✓   Headers: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/sec_headers_4443_20260610_163214.txt
+[2026-06-10 16:34:08] Assessing TLS: 65.61.137.117:8443
+[2026-06-10 16:34:11] ✓   Certificate: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/cert_8443_20260610_163408.txt
+[2026-06-10 16:34:11]     Subject: unknown
+[2026-06-10 16:34:11]     Expiry:  unknown
+[2026-06-10 16:34:18] ✓   Legacy check: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/tls_legacy_8443_20260610_163408.txt
+[2026-06-10 16:34:18] ⚠   testssl not found — falling back to nmap ssl-enum-ciphers
+[2026-06-10 16:34:18]   rc_scan [ssl-ciphers_65.61.137.117_8443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_8443_20260610_163418.rc
+[2026-06-10 16:34:18]   spool  [ssl-ciphers_65.61.137.117_8443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_8443_20260610_163418.log  (tail -f to follow)
+[2026-06-10 16:34:25] ✓   rc_scan done [ssl-ciphers_65.61.137.117_8443]
+[2026-06-10 16:34:25] ✓   Cipher enum: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/nmap_tls_8443_20260610_163408.nmap
+[2026-06-10 16:34:42] ✓   Extended cert analysis: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/cert_ext_8443_20260610_163408.txt
+[2026-06-10 16:34:48] ✓   Headers: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/sec_headers_8443_20260610_163408.txt
+[2026-06-10 16:34:49] Exporting MSF DB (tls)...
+[2026-06-10 16:34:56] ✓ Exported: hosts_tls_20260610_163448.csv | services_tls_20260610_163448.csv | notes_tls_20260610_163448.csv
+[2026-06-10 16:34:56] ✓ TLS scan complete. Summary: working/tls_summary_20260610_163142.md
+[2026-06-10 16:34:56] ✓ Evidence per host: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/<IP>/testssl_<port>_<TS>.{html,json,log}

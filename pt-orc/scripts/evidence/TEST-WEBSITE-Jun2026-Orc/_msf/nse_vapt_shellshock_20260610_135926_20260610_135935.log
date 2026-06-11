@@ -1,0 +1,9 @@
+[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_shellshock_20260610_135926_20260610_135935.log...
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_shellshock_20260610_135926_20260610_135935.rc)> workspace -a TEST-WEBSITE-Jun2026-Orc
+[0m[1m[34m[*][0m Workspace 'TEST-WEBSITE-Jun2026-Orc' already existed, switching to it.
+[1m[34m[*][0m Workspace: TEST-WEBSITE-Jun2026-Orc
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_shellshock_20260610_135926_20260610_135935.rc)> db_nmap -sS -Pn --open -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 --exclude 10.0.2.15 -p 80,443,8080,8443,8888 --script http-shellshock --script-args http-shellshock.uri=/cgi-bin/status,http-shellshock.header=User-Agent --script-timeout 20s -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_nse_sweep.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/nse_vapt_shellshock_20260610_135926
+[0m[1m[34m[*][0m Nmap: Starting Nmap 7.99 ( https://nmap.org ) at 2026-06-10 13:59 +0530
+[1m[34m[*][0m Nmap: Nmap done: 1 IP address (1 host up) scanned in 3.79 seconds
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_shellshock_20260610_135926_20260610_135935.rc)> spool off
+[0m

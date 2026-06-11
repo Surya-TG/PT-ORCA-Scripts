@@ -1,0 +1,5 @@
+spool /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_ftp_20260610_135926_20260610_135955.log
+workspace -a TEST-WEBSITE-Jun2026-Orc
+db_nmap -sS -Pn --open -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 --exclude 10.0.2.15 -p 21 --script ftp-anon,ftp-bounce,ftp-syst --script-timeout 15s -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_nse_sweep.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/nse_vapt_ftp_20260610_135926
+spool off
+exit

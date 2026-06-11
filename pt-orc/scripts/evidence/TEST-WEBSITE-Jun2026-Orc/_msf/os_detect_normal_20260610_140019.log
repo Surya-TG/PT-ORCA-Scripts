@@ -1,0 +1,10 @@
+[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/os_detect_normal_20260610_140019.log...
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/os_detect_normal_20260610_140019.rc)> workspace -a TEST-WEBSITE-Jun2026-Orc
+[0m[1m[34m[*][0m Workspace 'TEST-WEBSITE-Jun2026-Orc' already existed, switching to it.
+[1m[34m[*][0m Workspace: TEST-WEBSITE-Jun2026-Orc
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/os_detect_normal_20260610_140019.rc)> db_nmap -sS -O --osscan-guess --osscan-limit -sV -Pn --open -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 --exclude 10.0.2.15 -p 21,22,23,25,53,80,110,111,135,139,143,389,443,445,465,587,636,993,995,1433,1521,2049,3306,3389,5432,5900,5985,5986,8080,8443,8888,9200,10443,27017,6379,11211,2181 -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_os_normal.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/os_detect_normal_20260610_140019
+[0m[1m[34m[*][0m Nmap: Starting Nmap 7.99 ( https://nmap.org ) at 2026-06-10 14:00 +0530
+[1m[34m[*][0m Nmap: OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+[1m[34m[*][0m Nmap: Nmap done: 1 IP address (1 host up) scanned in 3.95 seconds
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/os_detect_normal_20260610_140019.rc)> spool off
+[0m

@@ -1,0 +1,43 @@
+[2026-06-10 14:17:22] ⚠ Targets file not found: working/TEST-WEBSITE-Jun2026-Orc_tls_targets.txt
+[2026-06-10 14:17:22] ⚠ No TLS-specific targets file — falling back to /home/kali/audit-orc-vapt/pt-orc/scripts/targets.txt (1 IP(s)) with ports 443 8443 4443
+[2026-06-10 14:17:22] TLS targets: 3
+[2026-06-10 14:17:23] Assessing TLS: 44.228.249.3:443
+[2026-06-10 14:17:38] ✓   Certificate: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/cert_443_20260610_141723.txt
+[2026-06-10 14:17:38]     Subject: unknown
+[2026-06-10 14:17:38]     Expiry:  unknown
+[2026-06-10 14:17:54] ✓   Legacy check: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/tls_legacy_443_20260610_141723.txt
+[2026-06-10 14:17:54] ⚠   testssl not found — falling back to nmap ssl-enum-ciphers
+[2026-06-10 14:17:54]   rc_scan [ssl-ciphers_44.228.249.3_443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_443_20260610_141754.rc
+[2026-06-10 14:17:54]   spool  [ssl-ciphers_44.228.249.3_443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_443_20260610_141754.log  (tail -f to follow)
+[2026-06-10 14:18:02] ✓   rc_scan done [ssl-ciphers_44.228.249.3_443]
+[2026-06-10 14:18:02] ✓   Cipher enum: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/nmap_tls_443_20260610_141723.nmap
+[2026-06-10 14:19:04] ✓   Extended cert analysis: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/cert_ext_443_20260610_141723.txt
+[2026-06-10 14:19:14] ✓   Headers: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/sec_headers_443_20260610_141723.txt
+[2026-06-10 14:19:14] Assessing TLS: 44.228.249.3:4443
+[2026-06-10 14:19:29] ✓   Certificate: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/cert_4443_20260610_141914.txt
+[2026-06-10 14:19:29]     Subject: unknown
+[2026-06-10 14:19:29]     Expiry:  unknown
+[2026-06-10 14:19:45] ✓   Legacy check: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/tls_legacy_4443_20260610_141914.txt
+[2026-06-10 14:19:45] ⚠   testssl not found — falling back to nmap ssl-enum-ciphers
+[2026-06-10 14:19:45]   rc_scan [ssl-ciphers_44.228.249.3_4443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_4443_20260610_141945.rc
+[2026-06-10 14:19:45]   spool  [ssl-ciphers_44.228.249.3_4443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_4443_20260610_141945.log  (tail -f to follow)
+[2026-06-10 14:19:54] ✓   rc_scan done [ssl-ciphers_44.228.249.3_4443]
+[2026-06-10 14:19:54] ✓   Cipher enum: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/nmap_tls_4443_20260610_141914.nmap
+[2026-06-10 14:20:55] ✓   Extended cert analysis: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/cert_ext_4443_20260610_141914.txt
+[2026-06-10 14:21:06] ✓   Headers: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/sec_headers_4443_20260610_141914.txt
+[2026-06-10 14:21:06] Assessing TLS: 44.228.249.3:8443
+[2026-06-10 14:21:21] ✓   Certificate: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/cert_8443_20260610_142106.txt
+[2026-06-10 14:21:21]     Subject: unknown
+[2026-06-10 14:21:21]     Expiry:  unknown
+[2026-06-10 14:49:18] ✓   Legacy check: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/tls_legacy_8443_20260610_142106.txt
+[2026-06-10 14:49:19] ⚠   testssl not found — falling back to nmap ssl-enum-ciphers
+[2026-06-10 14:49:19]   rc_scan [ssl-ciphers_44.228.249.3_8443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_8443_20260610_144919.rc
+[2026-06-10 14:49:19]   spool  [ssl-ciphers_44.228.249.3_8443] → /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_8443_20260610_144919.log  (tail -f to follow)
+[2026-06-10 14:49:29] ✓   rc_scan done [ssl-ciphers_44.228.249.3_8443]
+[2026-06-10 14:49:29] ✓   Cipher enum: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/nmap_tls_8443_20260610_142106.nmap
+[2026-06-10 14:50:31] ✓   Extended cert analysis: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/cert_ext_8443_20260610_142106.txt
+[2026-06-10 14:50:41] ✓   Headers: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/sec_headers_8443_20260610_142106.txt
+[2026-06-10 14:50:41] Exporting MSF DB (tls)...
+[2026-06-10 14:50:46] ✓ Exported: hosts_tls_20260610_145041.csv | services_tls_20260610_145041.csv | notes_tls_20260610_145041.csv
+[2026-06-10 14:50:46] ✓ TLS scan complete. Summary: working/tls_summary_20260610_141722.md
+[2026-06-10 14:50:46] ✓ Evidence per host: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/<IP>/testssl_<port>_<TS>.{html,json,log}

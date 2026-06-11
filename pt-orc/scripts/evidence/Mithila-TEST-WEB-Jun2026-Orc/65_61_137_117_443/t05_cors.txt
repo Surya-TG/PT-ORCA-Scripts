@@ -1,0 +1,16 @@
+[T05] Origin: https://evil.com
+[T05]   ACAO: 
+[T05]   ACAC: 
+[T05] Origin: https://attacker.io
+[T05]   ACAO: 
+[T05]   ACAC: 
+[T05] Origin: null
+[T05]   ACAO: 
+[T05]   ACAC: 
+[T05] Origin: https://65.61.137.117.evil.com
+[T05]   ACAO: 
+[T05]   ACAC: 
+[T05] Origin: https://evil65_61_137_117.com
+[T05]   ACAO: 
+[T05]   ACAC: 
+[T05] Null origin ACAO: 

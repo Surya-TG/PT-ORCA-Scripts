@@ -1,0 +1,67 @@
+[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_443_20260610_163146.log...
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_443_20260610_163146.rc)> workspace -a Mithila-TEST-WEB-Jun2026-Orc
+[0m[1m[34m[*][0m Added workspace: Mithila-TEST-WEB-Jun2026-Orc
+[1m[34m[*][0m Workspace: Mithila-TEST-WEB-Jun2026-Orc
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_443_20260610_163146.rc)> db_nmap -Pn -p 443 --script ssl-enum-ciphers,ssl-cert --script-timeout 2m -T3 65.61.137.117 -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/nmap_tls_443_20260610_163142
+[0m[1m[34m[*][0m Nmap: Starting Nmap 7.99 ( https://nmap.org ) at 2026-06-10 16:31 +0530
+[1m[34m[*][0m Nmap: Nmap scan report for 65.61.137.117
+[1m[34m[*][0m Nmap: Host is up (0.25s latency).
+[1m[34m[*][0m Nmap: PORT    STATE SERVICE
+[1m[34m[*][0m Nmap: 443/tcp open  https
+[1m[34m[*][0m Nmap: | ssl-cert: Subject: commonName=demo.testfire.net
+[1m[34m[*][0m Nmap: | Subject Alternative Name: DNS:demo.testfire.net
+[1m[34m[*][0m Nmap: | Issuer: commonName=Sectigo RSA Domain Validation Secure Server CA/organizationName=Sectigo Limited/stateOrProvinceName=Greater Manchester/countryName=GB
+[1m[34m[*][0m Nmap: | Public Key type: rsa
+[1m[34m[*][0m Nmap: | Public Key bits: 2048
+[1m[34m[*][0m Nmap: | Signature Algorithm: sha256WithRSAEncryption
+[1m[34m[*][0m Nmap: | Not valid before: 2025-05-21T00:00:00
+[1m[34m[*][0m Nmap: | Not valid after:  2026-06-21T23:59:59
+[1m[34m[*][0m Nmap: | MD5:     04a1 2772 0069 3d65 011d ded8 ccb0 201c
+[1m[34m[*][0m Nmap: | SHA-1:   a1e9 8d60 388b 84f4 bbc5 50d7 b61b b2b0 cc89 61fd
+[1m[34m[*][0m Nmap: |_SHA-256: b0ea c225 501d b594 a963 9f9e 718b c036 759b 9f49 2c7c 729a 60c8 4735 6839 3382
+[1m[34m[*][0m Nmap: | ssl-enum-ciphers:
+[1m[34m[*][0m Nmap: |   TLSv1.0:
+[1m[34m[*][0m Nmap: |     ciphers:
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A
+[1m[34m[*][0m Nmap: |     compressors:
+[1m[34m[*][0m Nmap: |       NULL
+[1m[34m[*][0m Nmap: |     cipher preference: client
+[1m[34m[*][0m Nmap: |     warnings:
+[1m[34m[*][0m Nmap: |       Key exchange (dh 1024) of lower strength than certificate key
+[1m[34m[*][0m Nmap: |   TLSv1.1:
+[1m[34m[*][0m Nmap: |     ciphers:
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A
+[1m[34m[*][0m Nmap: |     compressors:
+[1m[34m[*][0m Nmap: |       NULL
+[1m[34m[*][0m Nmap: |     cipher preference: client
+[1m[34m[*][0m Nmap: |     warnings:
+[1m[34m[*][0m Nmap: |       Key exchange (dh 1024) of lower strength than certificate key
+[1m[34m[*][0m Nmap: |   TLSv1.2:
+[1m[34m[*][0m Nmap: |     ciphers:
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_128_CBC_SHA256 (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 (dh 1024) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (secp256r1) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384 (secp256r1) - A
+[1m[34m[*][0m Nmap: |       TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A
+[1m[34m[*][0m Nmap: |     compressors:
+[1m[34m[*][0m Nmap: |       NULL
+[1m[34m[*][0m Nmap: |     cipher preference: client
+[1m[34m[*][0m Nmap: |     warnings:
+[1m[34m[*][0m Nmap: |       Key exchange (dh 1024) of lower strength than certificate key
+[1m[34m[*][0m Nmap: |_  least strength: A
+[1m[34m[*][0m Nmap: Nmap done: 1 IP address (1 host up) scanned in 13.34 seconds
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_443_20260610_163146.rc)> spool off
+[0m

@@ -1,0 +1,8 @@
+# Legacy Protocol Check — 44.228.249.3:4443
+# Engagement: TEST-WEBSITE-Jun2026-Orc
+# Date/Time:  2026-06-10 14:19:29
+---
+[ssl2] NOT TESTED — local OpenSSL does not support -ssl2 (removed in OpenSSL 3.x)
+[ssl3] NOT TESTED — local OpenSSL does not support -ssl3 (removed in OpenSSL 3.x)
+[tls1] timeout/connection error
+[tls1_1] timeout/connection error

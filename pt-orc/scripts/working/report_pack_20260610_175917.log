@@ -1,0 +1,131 @@
+[2026-06-10 17:59:17] 12_report_pack.sh — TechGuard. | Project: Mithila-TEST-WEB
+[2026-06-10 17:59:17] Evidence base: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc
+[2026-06-10 17:59:17] Output dir:    /home/kali/audit-orc-vapt/pt-orc/scripts/run
+# Session Start — 12_report_pack.sh
+# Time:        2026-06-10 17:59:17
+# Project:     Mithila-TEST-WEB
+# Profile:     web
+# Dry run:     0
+# Retest:      0
+# AI Report:   1
+# AI Model:    claude-haiku-4-5-20251001
+# Evidence:    /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc
+[2026-06-10 17:59:17] Building scope.json ...
+[2026-06-10 17:59:17]     targets.txt: 1 entries
+[2026-06-10 17:59:17] [OK]   Targets consolidated: 2 unique entries
+[2026-06-10 17:59:17] [WARN]   WINDOW_START not set — using 2026-05-27 (today-14d)
+[2026-06-10 17:59:17] [WARN]   WINDOW_END not set — using 2026-06-24 (today+14d)
+[2026-06-10 17:59:17] [OK] scope.json built — 2 targets, window 2026-05-27 → 2026-06-24
+[2026-06-10 17:59:17] Building evidence_manifest.jsonl ...
+[2026-06-10 17:59:17]     ev-001  [05_web]  t01_endpoints.txt
+[2026-06-10 17:59:17]     ev-002  [05_web]  t01_headers.txt
+[2026-06-10 17:59:17]     ev-003  [05_web]  t01_http_methods.txt
+[2026-06-10 17:59:17]     ev-004  [05_web]  t01_whatweb.txt
+[2026-06-10 17:59:17]     ev-005  [05_web]  t02_schema.txt
+[2026-06-10 17:59:17]     ev-006  [05_web]  t02_sec_headers.txt
+[2026-06-10 17:59:17]     ev-007  [05_web]  t03_auth.txt
+[2026-06-10 17:59:17]     ev-008  [05_web]  t03_cors.txt
+[2026-06-10 17:59:17]     ev-009  [05_web]  t04_rate_limit.txt
+[2026-06-10 17:59:17]     ev-010  [05_web]  t04_waf.txt
+[2026-06-10 17:59:17]     ev-011  [05_web]  t05_cors.txt
+[2026-06-10 17:59:17]     ev-012  [05_web]  t05_dirs.txt
+[2026-06-10 17:59:17]     ev-013  [05_web]  t05_gobuster.txt
+[2026-06-10 17:59:17]     ev-014  [05_web]  t06_bola.txt
+[2026-06-10 17:59:17]     ev-015  [05_web]  t06_nikto.txt
+[2026-06-10 17:59:17]     ev-016  [05_web]  t07_js.txt
+[2026-06-10 17:59:17]     ev-017  [05_web]  t07_mass_assign.txt
+[2026-06-10 17:59:17]     ev-018  [05_web]  t08_agency.txt
+[2026-06-10 17:59:17]     ev-019  [05_web]  t08_api.txt
+[2026-06-10 17:59:17]     ev-020  [05_web]  t08_sec_headers.txt
+[2026-06-10 17:59:17]     ev-021  [05_web]  t09_jwt.txt
+[2026-06-10 17:59:17]     ev-022  [05_web]  t09_sensitive.txt
+[2026-06-10 17:59:17]     ev-023  [05_web]  t11_ssrf.txt
+[2026-06-10 17:59:18]     ev-024  [05_web]  t12_cookies.txt
+[2026-06-10 17:59:18]     ev-025  [05_web]  t12_keys.txt
+[2026-06-10 17:59:18]     ev-026  [05_web]  t12_xxe.txt
+[2026-06-10 17:59:18]     ev-027  [05_web]  t13_redirect.txt
+[2026-06-10 17:59:18]     ev-028  [05_web]  t14_cors.txt
+[2026-06-10 17:59:18]     ev-029  [05_web]  t14_login.txt
+[2026-06-10 17:59:18]     ev-030  [05_web]  t15_cms.txt
+[2026-06-10 17:59:18]     ev-031  [05_web]  t15_plugins.txt
+[2026-06-10 17:59:18]     ev-032  [05_web]  t16_graphql.txt
+[2026-06-10 17:59:18]     ev-033  [05_web]  t17_oauth.txt
+[2026-06-10 17:59:18]     ev-034  [05_web]  t18_clientside.txt
+[2026-06-10 17:59:18]     ev-035  [04_tls]  cert_443_20260610_163142.txt
+[2026-06-10 17:59:18]     ev-036  [04_tls]  cert_4443_20260610_163214.txt
+[2026-06-10 17:59:18]     ev-037  [04_tls]  cert_8443_20260610_163408.txt
+[2026-06-10 17:59:18]     ev-038  [04_tls]  cert_ext_443_20260610_163142.txt
+[2026-06-10 17:59:18]     ev-039  [04_tls]  cert_ext_4443_20260610_163214.txt
+[2026-06-10 17:59:18]     ev-040  [04_tls]  cert_ext_8443_20260610_163408.txt
+[2026-06-10 17:59:18]     ev-041  [05_web]  headers_443_20260610_163142.txt
+[2026-06-10 17:59:18]     ev-042  [05_web]  headers_4443_20260610_163214.txt
+[2026-06-10 17:59:18]     ev-043  [05_web]  headers_8443_20260610_163408.txt
+[2026-06-10 17:59:18]     ev-044  [03_network]  nmap_tls_443_20260610_163142.gnmap
+[2026-06-10 17:59:18]     ev-045  [03_network]  nmap_tls_443_20260610_163142.nmap
+[2026-06-10 17:59:18]     ev-046  [03_network]  nmap_tls_4443_20260610_163214.gnmap
+[2026-06-10 17:59:18]     ev-047  [03_network]  nmap_tls_4443_20260610_163214.nmap
+[2026-06-10 17:59:18]     ev-048  [03_network]  nmap_tls_8443_20260610_163408.gnmap
+[2026-06-10 17:59:18]     ev-049  [03_network]  nmap_tls_8443_20260610_163408.nmap
+[2026-06-10 17:59:18]     ev-050  [05_web]  sec_headers_443_20260610_163142.txt
+[2026-06-10 17:59:18]     ev-051  [05_web]  sec_headers_4443_20260610_163214.txt
+[2026-06-10 17:59:18]     ev-052  [05_web]  sec_headers_8443_20260610_163408.txt
+[2026-06-10 17:59:18]     ev-053  [04_tls]  tls_legacy_443_20260610_163142.txt
+[2026-06-10 17:59:18]     ev-054  [04_tls]  tls_legacy_4443_20260610_163214.txt
+[2026-06-10 17:59:18]     ev-055  [04_tls]  tls_legacy_8443_20260610_163408.txt
+[2026-06-10 17:59:18]     ev-056  [01_dns]  all_subdomains_demo.testfire.net_20260610_162904.txt
+[2026-06-10 17:59:19]     ev-057  [01_dns]  all_targets_20260610_162904.txt
+[2026-06-10 17:59:19]     ev-058  [01_dns]  axfr_demo.testfire.net_20260610_162735.txt
+[2026-06-10 17:59:19]     ev-059  [01_dns]  axfr_demo.testfire.net_20260610_162904.txt
+[2026-06-10 17:59:19]     ev-060  [01_dns]  crt_demo.testfire.net_20260610_162904.txt
+[2026-06-10 17:59:19]     ev-061  [01_dns]  dnssec_demo.testfire.net_20260610_162735.txt
+[2026-06-10 17:59:19]     ev-062  [01_dns]  dnssec_demo.testfire.net_20260610_162904.txt
+[2026-06-10 17:59:19]     ev-063  [01_dns]  doh_demo.testfire.net_20260610_162735.txt
+[2026-06-10 17:59:19]     ev-064  [01_dns]  doh_demo.testfire.net_20260610_162904.txt
+[2026-06-10 17:59:19]     ev-065  [05_web]  hosts_tls_20260610_163448.csv
+[2026-06-10 17:59:19]     ev-066  [05_web]  notes_tls_20260610_163448.csv
+[2026-06-10 17:59:19]     ev-067  [05_web]  services_tls_20260610_163448.csv
+[2026-06-10 17:59:19]     ev-068  [05_web]  geo_65_61_137_117.json
+[2026-06-10 17:59:19]     ev-069  [05_web]  ipinfo_65_61_137_117.json
+[2026-06-10 17:59:19]     ev-070  [05_web]  summary_65_61_137_117.md
+[2026-06-10 17:59:19]     ev-071  [05_web]  traceroute_65_61_137_117.txt
+[2026-06-10 17:59:19]     ev-072  [05_web]  whois_65_61_137_117.txt
+[2026-06-10 17:59:19] [OK] Evidence manifest built — 72 items
+[2026-06-10 17:59:19] Collecting findings ...
+[2026-06-10 17:59:19]   Step 1: pre-generated findings from phase scripts ...
+[2026-06-10 17:59:19]     Loading pre-generated findings: Mithila-TEST-WEB-Jun2026-Orc_08_app_api_findings_20260610_165131.jsonl
+[2026-06-10 17:59:19] FINDING: Pre-generated [high] API Schema/Documentation Publicly Exposed (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [critical] Default Credentials Accepted — admin:admin (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [critical] Default Credentials Accepted — admin:password (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [critical] Default Credentials Accepted — admin:123456 (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [critical] Default Credentials Accepted — api:api (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [critical] Default Credentials Accepted — test:test (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [critical] Default Credentials Accepted — guest:guest (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [medium] Missing Rate Limiting on Login/Auth Endpoint (65.61.137.117:443)
+[2026-06-10 17:59:19] FINDING: Pre-generated [info] Server Version Disclosure in Response Headers (65.61.137.117:443)
+[2026-06-10 17:59:20] FINDING: Pre-generated [medium] Missing Security Response Headers (65.61.137.117:443)
+[2026-06-10 17:59:20]     Loading pre-generated findings: Mithila-TEST-WEB-Jun2026-Orc_09_ai_llm_findings_20260610_165438.jsonl
+[2026-06-10 17:59:20] FINDING: Pre-generated [low] Missing Security Headers on LLM API (65.61.137.117:443)
+[2026-06-10 17:59:20]     Pre-generated findings loaded: 11
+[2026-06-10 17:59:20]   Step 2: pattern-based detection across evidence files ...
+[2026-06-10 17:59:20] FINDING: medium [05_web] Multiple security headers missing (14) — sec_headers_443_20260610_163142.txt
+[2026-06-10 17:59:20] FINDING: medium [05_web] Multiple security headers missing (14) — sec_headers_4443_20260610_163214.txt
+[2026-06-10 17:59:20] FINDING: medium [05_web] Multiple security headers missing (14) — sec_headers_8443_20260610_163408.txt
+[2026-06-10 17:59:20] [OK] Findings collected — 14 total
+[2026-06-10 17:59:20] Building report_bundle.json ...
+[2026-06-10 17:59:20] [OK] report_bundle.json built — residual: Critical — immediate remediation required
+[2026-06-10 17:59:20] Writing output to /home/kali/audit-orc-vapt/pt-orc/scripts/run/Mithila-TEST-WEB_20260610_175917/ ...
+[2026-06-10 17:59:20] [OK]   scope.json written
+[2026-06-10 17:59:20] [OK]   evidence_manifest.jsonl written (72 items)
+[2026-06-10 17:59:20] [OK]   findings.jsonl written (14 findings)
+[2026-06-10 17:59:20] [OK]   report_bundle.json written
+# Session End — 12_report_pack.sh
+# Time:        2026-06-10 17:59:21
+# Project:     Mithila-TEST-WEB
+# Run dir:     /home/kali/audit-orc-vapt/pt-orc/scripts/run/Mithila-TEST-WEB_20260610_175917
+# Evidence:    72
+# Findings:    14 (C:6 H:1 M:5 L:1 I:1)
+# Residual:    Critical — immediate remediation required
+[2026-06-10 17:59:21]   Python: /home/kali/venv/bin/python3 (as kali)
+[2026-06-10 17:59:22] AI backends: Claude primary, Gemini fallback
+[2026-06-10 17:59:22] Generating AI report (model: claude-haiku-4-5-20251001) ...
+[2026-06-10 17:59:27] [ERR] AI report generation failed (exit 1)

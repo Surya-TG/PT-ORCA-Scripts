@@ -1,0 +1,13 @@
+[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_4443_20260610_141945.log...
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_4443_20260610_141945.rc)> workspace -a TEST-WEBSITE-Jun2026-Orc
+[0m[1m[34m[*][0m Workspace 'TEST-WEBSITE-Jun2026-Orc' already existed, switching to it.
+[1m[34m[*][0m Workspace: TEST-WEBSITE-Jun2026-Orc
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_4443_20260610_141945.rc)> db_nmap -Pn -p 4443 --script ssl-enum-ciphers,ssl-cert --script-timeout 2m -T3 44.228.249.3 -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/44.228.249.3/nmap_tls_4443_20260610_141914
+[0m[1m[34m[*][0m Nmap: Starting Nmap 7.99 ( https://nmap.org ) at 2026-06-10 14:19 +0530
+[1m[34m[*][0m Nmap: Nmap scan report for ec2-44-228-249-3.us-west-2.compute.amazonaws.com (44.228.249.3)
+[1m[34m[*][0m Nmap: Host is up.
+[1m[34m[*][0m Nmap: PORT     STATE    SERVICE
+[1m[34m[*][0m Nmap: 4443/tcp filtered pharos
+[1m[34m[*][0m Nmap: Nmap done: 1 IP address (1 host up) scanned in 3.94 seconds
+resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/ssl-ciphers_44.228.249.3_4443_20260610_141945.rc)> spool off
+[0m

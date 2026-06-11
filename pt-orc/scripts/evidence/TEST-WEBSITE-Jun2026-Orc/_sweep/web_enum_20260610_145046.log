@@ -1,0 +1,13 @@
+[2026-06-10 14:50:46] PT-Orc 05_web_enum.sh v2.0 — Advanced Web Enumeration
+[2026-06-10 14:50:46] Session: 20260610_145046 | Profile: standard | Tier: normal
+[2026-06-10 14:50:46]   Wordlist: /usr/share/wordlists/dirb/common.txt
+[2026-06-10 14:50:46]   Profile: standard
+[2026-06-10 14:50:46] ⚠ no web ports in DB — CSV fallback
+[2026-06-10 14:50:46] ✗ No targets. Use --host, --targets, or --from-db.
+[2026-06-10 14:50:46] ⚠ === SCOPE CONFIRMATION — Web Enum v2.0 ===
+[2026-06-10 14:50:46] ⚠ Profile: standard | Tier: normal | Tests: T01-T18
+[2026-06-10 14:50:46] ⚠ Targets (0):
+[2026-06-10 14:50:46] ✓ Auto-confirmed (--yes)
+[2026-06-10 14:50:46] ✓ Summary: /home/kali/audit-orc-vapt/pt-orc/scripts/working/TEST-WEBSITE-Jun2026-Orc_web_enum_summary_20260610_145046.md
+[2026-06-10 14:50:46] ✓ Findings: /home/kali/audit-orc-vapt/pt-orc/scripts/working/TEST-WEBSITE-Jun2026-Orc_05_web_enum_findings_20260610_145046.jsonl (0 total)
+[2026-06-10 14:50:46] ✓ Evidence: /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc

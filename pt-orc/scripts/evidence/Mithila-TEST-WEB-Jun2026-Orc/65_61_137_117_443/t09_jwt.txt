@@ -1,0 +1,5 @@
+[T09] alg=none → HTTP 404
+[T09] RS256→HS256 confusion probe → HTTP 404
+[T09] kid path traversal → HTTP 404
+[T09] kid SQL injection → HTTP 404
+[T09] jku injection probe → HTTP 404
