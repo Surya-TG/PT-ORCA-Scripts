@@ -2,41 +2,42 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:09_NAV_TOC — Section index | nav,toc,index | L5-66
-# - MRK:09_ROOT — ROOT CHECK | root,check,euid | L67-76 | ⚠ no-insert-before
-# - MRK:09_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L77-122 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:09_LOG — COLOURS AND LOGGING | log,colours,logging | L123-145 | ⚠ no-insert-before
-# - MRK:09_ARGS — ARGUMENT PARSING | args,argument,parsing | L146-168 | ⚠ no-insert-before
-# - MRK:09_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L169-220 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:09_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L221-237 | ⚠ no-insert-before; propose-before-edit
-# - MRK:09_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L238-267 | ⚠ no-insert-before; read-toc-first
-# - MRK:09_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L268-293 | ⚠ no-insert-before; read-toc-first
-# - MRK:09_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L294-352 | ⚠ no-insert-before
-# - MRK:09_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L353-379 | ⚠ no-insert-before
-# - MRK:09_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L380-470 | ⚠ read-toc-first
-# - MRK:09_T02 — T02 AUTHENTICATION | t02,authentication,auth,apikey,bypass | L471-534 | ⚠ read-toc-first
-# - MRK:09_T03 — T03 RATE LIMITING | t03,rate,limiting,limit,burst | L535-576 | ⚠ read-toc-first
-# - MRK:09_T04 — T04 PROMPT INJECTION | t04,prompt,injection,direct | L577-646 | ⚠ read-toc-first
-# - MRK:09_T05 — T05 INDIRECT INJECTION | t05,indirect,injection,rag,tool | L647-695 | ⚠ read-toc-first
-# - MRK:09_T06 — T06 SYSTEM PROMPT LEAKAGE | t06,system,prompt,leakage,disc | L696-753 | ⚠ read-toc-first
-# - MRK:09_T07 — T07 JAILBREAKING | t07,jailbreaking,jailbreak,dan,roleplay | L754-812 | ⚠ read-toc-first
-# - MRK:09_T08 — T08 EXCESSIVE AGENCY | t08,excessive,agency,tool,function | L813-869 | ⚠ read-toc-first
-# - MRK:09_T09 — T09 SENSITIVE DATA | t09,sensitive,data,pii,extraction | L870-928 | ⚠ read-toc-first
-# - MRK:09_T10 — T10 MODEL DOS | t10,model,dos,token,flood | L929-989 | ⚠ read-toc-first; deep-only
-# - MRK:09_T11 — T11 OUTPUT HANDLING | t11,output,handling,xss,markdown | L990-1049 | ⚠ read-toc-first
-# - MRK:09_T12 — T12 KEY/SECRET EXPOSURE | t12,key,secret,exposure,credential | L1050-1107 | ⚠ read-toc-first
-# - MRK:09_T13 — T13 MODEL FINGERPRINTING | t13,model,fingerprinting,fingerprint,version | L1108-1146 | ⚠ read-toc-first
-# - MRK:09_T14 — T14 CORS AND HEADERS | t14,cors,headers,origin,api | L1147-1189 | ⚠ read-toc-first
-# - MRK:09_T15 — T15 PLUGIN/TOOL ENUM | t15,plugin,tool,enum,function | L1190-1278 | ⚠ read-toc-first
-# - MRK:09_T16 — T16 TRAINING DATA EXTRACTION | t16,training,memorization,membership,inference | L1279-1350 | ⚠ read-toc-first
-# - MRK:09_T17 — T17 RAG/VECTOR STORE EXPOSURE | t17,rag,vector,embedding,retrieval | L1351-1428 | ⚠ read-toc-first
-# - MRK:09_T18 — T18 AGENTIC SSRF / FILE-READ | t18,agentic,ssrf,tool,imds | L1429-1493 | ⚠ read-toc-first; deep-only; agent-gated
-# - MRK:09_T19 — T19 CONVERSATION/THREAD IDOR | t19,thread,idor,conversation,isolation | L1494-1569 | ⚠ read-toc-first; threads-gated
-# - MRK:09_T20 — T20 SUPPLY CHAIN / MODEL FILE EXPOSURE | t20,supply,chain,model,gguf,safetensors | L1570-1647 | ⚠ read-toc-first
-# - MRK:09_T21 — T21 CONTEXT WINDOW MANIPULATION | t21,context,shadow,prompt,zero-width | L1648-1708 | ⚠ read-toc-first
-# - MRK:09_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1709-1786 | ⚠ no-insert-before; read-toc-first
-# - MRK:09_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1787-1899 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 33 entries | Integrity-hash: 0000000000000000 | Last-indexed: 2026-06-16T00:00:00Z
+# MRK:09_NAV_TOC — Section index | nav,toc,index | L5-68
+# - MRK:09_ROOT — ROOT CHECK | root,check,euid | L81-90 | ⚠ no-insert-before
+# - MRK:09_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L91-150 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:09_LOG — COLOURS AND LOGGING | log,colours,logging | L151-173 | ⚠ no-insert-before
+# - MRK:09_ARGS — ARGUMENT PARSING | args,argument,parsing | L174-197 | ⚠ no-insert-before
+# - MRK:09_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L198-249 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:09_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L250-266 | ⚠ no-insert-before; propose-before-edit
+# - MRK:09_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L267-296 | ⚠ no-insert-before; read-toc-first
+# - MRK:09_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L297-322 | ⚠ no-insert-before; read-toc-first
+# - MRK:09_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L323-381 | ⚠ no-insert-before
+# - MRK:09_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L382-410 | ⚠ no-insert-before
+# - MRK:09_T00 — PRIOR SCAN HARVEST + CHATBOT FINGERPRINT | t00,prior,harvest,chatbot,widget | L411-601 | ⚠ read-toc-first
+# - MRK:09_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L602-707 | ⚠ read-toc-first
+# - MRK:09_T02 — T02 AUTHENTICATION | t02,authentication,auth,apikey,bypass | L708-771 | ⚠ read-toc-first
+# - MRK:09_T03 — T03 RATE LIMITING | t03,rate,limiting,limit,burst | L772-813 | ⚠ read-toc-first
+# - MRK:09_T04 — T04 PROMPT INJECTION | t04,prompt,injection,direct | L814-899 | ⚠ read-toc-first
+# - MRK:09_T05 — T05 INDIRECT INJECTION | t05,indirect,injection,rag,tool | L900-948 | ⚠ read-toc-first
+# - MRK:09_T06 — T06 SYSTEM PROMPT LEAKAGE | t06,system,prompt,leakage,disc | L949-1006 | ⚠ read-toc-first
+# - MRK:09_T07 — T07 JAILBREAKING | t07,jailbreaking,jailbreak,dan,roleplay | L1007-1079 | ⚠ read-toc-first
+# - MRK:09_T08 — T08 EXCESSIVE AGENCY | t08,excessive,agency,tool,function | L1080-1138 | ⚠ read-toc-first
+# - MRK:09_T09 — T09 SENSITIVE DATA | t09,sensitive,data,pii,extraction | L1139-1197 | ⚠ read-toc-first
+# - MRK:09_T10 — T10 MODEL DOS | t10,model,dos,token,flood | L1198-1258 | ⚠ read-toc-first; deep-only
+# - MRK:09_T11 — T11 OUTPUT HANDLING | t11,output,handling,xss,markdown | L1259-1318 | ⚠ read-toc-first
+# - MRK:09_T12 — T12 KEY/SECRET EXPOSURE | t12,key,secret,exposure,credential | L1319-1376 | ⚠ read-toc-first
+# - MRK:09_T13 — T13 MODEL FINGERPRINTING | t13,model,fingerprinting,fingerprint,version | L1377-1415 | ⚠ read-toc-first
+# - MRK:09_T14 — T14 CORS AND HEADERS | t14,cors,headers,origin,api | L1416-1458 | ⚠ read-toc-first
+# - MRK:09_T15 — T15 PLUGIN/TOOL ENUM | t15,plugin,tool,enum,function | L1459-1507 | ⚠ read-toc-first
+# - MRK:09_T16 — T16 TRAINING DATA EXTRACTION | t16,training,memorization,membership,inference | L1508-1579 | ⚠ read-toc-first
+# - MRK:09_T17 — T17 RAG/VECTOR STORE EXPOSURE | t17,rag,vector,embedding,retrieval | L1580-1657 | ⚠ read-toc-first
+# - MRK:09_T18 — T18 AGENTIC SSRF / FILE-READ | t18,agentic,ssrf,tool,imds | L1658-1722 | ⚠ read-toc-first; deep-only; agent-gated
+# - MRK:09_T19 — T19 CONVERSATION/THREAD IDOR | t19,thread,idor,conversation,isolation | L1723-1798 | ⚠ read-toc-first; threads-gated
+# - MRK:09_T20 — T20 SUPPLY CHAIN / MODEL FILE EXPOSURE | t20,supply,chain,model,gguf,safetensors | L1799-1876 | ⚠ read-toc-first
+# - MRK:09_T21 — T21 CONTEXT WINDOW MANIPULATION | t21,context,shadow,prompt,zero-width | L1877-1937 | ⚠ read-toc-first
+# - MRK:09_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1938-2024 | ⚠ no-insert-before; read-toc-first
+# - MRK:09_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L2025-2132 | ⚠ no-insert-before; read-toc-first
+# NAV-LEN: 34 entries | Integrity-hash: 0000000000000000 | Last-indexed: 2026-06-16T12:00:00Z
 
 # =============================================================================
 # 09_ai_llm_review.sh — TechGuard. [VAPT-Advanced v3.0 — 2026-06-16]
@@ -47,9 +48,13 @@
 #   API key exposure, model fingerprinting, CORS, plugin enumeration,
 #   training data extraction, RAG/vector store exposure, agentic SSRF/file-read,
 #   conversation thread IDOR, supply chain/model file exposure,
-#   context window manipulation
+#   context window manipulation,
+#   prior scan harvest (gobuster/nikto/JS/API evidence from steps 05+08),
+#   embedded AI chatbot widget fingerprinting (Intercom, Drift, Zendesk, etc.)
 # Profiles: quick | standard (default) | deep
 # Consumes: MSF DB (web hosts from 03_comp_scan / 05_web_enum) or --host/--targets
+#   + evidence from steps 05 (t05_gobuster, t06_nikto, t07_js) and
+#   + evidence from step 08 (t02_schema, t08_api) for dynamic endpoint seeding
 # Produces: per-host evidence files + JSONL findings + markdown summary
 # =============================================================================
 # USAGE:
@@ -66,6 +71,7 @@
 #   --skip-test <N>           Skip test N (repeatable)
 #   --only-test <N>           Run only test N (repeatable)
 #   --intercept-proxy <url>   Proxy all requests through Burp/ZAP
+#   --skip-harvest            Skip prior-scan evidence harvest and chatbot detection
 #   --yes                     Skip scope confirmation
 #   --dry-run                 Print commands without executing
 set -uo pipefail
@@ -114,6 +120,15 @@ for _i in $(seq 1 21); do _T_ENABLED[$_i]=1; done
 # Cross-test dependency signals (set by earlier tests, read by later ones)
 _AGENT_ENDPOINTS_FOUND=""   # set by T08 — used by T18
 _THREADS_EP=""              # set by T01 — used by T19
+
+# Prior scan harvest signals (populated by T00 harvest, consumed by T01)
+_PRIOR_ENDPOINTS=()      # AI/LLM paths harvested from steps 05/08 evidence
+_CHATBOT_WIDGETS=()      # embedded chatbot vendors detected on root page
+_PRIOR_LIVE_PATHS=()     # all 2xx paths from gobuster (context only)
+_SKIP_HARVEST=0          # set 1 via --skip-harvest to disable T00 harvest
+
+# AI/LLM keyword regex for path matching against prior step evidence
+_AI_PATH_RE='chat|/llm|/ai/|/ai$|/gpt|/model[s]?[/.]|assistant|complet|generat|infer|predict|/prompt|embed|/rag[/.]|/agent[/.]'
 
 # Target options
 TIER="${GLOBAL_TIER:-normal}"
@@ -173,6 +188,7 @@ while [[ $# -gt 0 ]]; do
         --skip-test)        SKIP_TESTS+=("$2");                     shift 2 ;;
         --only-test)        ONLY_TESTS+=("$2");                     shift 2 ;;
         --intercept-proxy)  CURL_PROXY_ARGS=("-x" "$2");            shift 2 ;;
+        --skip-harvest)     _SKIP_HARVEST=1;                        shift   ;;
         --yes)              AUTO_YES=1;                             shift   ;;
         --dry-run)          DRY_RUN=1;                              shift   ;;
         *) log_err "Unknown argument: $1"; exit 1 ;;
@@ -393,7 +409,198 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:09_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L380-470
+# MRK:09_T00 — PRIOR SCAN HARVEST + CHATBOT FINGERPRINT | t00,prior,harvest,chatbot,widget | L411-601 | ⚠ read-toc-first
+# NAV-RULE: read-toc-first
+# =============================================================================
+
+# Third-party chatbot/AI widget signatures — "VendorName|regex1|regex2|..."
+_CHATBOT_SIGS=(
+    "Intercom|app\.intercom\.io|widget\.intercom\.io|intercomSettings|window\.Intercom"
+    "Drift|js\.driftt\.com|drift\.com/api|window\.drift"
+    "Zendesk AI|static\.zdassets\.com|zdSettings|window\.zE\b"
+    "Crisp|client\.crisp\.chat|CRISP_WEBSITE_ID"
+    "Tidio|code\.tidio\.co|tidioChatCode"
+    "tawk.to|tawk\.to/s1/|Tawk_API"
+    "HubSpot Chat|js\.hs-scripts\.com|HubSpotConversations"
+    "LiveChat|livechat-static\.com|LC_API\b"
+    "Freshchat|wchat\.freshchat\.com|fcWidget\b"
+    "Olark|static\.olark\.com|olark("
+    "Voiceflow|cdn\.voiceflow\.com"
+    "ChatBot.com|cdn\.chatbot\.com"
+    "Botpress|cdn\.botpress\.cloud|window\.botpressWebChat"
+)
+
+harvest_prior_scans() {
+    local base_url="$1" ev_dir="$2" ip="$3" port="$4"
+    local evfile="${ev_dir}/t00_prior_harvest.txt"
+    local harvested=0
+
+    log "T00: Harvesting prior step evidence for ${base_url}"
+    {
+        echo "# Prior Scan Harvest — ${base_url}"
+        echo "# Session: ${SESSION_TS}"
+        echo ""
+    } > "$evfile"
+
+    # ── Step 05: gobuster discovered paths ──────────────────────────────────
+    local gobuster_file="${ev_dir}/t05_gobuster.txt"
+    if [[ -f "$gobuster_file" ]]; then
+        local gb_live=0
+        while IFS= read -r line; do
+            local path; path=$(awk '{print $1}' <<< "$line")
+            [[ "$path" =~ ^/ ]] || path="/${path}"
+            local status; status=$(grep -oP 'Status: \K[0-9]+' <<< "$line" || true)
+            [[ "$status" =~ ^(200|301|302)$ ]] || continue
+            _PRIOR_LIVE_PATHS+=("$path")
+            (( gb_live++ )) || true
+            if grep -qiE "${_AI_PATH_RE}" <<< "$path"; then
+                _PRIOR_ENDPOINTS+=("$path")
+                echo "[T00] gobuster hit: ${path} (HTTP ${status})" >> "$evfile"
+                (( harvested++ )) || true
+            fi
+        done < <(grep -v "^#\|^-\{3\}" "$gobuster_file" 2>/dev/null || true)
+        echo "[T00] gobuster (t05_gobuster.txt): ${gb_live} live paths scanned" >> "$evfile"
+    else
+        echo "[T00] gobuster (t05_gobuster.txt): not found — step 05 may not have run" >> "$evfile"
+    fi
+
+    # ── Step 05: nikto findings ──────────────────────────────────────────────
+    local nikto_file="${ev_dir}/t06_nikto.txt"
+    if [[ -f "$nikto_file" ]]; then
+        while IFS= read -r line; do
+            local uri; uri=$(grep -oP '(?<=\+ )/[^ ]+' <<< "$line" | head -1 || true)
+            [[ -z "$uri" ]] && continue
+            if grep -qiE "${_AI_PATH_RE}" <<< "$uri"; then
+                _PRIOR_ENDPOINTS+=("$uri")
+                echo "[T00] nikto hit: ${uri}" >> "$evfile"
+                (( harvested++ )) || true
+            fi
+        done < <(grep "^+" "$nikto_file" 2>/dev/null || true)
+        echo "[T00] nikto (t06_nikto.txt): parsed" >> "$evfile"
+    else
+        echo "[T00] nikto (t06_nikto.txt): not found" >> "$evfile"
+    fi
+
+    # ── Step 05: JS analysis output ─────────────────────────────────────────
+    local js_file="${ev_dir}/t07_js.txt"
+    if [[ -f "$js_file" ]]; then
+        while IFS= read -r line; do
+            local path
+            path=$(grep -oP '(/[a-z0-9/_.-]*(chat|llm|ai|model|complet|generat)[a-z0-9/_.-]*)' <<< "$line" | head -1 || true)
+            [[ -n "$path" ]] && {
+                _PRIOR_ENDPOINTS+=("$path")
+                echo "[T00] js-analysis ref: ${path}" >> "$evfile"
+                (( harvested++ )) || true
+            }
+        done < "$js_file"
+        echo "[T00] js-analysis (t07_js.txt): parsed" >> "$evfile"
+    else
+        echo "[T00] js-analysis (t07_js.txt): not found" >> "$evfile"
+    fi
+
+    # ── Step 08: API schema + endpoint evidence ──────────────────────────────
+    for f in "${ev_dir}/t02_schema.txt" "${ev_dir}/t08_api.txt"; do
+        [[ -f "$f" ]] || continue
+        local fname; fname=$(basename "$f")
+        while IFS= read -r line; do
+            local path; path=$(grep -oP '(?<=GET |POST )/[^ ]+' <<< "$line" | head -1 || true)
+            local code; code=$(grep -oP 'HTTP \K[0-9]+' <<< "$line" | head -1 || true)
+            [[ -z "$path" ]] && continue
+            [[ "$code" =~ ^(200|201|301|302)$ ]] || continue
+            if grep -qiE "${_AI_PATH_RE}" <<< "$path"; then
+                _PRIOR_ENDPOINTS+=("$path")
+                echo "[T00] ${fname} live hit: ${path} (HTTP ${code})" >> "$evfile"
+                (( harvested++ )) || true
+            fi
+        done < "$f"
+        echo "[T00] api-evidence (${fname}): parsed" >> "$evfile"
+    done
+
+    # ── Deduplicate _PRIOR_ENDPOINTS ─────────────────────────────────────────
+    local -A _seen_p=()
+    local -a _deduped=()
+    for _ep in "${_PRIOR_ENDPOINTS[@]+"${_PRIOR_ENDPOINTS[@]}"}"; do
+        [[ -z "${_seen_p[$_ep]+x}" ]] && { _deduped+=("$_ep"); _seen_p["$_ep"]=1; }
+    done
+    _PRIOR_ENDPOINTS=("${_deduped[@]+"${_deduped[@]}"}")
+
+    echo "" >> "$evfile"
+    echo "[T00] Harvest total: ${harvested} raw hits → ${#_PRIOR_ENDPOINTS[@]} unique AI/LLM paths" >> "$evfile"
+    if [[ "${#_PRIOR_ENDPOINTS[@]}" -gt 0 ]]; then
+        log_ok "T00: ${#_PRIOR_ENDPOINTS[@]} prior-scan AI/LLM endpoint hints harvested"
+    else
+        log_ok "T00: No prior-scan AI/LLM endpoint hints found"
+    fi
+}
+
+detect_chatbot_widgets() {
+    local base_url="$1" ev_dir="$2"
+    local evfile="${ev_dir}/t00_chatbot_widgets.txt"
+    local page_src
+
+    log "T00: Chatbot widget fingerprinting — ${base_url}"
+    {
+        echo "# Chatbot Widget Fingerprint — ${base_url}"
+        echo "# Session: ${SESSION_TS}"
+        echo ""
+    } > "$evfile"
+
+    page_src=$(_curl -L --max-time 15 "${base_url}/" 2>/dev/null | head -c 65536 || true)
+
+    if [[ -z "$page_src" ]]; then
+        echo "[T00] Could not fetch root page source" >> "$evfile"
+        log_info "T00: Page source unavailable — widget fingerprinting skipped"
+        return
+    fi
+
+    local widget_found=0
+    for sig_entry in "${_CHATBOT_SIGS[@]}"; do
+        local vendor; vendor=$(cut -d'|' -f1 <<< "$sig_entry")
+        local rest; rest=$(cut -d'|' -f2- <<< "$sig_entry")
+        local matched=0
+        while IFS='|' read -r pattern; do
+            grep -qiE "$pattern" <<< "$page_src" && { matched=1; break; }
+        done <<< "${rest//|/$'\n'}"
+
+        [[ "$matched" -eq 0 ]] && continue
+        _CHATBOT_WIDGETS+=("$vendor")
+        echo "[T00] Widget detected: ${vendor}" >> "$evfile"
+        emit_finding "low" \
+            "Third-Party AI Chatbot Widget Detected: ${vendor} (${base_url})" \
+            "The page at ${base_url} embeds the ${vendor} third-party AI chatbot widget. Third-party chatbot SDKs introduce supply-chain risk (OWASP LLM03), data-privacy exposure (conversation data sent to vendor backend), and may be susceptible to prompt injection via the chat UI (LLM01)." \
+            "Review the data-processing agreement with ${vendor}. Pin the SDK to a specific version and monitor for supply-chain updates. Test the chatbot interface for prompt injection (T04) and sensitive data exfiltration (T09). Confirm PII handling meets applicable data-protection regulations." \
+            "t00_chatbot_widgets.txt"
+        (( widget_found++ )) || true
+    done
+
+    # Inline LLM API endpoint URL references in page source
+    local inline_refs
+    inline_refs=$(grep -oiE 'https?://[^"'\'' ]+(/v[0-9]+/chat|/api/chat|/v[0-9]+/completions|/chat/completions)[^"'\'' ]*' <<< "$page_src" | head -5 || true)
+    if [[ -n "$inline_refs" ]]; then
+        echo "[T00] Inline LLM API refs in page source:" >> "$evfile"
+        echo "$inline_refs" >> "$evfile"
+        while IFS= read -r ref; do
+            [[ -z "$ref" ]] && continue
+            local rpath; rpath=$(grep -oP '(/v[0-9]+/chat|/api/chat|/v[0-9]+/completions|/chat/completions)[^ "'\'']*' <<< "$ref" | head -1 || true)
+            [[ -n "$rpath" ]] && _PRIOR_ENDPOINTS+=("$rpath")
+        done <<< "$inline_refs"
+        emit_finding "medium" \
+            "LLM API Endpoint URL Embedded in Client-Side Page Source (${base_url})" \
+            "The page at ${base_url} contains direct LLM API endpoint URLs in client-side HTML/JavaScript: '${inline_refs:0:200}'. Exposing these URLs reveals internal service topology and allows direct unauthenticated access attempts against the LLM backend (OWASP LLM07)." \
+            "Proxy all AI/chat requests through the application backend. Remove LLM API base URLs from client-side code. Enforce CORS at the API layer and use server-side token injection rather than embedding API keys or base URLs in the browser." \
+            "t00_chatbot_widgets.txt"
+    fi
+
+    if [[ "$widget_found" -eq 0 ]] && [[ -z "$inline_refs" ]]; then
+        echo "[T00] No third-party chatbot widgets or inline LLM API refs detected" >> "$evfile"
+        log_ok "T00: No chatbot widgets detected on ${base_url}"
+    else
+        log_ok "T00: ${widget_found} widget(s) found; inline API refs: $([ -n "$inline_refs" ] && echo "yes" || echo "no")"
+    fi
+}
+
+# =============================================================================
+# MRK:09_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L602-707 | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -433,6 +640,20 @@ test_01_endpoint_discovery() {
         # LocalAI
         "/v1/audio/transcriptions" "/v1/images/generations"
     )
+
+    # Seed with prior-scan hints at front, deduplicating against static list
+    if [[ "${#_PRIOR_ENDPOINTS[@]}" -gt 0 ]]; then
+        local -A _seen_ep=()
+        local -a _merged=()
+        for _p in "${_PRIOR_ENDPOINTS[@]}"; do
+            [[ -z "${_seen_ep[$_p]+x}" ]] && { _merged+=("$_p"); _seen_ep["$_p"]=1; }
+        done
+        for _p in "${get_paths[@]}"; do
+            [[ -z "${_seen_ep[$_p]+x}" ]] && { _merged+=("$_p"); _seen_ep["$_p"]=1; }
+        done
+        get_paths=("${_merged[@]}")
+        log_info "T01: Seeded ${#_PRIOR_ENDPOINTS[@]} prior-scan hints → ${#get_paths[@]} total paths"
+    fi
 
     local discovered_paths=()
     for path in "${get_paths[@]}"; do
@@ -1763,6 +1984,15 @@ test_target() {
     _SUMMARY_LEAK=0
     _FIND_AT_START="${_FIND_CTR}"
 
+    # T00 — prior scan harvest + chatbot widget detection (runs before T01)
+    _PRIOR_ENDPOINTS=()
+    _CHATBOT_WIDGETS=()
+    _PRIOR_LIVE_PATHS=()
+    if [[ "${_SKIP_HARVEST:-0}" -eq 0 ]]; then
+        harvest_prior_scans    "$base_url" "$ev_dir" "$ip" "$port"
+        detect_chatbot_widgets "$base_url" "$ev_dir"
+    fi
+
     # Dispatch — T01 must run first to set _PRIMARY_EP
     _test_skip 1  || test_01_endpoint_discovery "$base_url" "$ev_dir" "$ip" "$port"
     _test_skip 2  || test_02_authentication     "$base_url" "$ev_dir" "$ip" "$port"
@@ -1798,7 +2028,7 @@ test_target() {
 # =============================================================================
 
 main() {
-    log "PT-Orc 09_ai_llm_review.sh v3.0 — OWASP LLM Top 10 (2025) — 21 tests"
+    log "PT-Orc 09_ai_llm_review.sh v3.0 — OWASP LLM Top 10 (2025) — 21 tests + dynamic harvest"
     log "Session: ${SESSION_TS} | Profile: ${PROFILE} | Tier: ${TIER}"
     [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && log_info "Intercept proxy: ${CURL_PROXY_ARGS[*]}"
     [[ -n "${LLM_API_KEY:-}" ]] && log_info "API key: ${LLM_API_KEY:0:8}…"
@@ -1836,6 +2066,7 @@ main() {
         echo ""
         echo "| # | OWASP LLM | Test | Status |"
         echo "|---|-----------|------|--------|"
+        echo "| T00 | — | Prior Scan Harvest + Chatbot Widget Fingerprint | $([ "${_SKIP_HARVEST:-0}" -eq 0 ] && echo "✓ Run" || echo "— Skipped (--skip-harvest)") |"
         echo "| T01 | LLM07 | Endpoint Discovery | $([ "${_T_ENABLED[1]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo "| T02 | LLM07 | Authentication | $([ "${_T_ENABLED[2]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo "| T03 | LLM10 | Rate Limiting | $([ "${_T_ENABLED[3]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
@@ -1882,7 +2113,7 @@ main() {
         echo ""
         echo "---"
         echo "*Generated by PT-Orc 09_ai_llm_review.sh v3.0 — TechGuard Labs*"
-        echo "*OWASP LLM Top 10 (2025): LLM01/02/03/05/06/07/08/10 — 21 automated tests*"
+        echo "*OWASP LLM Top 10 (2025): LLM01/02/03/05/06/07/08/10 — 21 automated tests + dynamic harvest (T00)*"
     } > "$summary_md"
 
     log_ok "Summary: ${summary_md}"
