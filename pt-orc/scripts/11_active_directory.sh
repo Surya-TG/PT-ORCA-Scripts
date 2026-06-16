@@ -1,4 +1,28 @@
 #!/usr/bin/env bash
+# L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
+# L2 NAV:v1 → ./LOCAL-INDEX.md
+
+# MRK:11_NAV_TOC — Section index | nav,toc,index | L5-32
+# - MRK:11_T01 — T01 DC DISCOVERY & PORT MAP | t01,dc,discovery,port,map | L33-33
+# - MRK:11_T02 — T02 LDAP ENUMERATION (NULL + AUTH) | t02,ldap,enumeration,null,auth | L34-34
+# - MRK:11_T03 — T03 NETBIOS / RPC ENUMERATION | t03,netbios,rpc,enumeration | L35-35
+# - MRK:11_T04 — T04 SMB NULL SESSION & SHARE ENUM | t04,smb,null,session,share | L36-36
+# - MRK:11_T05 — T05 KERBEROASTING (GetUserSPNs) | t05,kerberoasting,getuserspns | L37-37
+# - MRK:11_T06 — T06 AS-REP ROASTING | t06,rep,roasting | L38-38
+# - MRK:11_T07 — T07 PASSWORD POLICY ENUMERATION | t07,password,policy,enumeration | L39-39
+# - MRK:11_T08 — T08 PRIVILEGED GROUP ENUMERATION | t08,privileged,group,enumeration | L40-40
+# - MRK:11_T09 — T09 LLMNR / NBT-NS POISONING DETECTION | t09,llmnr,nbt,ns,poisoning | L41-41
+# - MRK:11_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8) | t10,adcs,template,enumeration,esc1 | L42-42
+# - MRK:11_T11 — T11 BLOODHOUND COLLECTION | t11,bloodhound,collection | L43-43
+# - MRK:11_T12 — T12 GPO ENUMERATION | t12,gpo,enumeration | L44-44
+# - MRK:11_T13 — T13 ACL / ADMINSD HOLDER REVIEW | t13,acl,adminsd,holder,review | L45-45
+# - MRK:11_T14 — T14 DELEGATION ENUMERATION | t14,delegation,enumeration | L46-46
+# - MRK:11_T15 — T15 DOMAIN TRUST MAPPING | t15,domain,trust,mapping | L47-47
+# - MRK:11_T16 — T16 PASSWORD SPRAYING (DEEP ONLY) | t16,password,spraying,deep | L48-48
+# - MRK:11_T17 — T17 DCSYNC RIGHTS CHECK | t17,dcsync,rights,check | L49-49
+# - MRK:11_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE | t18,kerberos,ticket,hash,attack | L50-1477
+# NAV-LEN: 18 entries | Integrity-hash: d16b2c1aa927c06a | Last-indexed: 2026-06-16T13:41:02Z
+
 # =============================================================================
 # 11_active_directory.sh — Active Directory / Windows Domain Security Testing
 # TechGuard Labs | PT-Orc Suite v0.8
@@ -6,24 +30,24 @@
 # NAV: MRK:11_TOC (this block) | MRK:11_ROOT | MRK:11_CONF | MRK:11_LOG
 #      MRK:11_ARGS | MRK:11_CONFIRM | MRK:11_TARGETS
 #      MRK:11_FIND | MRK:11_UTILS | MRK:11_PROF
-#      MRK:11_T01 — T01 DC DISCOVERY & PORT MAP
-#      MRK:11_T02 — T02 LDAP ENUMERATION (NULL + AUTH)
-#      MRK:11_T03 — T03 NETBIOS / RPC ENUMERATION
-#      MRK:11_T04 — T04 SMB NULL SESSION & SHARE ENUM
-#      MRK:11_T05 — T05 KERBEROASTING (GetUserSPNs)
-#      MRK:11_T06 — T06 AS-REP ROASTING
-#      MRK:11_T07 — T07 PASSWORD POLICY ENUMERATION
-#      MRK:11_T08 — T08 PRIVILEGED GROUP ENUMERATION
-#      MRK:11_T09 — T09 LLMNR / NBT-NS POISONING DETECTION
-#      MRK:11_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8)
-#      MRK:11_T11 — T11 BLOODHOUND COLLECTION
-#      MRK:11_T12 — T12 GPO ENUMERATION
-#      MRK:11_T13 — T13 ACL / ADMINSD HOLDER REVIEW
-#      MRK:11_T14 — T14 DELEGATION ENUMERATION
-#      MRK:11_T15 — T15 DOMAIN TRUST MAPPING
-#      MRK:11_T16 — T16 PASSWORD SPRAYING (DEEP ONLY)
-#      MRK:11_T17 — T17 DCSYNC RIGHTS CHECK
-#      MRK:11_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE
+#      MRK:11_T01 — T01 DC DISCOVERY & PORT MAP | t01,dc,discovery,port,map | L33-33
+#      MRK:11_T02 — T02 LDAP ENUMERATION (NULL + AUTH) | t02,ldap,enumeration,null,auth | L34-34
+#      MRK:11_T03 — T03 NETBIOS / RPC ENUMERATION | t03,netbios,rpc,enumeration | L35-35
+#      MRK:11_T04 — T04 SMB NULL SESSION & SHARE ENUM | t04,smb,null,session,share | L36-36
+#      MRK:11_T05 — T05 KERBEROASTING (GetUserSPNs) | t05,kerberoasting,getuserspns | L37-37
+#      MRK:11_T06 — T06 AS-REP ROASTING | t06,rep,roasting | L38-38
+#      MRK:11_T07 — T07 PASSWORD POLICY ENUMERATION | t07,password,policy,enumeration | L39-39
+#      MRK:11_T08 — T08 PRIVILEGED GROUP ENUMERATION | t08,privileged,group,enumeration | L40-40
+#      MRK:11_T09 — T09 LLMNR / NBT-NS POISONING DETECTION | t09,llmnr,nbt,ns,poisoning | L41-41
+#      MRK:11_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8) | t10,adcs,template,enumeration,esc1 | L42-42
+#      MRK:11_T11 — T11 BLOODHOUND COLLECTION | t11,bloodhound,collection | L43-43
+#      MRK:11_T12 — T12 GPO ENUMERATION | t12,gpo,enumeration | L44-44
+#      MRK:11_T13 — T13 ACL / ADMINSD HOLDER REVIEW | t13,acl,adminsd,holder,review | L45-45
+#      MRK:11_T14 — T14 DELEGATION ENUMERATION | t14,delegation,enumeration | L46-46
+#      MRK:11_T15 — T15 DOMAIN TRUST MAPPING | t15,domain,trust,mapping | L47-47
+#      MRK:11_T16 — T16 PASSWORD SPRAYING (DEEP ONLY) | t16,password,spraying,deep | L48-48
+#      MRK:11_T17 — T17 DCSYNC RIGHTS CHECK | t17,dcsync,rights,check | L49-49
+#      MRK:11_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE | t18,kerberos,ticket,hash,attack | L50-1477
 #      MRK:11_TRUN | MRK:11_MAIN
 # =============================================================================
 
@@ -1448,3 +1472,6 @@ main() {
 }
 
 main "$@"
+
+# L2 NAV:v1 → ./LOCAL-INDEX.md
+# L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)

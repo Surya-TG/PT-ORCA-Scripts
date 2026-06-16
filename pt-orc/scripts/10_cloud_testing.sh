@@ -1,4 +1,25 @@
 #!/usr/bin/env bash
+# L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
+# L2 NAV:v1 → ./LOCAL-INDEX.md
+
+# MRK:10_NAV_TOC — Section index | nav,toc,index | L5-29
+# - MRK:10_T01 — T01 CLOUD PROVIDER DETECTION | t01,cloud,provider,detection | L30-30
+# - MRK:10_T02 — T02 IMDS SSRF PROBE | t02,imds,ssrf,probe | L31-31
+# - MRK:10_T03 — T03 STORAGE BUCKET DISCOVERY | t03,storage,bucket,discovery | L32-32
+# - MRK:10_T04 — T04 IAM ROLE / CREDENTIAL METADATA | t04,iam,role,credential,metadata | L33-33
+# - MRK:10_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS | t05,serverless,function,endpoints | L34-34
+# - MRK:10_T06 — T06 CONTAINER REGISTRY DETECTION | t06,container,registry,detection | L35-35
+# - MRK:10_T07 — T07 KUBERNETES API EXPOSURE | t07,kubernetes,api,exposure | L36-36
+# - MRK:10_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC) | t08,security,headers,cloud,specific | L37-37
+# - MRK:10_T09 — T09 CORS POLICY CHECK | t09,cors,policy,check | L38-38
+# - MRK:10_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE | t10,cloud,management,console,exposure | L39-39
+# - MRK:10_T11 — T11 CDN / ORIGIN IP DISCLOSURE | t11,cdn,origin,ip,disclosure | L40-40
+# - MRK:10_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES) | t12,subdomain,takeover,cloud,services | L41-41
+# - MRK:10_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE | t13,cloud,token,api,key | L42-42
+# - MRK:10_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING | t14,object,storage,acl,public | L43-43
+# - MRK:10_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING | t15,waf,detection,bypass,fingerprinting | L44-1207
+# NAV-LEN: 15 entries | Integrity-hash: 03840855921e18f5 | Last-indexed: 2026-06-16T13:41:02Z
+
 # =============================================================================
 # 10_cloud_testing.sh — Cloud Infrastructure Security Testing
 # TechGuard Labs | PT-Orc Suite v0.8
@@ -6,21 +27,21 @@
 # NAV: MRK:10_TOC (this block) | MRK:10_ROOT | MRK:10_CONF | MRK:10_LOG
 #      MRK:10_ARGS | MRK:10_DB | MRK:10_CONFIRM | MRK:10_TARGETS
 #      MRK:10_FIND | MRK:10_UTILS | MRK:10_PROF
-#      MRK:10_T01 — T01 CLOUD PROVIDER DETECTION
-#      MRK:10_T02 — T02 IMDS SSRF PROBE
-#      MRK:10_T03 — T03 STORAGE BUCKET DISCOVERY
-#      MRK:10_T04 — T04 IAM ROLE / CREDENTIAL METADATA
-#      MRK:10_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS
-#      MRK:10_T06 — T06 CONTAINER REGISTRY DETECTION
-#      MRK:10_T07 — T07 KUBERNETES API EXPOSURE
-#      MRK:10_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC)
-#      MRK:10_T09 — T09 CORS POLICY CHECK
-#      MRK:10_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE
-#      MRK:10_T11 — T11 CDN / ORIGIN IP DISCLOSURE
-#      MRK:10_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES)
-#      MRK:10_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE
-#      MRK:10_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING
-#      MRK:10_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING
+#      MRK:10_T01 — T01 CLOUD PROVIDER DETECTION | t01,cloud,provider,detection | L30-30
+#      MRK:10_T02 — T02 IMDS SSRF PROBE | t02,imds,ssrf,probe | L31-31
+#      MRK:10_T03 — T03 STORAGE BUCKET DISCOVERY | t03,storage,bucket,discovery | L32-32
+#      MRK:10_T04 — T04 IAM ROLE / CREDENTIAL METADATA | t04,iam,role,credential,metadata | L33-33
+#      MRK:10_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS | t05,serverless,function,endpoints | L34-34
+#      MRK:10_T06 — T06 CONTAINER REGISTRY DETECTION | t06,container,registry,detection | L35-35
+#      MRK:10_T07 — T07 KUBERNETES API EXPOSURE | t07,kubernetes,api,exposure | L36-36
+#      MRK:10_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC) | t08,security,headers,cloud,specific | L37-37
+#      MRK:10_T09 — T09 CORS POLICY CHECK | t09,cors,policy,check | L38-38
+#      MRK:10_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE | t10,cloud,management,console,exposure | L39-39
+#      MRK:10_T11 — T11 CDN / ORIGIN IP DISCLOSURE | t11,cdn,origin,ip,disclosure | L40-40
+#      MRK:10_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES) | t12,subdomain,takeover,cloud,services | L41-41
+#      MRK:10_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE | t13,cloud,token,api,key | L42-42
+#      MRK:10_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING | t14,object,storage,acl,public | L43-43
+#      MRK:10_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING | t15,waf,detection,bypass,fingerprinting | L44-1207
 #      MRK:10_TRUN | MRK:10_MAIN
 # =============================================================================
 
@@ -1181,3 +1202,6 @@ main() {
 }
 
 main "$@"
+
+# L2 NAV:v1 → ./LOCAL-INDEX.md
+# L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
