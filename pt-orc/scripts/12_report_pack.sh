@@ -402,7 +402,12 @@ collect_findings() {
     while IFS= read -r -d '' f; do
         pregen_files+=("$f")
     done < <(find "${WORKING_DIR}" -maxdepth 1 \
-        \( -name "*05_web_enum_findings_*.jsonl" \
+        \( -name "*01_dns_findings_*.jsonl" \
+        -o -name "*02_ip_analysis_findings_*.jsonl" \
+        -o -name "*03_comp_scan_findings_*.jsonl" \
+        -o -name "*04_tls_scan_findings_*.jsonl" \
+        -o -name "*05_web_enum_findings_*.jsonl" \
+        -o -name "*06_wpscan_findings_*.jsonl" \
         -o -name "*07_service_verify_findings_*.jsonl" \
         -o -name "*08_app_api_findings_*.jsonl" \
         -o -name "*09_ai_llm_findings_*.jsonl" \

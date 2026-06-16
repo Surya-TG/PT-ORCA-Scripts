@@ -12,11 +12,12 @@
 # - MRK:06_LOAD — PHASE 2 TARGET LOADING | load,phase,target,loading,read | L305-334 | ⚠ no-insert-before
 # - MRK:06_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L335-368 | ⚠ no-insert-before; propose-before-edit; read-toc-first
 # - MRK:06_HELP — HELPERS | help,helpers,sanitize,label,url | L369-386 | ⚠ no-insert-before
-# - MRK:06_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L387-402 | ⚠ no-insert-before
-# - MRK:06_ASSESS — PER-TARGET ASSESSMENT | assess,target,assessment,step,basic | L403-894 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_REPORT — CONSOLIDATED REPORT | report,consolidated,working,wpscan,ts | L895-1062 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_MAIN — MAIN entry point | main,entry,point | L1063-1142 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 13 entries | Integrity-hash: b012401c7b4c9367 | Last-indexed: 2026-06-09T07:17:36Z
+# - MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L387-413 | ⚠ no-insert-before; read-toc-first
+# - MRK:06_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L414-430 | ⚠ no-insert-before
+# - MRK:06_ASSESS — PER-TARGET ASSESSMENT | assess,target,assessment,step,basic | L431-960 | ⚠ no-insert-before; read-toc-first
+# - MRK:06_REPORT — CONSOLIDATED REPORT | report,consolidated,working,wpscan,ts | L961-1130 | ⚠ no-insert-before; read-toc-first
+# - MRK:06_MAIN — MAIN entry point | main,entry,point | L1131-1215 | ⚠ no-insert-before; read-toc-first
+# NAV-LEN: 14 entries | Integrity-hash: c1a94f7b3e820d51 | Last-indexed: 2026-06-16T00:00:00Z
 
 # =============================================================================
 # 06_wpscan.sh — WordPress Detection & Security Assessment — TechGuard.
@@ -385,7 +386,36 @@ sanitize_label() {
 }
 
 # =============================================================================
-# MRK:06_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L387-402
+# MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L387-413
+# NAV-RULE: no-insert-before; read-toc-first
+# =============================================================================
+
+_FIND_CTR=0
+_CURRENT_TARGET=""
+FINDINGS_FILE=""  # resolved after PROJ_SLUG is set in CONF section
+
+emit_finding() {
+    local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
+    (( _FIND_CTR++ )) || true
+    local tgt_slug
+    tgt_slug=$(sanitize_label "${_CURRENT_TARGET:-unknown}")
+    local fid="f-06-${tgt_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-06-${tgt_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    [[ -n "$FINDINGS_FILE" ]] || return 0
+    local payload
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"06_wpscan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+        "$fid" \
+        "$(echo "$title" | sed 's/"/\\"/g')" \
+        "$sev" \
+        "${ev_tag:-$ev_id}" \
+        "$(echo "$desc"  | sed 's/"/\\"/g')" \
+        "$(echo "$rec"   | sed 's/"/\\"/g')")
+    echo "$payload" >> "$FINDINGS_FILE"
+    log_warn "FINDING [${sev^^}]: ${title}"
+}
+
+# =============================================================================
+# MRK:06_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L414-430
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -407,6 +437,8 @@ declare -A WP_API_USED
 
 assess_wordpress() {
     local url="$1"
+    _CURRENT_TARGET="$url"
+    _FIND_CTR=0
     local label
     label="$(sanitize_label "$url")"
     local outdir="${EVIDENCE_BASE}/_wpscan/${label}"
@@ -542,6 +574,14 @@ assess_wordpress() {
 
         WP_VULN_COUNT["$label"]="$vuln_count"
 
+        if [[ "$vuln_count" -gt 0 ]]; then
+            emit_finding "high" \
+                "WPScan: ${vuln_count} Vulnerabilit$([ "$vuln_count" -eq 1 ] && echo y || echo ies) — ${url}" \
+                "WPScan reported ${vuln_count} vulnerability/vulnerabilities for the WordPress installation at ${url}. Review ${full_out} for specific CVEs and version details." \
+                "Update WordPress core, all plugins, and themes to their latest versions. Apply vendor patches for any identified CVEs immediately." \
+                "${full_out}"
+        fi
+
         # Parse plugins
         local plugins
         plugins=$(grep -oE "Plugin: [a-zA-Z0-9_-]+" "$full_out" \
@@ -580,6 +620,11 @@ assess_wordpress() {
         if echo "$xmlrpc_resp" | grep -q "<methodResponse>"; then
             WP_XMLRPC["$label"]="EXPOSED"
             log_warn "  xmlrpc.php is enabled — potential brute-force and amplification vector"
+            emit_finding "high" \
+                "XML-RPC Enabled — ${url}" \
+                "xmlrpc.php is accessible and responding at ${url}/xmlrpc.php. This endpoint can be abused for brute-force attacks and SSRF." \
+                "Disable XML-RPC via a security plugin (e.g., Disable XML-RPC) or add 'add_filter(\"xmlrpc_enabled\", \"__return_false\");' to functions.php unless explicitly required by a plugin." \
+                "${xmlrpc_out}"
 
             # VAPT: multicall amplification check (CVE-like: XML-RPC system.multicall DDoS amplifier)
             local multicall_payload='<?xml version="1.0"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>wp.getUsers</string></value></member><member><name>params</name><value><array><data></data></array></value></member></struct></value></data></array></value></param></params></methodCall>'
@@ -589,6 +634,11 @@ assess_wordpress() {
             if echo "$multicall_resp" | grep -qiE "<array>|<struct>|<methodResponse>"; then
                 log_warn "  system.multicall enabled — brute-force amplification possible (100s of auth attempts per request)"
                 WP_XMLRPC["$label"]="EXPOSED+MULTICALL"
+                emit_finding "critical" \
+                    "XML-RPC system.multicall Enabled — ${url}" \
+                    "system.multicall is enabled at ${url}/xmlrpc.php, allowing hundreds of authentication attempts in a single HTTP request — effectively bypassing account lockout controls." \
+                    "Disable XML-RPC entirely. If XML-RPC must remain enabled, block system.multicall specifically via a WAF rule or plugin filter." \
+                    "${xmlrpc_out}"
             fi
 
             # Check if wp.getUsersBlogs is available (user enum via XML-RPC)
@@ -623,6 +673,11 @@ assess_wordpress() {
            echo "$wpjson_resp" | grep -qE '"(slug|name)"'; then
             WP_JSON_USERS["$label"]="EXPOSED"
             log_warn "  wp-json users endpoint exposed — usernames enumerable"
+            emit_finding "medium" \
+                "WordPress REST API User Enumeration — ${url}" \
+                "The /wp-json/wp/v2/users endpoint is publicly accessible at ${url}, exposing WordPress usernames. These can be used to mount targeted brute-force attacks." \
+                "Restrict REST API user endpoint by filtering 'rest_endpoints' or using a plugin such as 'Disable REST API'. Remove author archives if not needed for SEO." \
+                "${wpjson_out}"
         else
             WP_JSON_USERS["$label"]="not exposed"
             log_info "  wp-json/wp/v2/users: not accessible or empty"
@@ -645,7 +700,14 @@ assess_wordpress() {
                 fi
             fi
         done
-        [[ "${#author_found[@]}" -gt 0 ]] && WP_JSON_USERS["$label"]="EXPOSED (${WP_JSON_USERS[$label]}+author_enum:$(IFS=,; echo "${author_found[*]}"))"
+        if [[ "${#author_found[@]}" -gt 0 ]]; then
+            WP_JSON_USERS["$label"]="EXPOSED (${WP_JSON_USERS[$label]}+author_enum:$(IFS=,; echo "${author_found[*]}"))"
+            emit_finding "medium" \
+                "WordPress Username Enumeration via ?author= — ${url}" \
+                "Author archive redirects at ${url}/?author=N reveal WordPress usernames: $(IFS=,; echo "${author_found[*]}"). This bypass works even when the REST API user endpoint is disabled." \
+                "Disable author archives via SEO plugin settings or add a redirect rule. Use a security plugin to suppress username hints in author archive URLs." \
+                "${wpjson_out}"
+        fi
 
         # VAPT: additional wp-json endpoint discovery
         local wpjson_extra_out="${outdir}/wpjson_discovery_${ts}.txt"
@@ -731,6 +793,14 @@ assess_wordpress() {
 
     if [[ "${#exposed_files[@]}" -gt 0 ]]; then
         WP_EXPOSED_FILES["$label"]="$(printf '%s,' "${exposed_files[@]}" | sed 's/,$//')"
+        local exposed_list; exposed_list="$(IFS=,; echo "${exposed_files[*]}")"
+        local ef_sev="high"
+        echo "${exposed_list}" | grep -qiE "wp-config|\.env|\.git" && ef_sev="critical"
+        emit_finding "$ef_sev" \
+            "Sensitive File Exposure (${#exposed_files[@]} path(s)) — ${url}" \
+            "The following paths returned HTTP 200 at ${url}: ${exposed_list}. wp-config.php exposure leaks database credentials and secret keys; .git/HEAD exposes source history; .env files often contain API keys." \
+            "Block direct access to sensitive files in .htaccess (Apache) or location blocks (nginx). Remove backup files from the web root. Rotate any credentials exposed." \
+            "${outdir}"
     fi
 
     # ── Step 6 — Login page exposure ─────────────────────────────────────────
@@ -758,6 +828,11 @@ assess_wordpress() {
 
         if [[ "$admin_code" == "200" ]]; then
             log_warn "  wp-admin/ returns 200 — admin panel directly accessible (possible auth bypass)"
+            emit_finding "critical" \
+                "wp-admin Direct Access (HTTP 200) — ${url}" \
+                "The WordPress admin panel at ${url}/wp-admin/ returned HTTP 200 without redirecting to the login page, indicating a possible authentication bypass or misconfiguration." \
+                "Verify authentication controls are functioning. Restrict wp-admin/ access by IP via server config. Investigate for active compromise or plugin-induced auth bypass." \
+                "${outdir}"
         elif [[ "$admin_code" =~ ^(301|302)$ ]]; then
             if echo "$location" | grep -qi "wp-login"; then
                 log_info "  wp-admin/ redirects to login page [${admin_code}] — normal behaviour"
@@ -810,8 +885,17 @@ assess_wordpress() {
             done
         } | tee "$mal_plugin_out" >/dev/null
         local mal_count; mal_count=$(grep -c "^\s*\[20" "$mal_plugin_out" 2>/dev/null || echo 0)
-        [[ "$mal_count" -gt 0 ]] && log_warn "  ${mal_count} potentially vulnerable plugin(s) detected — review ${mal_plugin_out}" \
-                                   || log_info "  No known-malicious plugins detected at common paths"
+        if [[ "$mal_count" -gt 0 ]]; then
+            log_warn "  ${mal_count} potentially vulnerable plugin(s) detected — review ${mal_plugin_out}"
+            local mal_names; mal_names=$(grep "^\s*\[20" "$mal_plugin_out" 2>/dev/null | awk '{print $2}' | tr '\n' ',' | sed 's/,$//' || true)
+            emit_finding "high" \
+                "Known-Vulnerable Plugin(s) Detected (${mal_count}) — ${url}" \
+                "Plugin paths responding at ${url} match known-vulnerable or abandoned plugins: ${mal_names}. These plugins have documented CVEs including RCE, SQLi, and authentication bypass." \
+                "Immediately update or remove all identified plugins. Cross-reference detected plugin versions against NVD and the WPScan vulnerability database for specific CVEs." \
+                "${mal_plugin_out}"
+        else
+            log_info "  No known-malicious plugins detected at common paths"
+        fi
     fi
 
     # ── Step 7 — Security headers ─────────────────────────────────────────────
@@ -843,6 +927,11 @@ assess_wordpress() {
 
         if [[ "${#missing_headers[@]}" -gt 0 ]]; then
             WP_SEC_HEADERS["$label"]="missing: $(printf '%s,' "${missing_headers[@]}" | sed 's/,$//')"
+            emit_finding "low" \
+                "Missing Security Headers (${#missing_headers[@]}) — ${url}" \
+                "The following HTTP security headers are absent from ${url}: $(printf '%s,' "${missing_headers[@]}" | sed 's/,$//') . Missing CSP increases XSS exposure; missing HSTS allows protocol downgrade; missing X-Frame-Options enables clickjacking." \
+                "Add the missing headers via server configuration (Apache/nginx) or a WordPress security plugin (e.g., Headers Security Advanced & HSTS WP). Enable HSTS preloading once stable." \
+                "${outdir}"
         else
             WP_SEC_HEADERS["$label"]="all present"
         fi
@@ -1104,7 +1193,9 @@ main() {
         scope_confirm "${#WP_TARGETS[@]}"
 
         mkdir -p "${EVIDENCE_BASE}/_wpscan"
-        mkdir -p "working"
+        mkdir -p "${SCRIPT_DIR}/working"
+        FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_06_wpscan_findings_${SESSION_TS}.jsonl"
+        : > "$FINDINGS_FILE"
 
         local total="${#WP_TARGETS[@]}"
         local i=0
@@ -1121,14 +1212,18 @@ main() {
         write_report
 
         echo ""
+        local _find_count=0
+        [[ -f "$FINDINGS_FILE" ]] && _find_count=$(wc -l < "$FINDINGS_FILE" 2>/dev/null || echo 0)
         echo -e "${GREEN}════════════════════════════════════════════════${NC}"
         echo -e "${GREEN}  WPScan Assessment Complete — ${PROJECT_NAME}${NC}"
         echo -e "${GREEN}  Targets assessed: ${total}${NC}"
+        echo -e "${GREEN}  Findings emitted: ${_find_count}${NC}"
         echo -e "${GREEN}  Evidence base:    ${EVIDENCE_BASE}/_wpscan/${NC}"
         echo -e "${GREEN}  API budget left:  ${WPSCAN_API_BUDGET}${NC}"
         echo -e "${GREEN}════════════════════════════════════════════════${NC}"
         echo ""
         echo "Review: working/wpscan_report_${SESSION_TS}.md"
+        [[ -f "$FINDINGS_FILE" ]] && echo "Findings: ${FINDINGS_FILE}"
         echo ""
     fi
 
