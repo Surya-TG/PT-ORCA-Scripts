@@ -187,21 +187,22 @@ _validate_config() {
 # - MRK:11_FIND
 FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_11_ad_findings_${SESSION_TS}.jsonl"
 _FIND_CTR=0
+: > "$FINDINGS_FILE"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
     (( _FIND_CTR++ )) || true
     local fid
-    fid="11_ad_$(printf '%04d' "$_FIND_CTR")"
+    fid="f-11-ad-$(printf '%04d' "$_FIND_CTR")"
+    local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"11_ad","description":"%s","recommendation":"%s","evidence_tag":"%s","ts":"%s"}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"11_ad","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
-        "${title//\"/\\\"}" \
+        "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
-        "${desc//\"/\\\"}" \
-        "${rec//\"/\\\"}" \
-        "$ev_tag" \
-        "$(date -u +%Y-%m-%dT%H:%M:%SZ)")
+        "$ev_id" \
+        "$(echo "$desc" | sed 's/"/\\"/g')" \
+        "$(echo "$rec"  | sed 's/"/\\"/g')")
     echo "$payload" >> "$FINDINGS_FILE"
     log_wrn "FINDING [${sev^^}] ${title}"
 }

@@ -178,22 +178,22 @@ assemble_targets() {
 # - MRK:10_FIND
 FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_10_cloud_findings_${SESSION_TS}.jsonl"
 _FIND_CTR=0
+: > "$FINDINGS_FILE"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
     (( _FIND_CTR++ )) || true
-    local fid ev_file
-    fid="10_cloud_$(printf '%04d' "$_FIND_CTR")"
-    ev_file="${EVIDENCE_BASE}/${ev_tag:+${ev_tag}_}${SESSION_TS}.txt"
+    local fid
+    fid="f-10-cloud-$(printf '%04d' "$_FIND_CTR")"
+    local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"10_cloud","description":"%s","recommendation":"%s","evidence_tag":"%s","ts":"%s"}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"10_cloud","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
-        "${title//\"/\\\"}" \
+        "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
-        "${desc//\"/\\\"}" \
-        "${rec//\"/\\\"}" \
-        "$ev_tag" \
-        "$(date -u +%Y-%m-%dT%H:%M:%SZ)")
+        "$ev_id" \
+        "$(echo "$desc" | sed 's/"/\\"/g')" \
+        "$(echo "$rec"  | sed 's/"/\\"/g')")
     echo "$payload" >> "$FINDINGS_FILE"
     log_wrn "FINDING [${sev^^}] ${title}"
 }
