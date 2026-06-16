@@ -2,19 +2,19 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:04_NAV_TOC — Section index | nav,toc,index | L5-49
-# - MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-59 | ⚠ no-insert-before
-# - MRK:04_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L60-87 | ⚠ no-insert-before; propose-before-edit
-# - MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L88-113 | ⚠ no-insert-before
-# - MRK:04_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L114-135 | ⚠ no-insert-before; propose-before-edit
-# - MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L136-154 | ⚠ no-insert-before
-# - MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L155-223 | ⚠ no-insert-before; read-toc-first
-# - MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L224-249 | ⚠ no-insert-before; propose-before-edit
-# - MRK:04_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L250-282 | ⚠ no-insert-before; read-toc-first
-# - MRK:04_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L283-635 | ⚠ no-insert-before; read-toc-first
-# - MRK:04_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L636-655 | ⚠ no-insert-before
-# - MRK:04_MAIN — MAIN entry point | main,entry,point | L656-724 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 11 entries | Integrity-hash: 0b06fbf74a5c27f4 | Last-indexed: 2026-06-09T07:17:36Z
+# MRK:04_NAV_TOC — Section index | nav,toc,index | L5-48
+# MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-58 | ⚠ no-insert-before
+# MRK:04_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L60-87 | ⚠ no-insert-before; propose-before-edit
+# MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L89-134 | ⚠ no-insert-before
+# MRK:04_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L136-156 | ⚠ no-insert-before; propose-before-edit
+# MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L158-175 | ⚠ no-insert-before
+# MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L177-244 | ⚠ no-insert-before; read-toc-first
+# MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L246-270 | ⚠ no-insert-before; propose-before-edit
+# MRK:04_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L272-328 | ⚠ no-insert-before; read-toc-first
+# MRK:04_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L330-788 | ⚠ no-insert-before; read-toc-first
+# MRK:04_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L790-808 | ⚠ no-insert-before
+# MRK:04_MAIN — MAIN entry point | main,entry,point | L810-884 | ⚠ no-insert-before; read-toc-first
+# NAV-LEN: 12 entries | Integrity-hash: 04bf07ede641cb6e | Last-indexed: 2026-06-16T08:16:14Z
 
 # =============================================================================
 # 04_tls_scan.sh — TechGuard. [VAPT-enhanced]
@@ -47,7 +47,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-59
+# MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-58
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -86,12 +86,12 @@ EXTRA_HOSTS=()
 AUTO_YES=0
 
 # =============================================================================
-# MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L88-113
+# MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L89-134
 # NAV-RULE: no-insert-before
 # =============================================================================
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-BLUE='\033[0;34m'; CYAN='\033[0;36m'; NC='\033[0m'
+BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
@@ -99,20 +99,41 @@ _now() { date +'%Y-%m-%d %H:%M:%S'; }
 SESSION_TS="$(_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 # Ensure evidence dirs exist under repo
-mkdir -p "${EVIDENCE_BASE}/_sweep" working
+mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/tls_scan_${SESSION_TS}.log"
+FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_04_tls_scan_findings_${SESSION_TS}.jsonl"
 
 # Colored output to stderr, plain log to file
-log()     { local m="[$(_now)] $1"; echo -e "${BLUE}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_ok()  { local m="[$(_now)] ✓ $1"; echo -e "${GREEN}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_warn(){ local m="[$(_now)] ⚠ $1"; echo -e "${YELLOW}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_err() { local m="[$(_now)] ✗ $1"; echo -e "${RED}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log()      { local m="[$(_now)] $1";       echo -e "${BLUE}${m}${NC}"        >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_ok()   { local m="[$(_now)] ✓ $1";    echo -e "${GREEN}${m}${NC}"        >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_warn() { local m="[$(_now)] ⚠ $1";    echo -e "${YELLOW}${m}${NC}"       >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_err()  { local m="[$(_now)] ✗ $1";    echo -e "${RED}${m}${NC}"          >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_info() { local m="[$(_now)]   $1";    echo -e "${CYAN}${m}${NC}"         >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_find() { local m="[$(_now)] ★ FINDING: $1"; echo -e "${BOLD}${RED}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+
+_FIND_CTR=0
+
+emit_finding() {
+    local sev="$1" title="$2" desc="$3" rec="$4"
+    (( _FIND_CTR++ )) || true
+    local fid="f-04-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-04-$(printf '%03d' "${_FIND_CTR}")"
+    local payload
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"04_tls_scan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+        "$fid" \
+        "$(echo "$title" | sed 's/"/\\"/g')" \
+        "$sev" \
+        "$ev_id" \
+        "$(echo "$desc" | sed 's/"/\\"/g')" \
+        "$(echo "$rec"  | sed 's/"/\\"/g')")
+    echo "$payload" >> "$FINDINGS_FILE"
+    log_find "${sev^^}: ${title}"
+}
 
 # Ownership helper removed per operator preference; leave ownership as-is
 
 # =============================================================================
-# MRK:04_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L114-135
+# MRK:04_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L136-156
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -134,7 +155,7 @@ parse_db_conf() {
 }
 
 # =============================================================================
-# MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L136-154
+# MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L158-175
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -153,7 +174,7 @@ done
 
 
 # =============================================================================
-# MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L155-223
+# MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L177-244
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -222,7 +243,7 @@ export_db() {
 }
 
 # =============================================================================
-# MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L224-249
+# MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L246-270
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -248,7 +269,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:04_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L250-282
+# MRK:04_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L272-328
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -306,7 +327,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:04_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L283-635
+# MRK:04_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L330-788
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -342,6 +363,26 @@ assess_host() {
     log_info "  Subject: ${subject}"
     log_info "  Expiry:  ${expiry}"
 
+    # ── 1b. Certificate expiry check ──────────────────────────────────────────
+    local cert_pem_file="${dir}/cert_pem_${port}_${ts}.pem"
+    if timeout 12 bash -c "echo | openssl s_client -connect '${ip}:${port}' \
+        -servername '${ip}' 2>/dev/null | openssl x509" > "$cert_pem_file" 2>/dev/null \
+        && [[ -s "$cert_pem_file" ]]; then
+        if ! openssl x509 -noout -checkend 0 -in "$cert_pem_file" 2>/dev/null; then
+            emit_finding "critical" "TLS Certificate Expired: ${target}" \
+                "The TLS certificate on ${target} has passed its expiry date. Browsers and clients display a hard certificate error, causing service disruption. An expired certificate on an active service indicates a certificate management failure." \
+                "Replace the certificate immediately. Automate renewal using certbot or CA-provided tooling. Implement monitoring alerts at 30-day and 7-day expiry thresholds."
+        elif ! openssl x509 -noout -checkend 2592000 -in "$cert_pem_file" 2>/dev/null; then
+            emit_finding "medium" "TLS Certificate Expiring Within 30 Days: ${target}" \
+                "The TLS certificate on ${target} expires within 30 days. Certificate expiry will cause client-visible errors and service disruption." \
+                "Renew the certificate before expiry. Implement automated renewal with certbot or equivalent, and monitoring alerts at 30-day and 7-day thresholds."
+        elif ! openssl x509 -noout -checkend 7776000 -in "$cert_pem_file" 2>/dev/null; then
+            emit_finding "low" "TLS Certificate Expiring Within 90 Days: ${target}" \
+                "The TLS certificate on ${target} expires within 90 days. Schedule renewal to avoid service disruption." \
+                "Renew the certificate before expiry. Implement automated certificate renewal and expiry monitoring."
+        fi
+    fi
+
     # ── 2. Legacy protocol checks (openssl) ────────────────────────────────
     # OpenSSL 3.x dropped SSLv2/SSLv3 entirely — test only what the local binary
     # supports. TLS 1.0/1.1 "unexpected eof" means the server refused that version,
@@ -374,6 +415,27 @@ assess_host() {
         done
     } | tee "$legacy_out"
     log_ok "  Legacy check: ${legacy_out}"
+
+    # Emit findings for accepted legacy protocols (< process-sub keeps _FIND_CTR in current shell)
+    while IFS= read -r leg_line; do
+        if [[ "$leg_line" =~ \[ssl2\].*ACCEPTED ]]; then
+            emit_finding "critical" "SSLv2 Accepted: ${target}" \
+                "The server at ${target} accepted an SSLv2 connection. SSLv2 has been broken since 1996 and is exploitable via the DROWN attack (CVE-2016-0800), allowing decryption of captured HTTPS sessions. Its presence indicates a severely misconfigured TLS stack." \
+                "Disable SSLv2 immediately. In Apache: 'SSLProtocol all -SSLv2 -SSLv3'. In Nginx: 'ssl_protocols TLSv1.2 TLSv1.3;'. Restart the service and verify with testssl or sslyze."
+        elif [[ "$leg_line" =~ \[ssl3\].*ACCEPTED ]]; then
+            emit_finding "critical" "SSLv3 Accepted: ${target}" \
+                "The server at ${target} accepted an SSLv3 connection. SSLv3 is vulnerable to the POODLE attack (CVE-2014-3566), allowing decryption of HTTPS traffic. RFC 7568 has prohibited SSLv3 since 2015." \
+                "Disable SSLv3. Minimum supported protocol version must be TLS 1.2. In Nginx: 'ssl_protocols TLSv1.2 TLSv1.3;'. In Apache: 'SSLProtocol all -SSLv2 -SSLv3'."
+        elif [[ "$leg_line" =~ \[tls1\].*ACCEPTED ]]; then
+            emit_finding "medium" "TLS 1.0 Accepted: ${target}" \
+                "The server at ${target} accepted a TLS 1.0 connection. TLS 1.0 is deprecated per RFC 8996 and vulnerable to BEAST (CVE-2011-3389) and Lucky13 attacks. PCI-DSS 3.2+ prohibits TLS 1.0 for cardholder data environments." \
+                "Disable TLS 1.0. Set minimum protocol to TLS 1.2. In Nginx: 'ssl_protocols TLSv1.2 TLSv1.3;'. In Apache: 'SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1'."
+        elif [[ "$leg_line" =~ \[tls1_1\].*ACCEPTED ]]; then
+            emit_finding "medium" "TLS 1.1 Accepted: ${target}" \
+                "The server at ${target} accepted a TLS 1.1 connection. TLS 1.1 is deprecated per RFC 8996 and must be disabled on all production services." \
+                "Disable TLS 1.1. Set minimum protocol to TLS 1.2. In Nginx: 'ssl_protocols TLSv1.2 TLSv1.3;'. In Apache: 'SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1'."
+        fi
+    done < <(grep "ACCEPTED" "$legacy_out" 2>/dev/null)
 
     if [[ "$FAST_MODE" -eq 1 ]]; then
         # ── FAST: nmap ssl-enum-ciphers only ───────────────────────────────
@@ -415,6 +477,34 @@ assess_host() {
                     "${testssl_base}.json" 2>/dev/null | \
                     grep -E "CRITICAL|HIGH|MEDIUM" | head -15 | \
                     while IFS= read -r line; do log_info "    ${line}"; done
+            fi
+
+            # Emit CRITICAL/HIGH testssl findings to JSONL (capped at 10 to avoid report inflation)
+            if [[ -f "${testssl_base}.json" ]]; then
+                local _ts_find_ct=0 _ts_find_sup=0
+                while IFS='|' read -r tsev tid tfinding; do
+                    [[ -z "$tsev" ]] && continue
+                    if [[ $_ts_find_ct -ge 10 ]]; then
+                        (( _ts_find_sup++ )) || true
+                        continue
+                    fi
+                    local ts_sev; [[ "$tsev" == "CRITICAL" ]] && ts_sev="critical" || ts_sev="high"
+                    emit_finding "$ts_sev" "testssl [${tid}]: ${target}" \
+                        "${tfinding}" \
+                        "Review the full testssl report for remediation details: ${testssl_base}.{json,html,log}"
+                    (( _ts_find_ct++ )) || true
+                done < <(python3 -c "
+import json,sys
+try:
+    with open(sys.argv[1]) as f:
+        data=json.load(f)
+    for e in data:
+        sev=str(e.get('severity','')).upper()
+        if sev in ('CRITICAL','HIGH'):
+            print(sev+'|'+str(e.get('id',''))+'|'+str(e.get('finding','')).replace('|','/'))
+except:pass
+" "${testssl_base}.json" 2>/dev/null)
+                [[ $_ts_find_sup -gt 0 ]] && log_info "  testssl: ${_ts_find_sup} additional HIGH/CRITICAL finding(s) suppressed (>10 cap) — see ${testssl_base}.json"
             fi
         else
             log_warn "  testssl not found — falling back to nmap ssl-enum-ciphers"
@@ -515,6 +605,24 @@ assess_host() {
             echo "  NIST PQC winners (ML-KEM/ML-DSA) not yet widely deployed. Monitor RFC 9180+ adoption."
         } | tee "$cert_ext_out"
         log_ok "  Extended cert analysis: ${cert_ext_out}"
+
+        # Emit findings detected in extended cert analysis (grep output file — avoids subshell issue)
+        if grep -q "\[FINDING\] Weak RSA key" "$cert_ext_out" 2>/dev/null; then
+            local weak_key_detail; weak_key_detail=$(grep -oiE "(RSA Public-Key|Public-Key): \([0-9]+ bit\)" "$cert_ext_out" | head -1 || echo "< 2048-bit key")
+            emit_finding "high" "Weak TLS Certificate Key Size: ${target}" \
+                "The TLS certificate on ${target} uses a weak RSA key (${weak_key_detail}). Keys below 2048 bits are factorable with modern hardware/cloud resources, compromising the confidentiality of all sessions. NIST SP 800-131A requires a minimum of 2048-bit RSA keys." \
+                "Reissue the certificate with a minimum 2048-bit RSA key (4096 recommended). Consider ECDSA P-256/P-384 for equivalent security with smaller key sizes."
+        fi
+        if grep -q "\[ROBOT RISK\]" "$cert_ext_out" 2>/dev/null; then
+            emit_finding "medium" "RSA Key Exchange In Use — ROBOT Risk: ${target}" \
+                "The TLS connection to ${target} uses RSA key exchange. Servers supporting RSA-based cipher suites may be vulnerable to the ROBOT attack (CVE-2017-13099, Bleichenbacher padding oracle), enabling passive decryption of recorded TLS sessions. RSA key exchange also provides no forward secrecy." \
+                "Disable RSA key exchange cipher suites. Prefer ECDHE/DHE suites for forward secrecy. In Nginx: 'ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:!kRSA'. Confirm with the robot-detect tool (https://robotattack.org)."
+        fi
+        if grep -q "\[CT\] No SCTs found" "$cert_ext_out" 2>/dev/null; then
+            emit_finding "info" "No Certificate Transparency SCTs Found: ${target}" \
+                "No Signed Certificate Timestamps (SCTs) were embedded in the certificate served by ${target}. SCTs are required for certificates issued after April 2018 per Chrome CT policy. Absence may indicate a privately issued certificate not subject to public audit, or a TLS stack misconfiguration." \
+                "Ensure the certificate includes embedded SCTs (issued by a public CA with CT support). Verify certificate inclusion at crt.sh. For internal CAs, consider OCSP stapling with CT-aware tooling."
+        fi
 
         # CT log lookup via crt.sh (passive — no active connection to target)
         local cn_for_ct; cn_for_ct=$(grep -oE "CN = [^,]+" "$cert_out" 2>/dev/null | head -1 | sed 's/CN = //' || true)
@@ -649,17 +757,37 @@ print('\n'.join(sorted(names)))" 2>/dev/null || true)
                     && echo "  [BEAST/LUCKY13 RISK] TLS 1.0/1.1 accepted — CBC cipher modes vulnerable to BEAST and Lucky13 timing attacks" || true
             fi
         } | tee "$sec_headers_out"
+
+        # Emit findings for critical missing headers (outside tee to keep _FIND_CTR in current shell)
+        if [[ $_is_http -eq 1 ]]; then
+            if grep -q "MISSING: Strict-Transport-Security" "$sec_headers_out" 2>/dev/null; then
+                emit_finding "medium" "Missing HSTS Header: ${target}" \
+                    "The HTTP Strict-Transport-Security (HSTS) header is absent on ${target}. Without HSTS, clients connecting via HTTP are not automatically upgraded to HTTPS, enabling SSL stripping attacks. OWASP and NIST SP 800-52 require HSTS for all externally accessible HTTPS endpoints." \
+                    "Add to server configuration: 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload'. Verify full HTTPS coverage before enabling preload to prevent access lockout."
+            fi
+            if grep -q "MISSING: X-Frame-Options" "$sec_headers_out" 2>/dev/null && \
+               grep -q "MISSING: Content-Security-Policy" "$sec_headers_out" 2>/dev/null; then
+                emit_finding "medium" "Missing Clickjacking Protection (X-Frame-Options + CSP): ${target}" \
+                    "Neither X-Frame-Options nor Content-Security-Policy frame-ancestors is present on ${target}. This leaves the application vulnerable to clickjacking attacks, where a malicious page embeds the target in an invisible iframe and tricks users into unintentional interactions with sensitive UI elements." \
+                    "Add 'X-Frame-Options: DENY' or 'SAMEORIGIN'. Also add 'Content-Security-Policy: frame-ancestors \\'none\\'' or 'frame-ancestors \\'self\\'' for defence in depth."
+            fi
+            if grep -q "\[WARN\] max-age=" "$sec_headers_out" 2>/dev/null; then
+                emit_finding "low" "HSTS max-age Below Recommended Threshold: ${target}" \
+                    "The HSTS max-age directive on ${target} is below 31536000 seconds (1 year). A short max-age means browsers periodically fall back to HTTP during the gap window, reducing SSL stripping protection." \
+                    "Set 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload'. The HSTS preload list requires a minimum of 31536000 seconds."
+            fi
+        fi
     fi
 
     log_ok "  Headers: ${sec_headers_out}"
 
     # ── 4. Append to TLS summary ───────────────────────────────────────────
     echo "| ${ip} | ${port} | ${expiry} | ${subject} | ${dir} |" \
-        >> "working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+        >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
 }
 
 # =============================================================================
-# MRK:04_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L636-655
+# MRK:04_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L790-808
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -674,12 +802,12 @@ run_grab_scores() {
     log "Running GrabScores-v2.5.py..."
     python3 "$script_path" \
         --targets "$TARGETS_FILE" \
-        --output-dir "$SCREENS_DIR" 2>&1 | tee "working/${PROJ_SLUG}_grab_scores_${SESSION_TS}.log"
+        --output-dir "$SCREENS_DIR" 2>&1 | tee "${SCRIPT_DIR}/working/${PROJ_SLUG}_grab_scores_${SESSION_TS}.log"
     log_ok "Screenshots: ${SCREENS_DIR}"
 }
 
 # =============================================================================
-# MRK:04_MAIN — MAIN entry point | main,entry,point | L656-724
+# MRK:04_MAIN — MAIN entry point | main,entry,point | L810-884
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -690,6 +818,7 @@ main() {
     echo "  TechGuard."
     echo "  Project: ${PROJECT_NAME}"
     echo "  Mode:    $([ "$FAST_MODE" -eq 1 ] && echo "fast" || echo "full (testssl)")"
+    echo "  Findings: ${FINDINGS_FILE}"
     echo "════════════════════════════════════════════════"
     echo -e "${NC}"
 
@@ -700,8 +829,8 @@ main() {
     trail_phase_start phase "tls" project "${PROJECT_NAME:-}" mode "${MODE:-}" session "${SESSION_TS:-$(_ts)}" ts "$(date -u +%FT%TZ)" fast_mode "${FAST_MODE:-0}" 2>/dev/null || true
 
     # TLS summary header
-    mkdir -p "${EVIDENCE_BASE}/_sweep" "${EVIDENCE_BASE}/_exports" working
-    cat > "working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md" << EOF
+    mkdir -p "${EVIDENCE_BASE}/_sweep" "${EVIDENCE_BASE}/_exports" "${SCRIPT_DIR}/working"
+    cat > "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md" << EOF
 # TLS Assessment Summary — ${PROJECT_NAME}
 *Generated: $(_now) | Session: ${SESSION_TS}*
 
@@ -729,10 +858,14 @@ EOF
     run_grab_scores
 
     # Finalise summary
-    echo "" >> "working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
-    echo "---" >> "working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
-    echo "*04_tls_scan.sh | TechGuard.*" \
-        >> "working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "---" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "## JSONL Findings (auto-ingested by 12_report_pack.sh)" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "- **Count:** ${_FIND_CTR}" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "- **File:** \`${FINDINGS_FILE}\`" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "*04_tls_scan.sh | TechGuard. | Findings: ${_FIND_CTR}*" \
+        >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
 
     export_db "tls"
 
@@ -740,7 +873,8 @@ EOF
     local _04_t_end; _04_t_end=$(date +%s)
     trail_phase_end phase "tls" project "${PROJECT_NAME:-}" session "${SESSION_TS:-}" duration_sec "$((_04_t_end - _04_t_start))" targets "$count" ts "$(date -u +%FT%TZ)" 2>/dev/null || true
 
-    log_ok "TLS scan complete. Summary: working/tls_summary_${SESSION_TS}.md"
+    log_ok "Findings: ${_FIND_CTR} written to ${FINDINGS_FILE}"
+    log_ok "TLS scan complete. Summary: ${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
     log_ok "Evidence per host: ${EVIDENCE_BASE}/<IP>/testssl_<port>_<TS>.{html,json,log}"
 }
 
