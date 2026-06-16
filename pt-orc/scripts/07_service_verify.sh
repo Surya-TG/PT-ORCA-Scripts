@@ -269,35 +269,27 @@ run_msf_module() {
 }
 
 # =============================================================================
-# MRK:07_RESULTS — RESULT TRACKING  "STATUS | results,result,tracking,status,ip | L271-288
+# MRK:07_RESULTS — RESULT TRACKING + FINDING WRITER | results,find,jsonl,emit | L271-398
 # NAV-RULE: no-insert-before
 # =============================================================================
 
 RESULTS=()
 
-add_result() {
-    local status="$1" ip="$2" port="$3" service="$4" detail="$5" evidence="${6:-}"
-    RESULTS+=("${status}|${ip}|${port}|${service}|${detail}|${evidence}")
-    case "$status" in
-        VULN)    log_ok  "  [VULN]    ${service}:${port} @ ${ip} — ${detail}" ;;
-        SAFE)    log_info "  [SAFE]    ${service}:${port} @ ${ip} — ${detail}" ;;
-        UNKNOWN) log_warn "  [UNKNOWN] ${service}:${port} @ ${ip} — ${detail}" ;;
-        MANUAL)  log_warn "  [MANUAL]  ${service}:${port} @ ${ip} — ${detail}" ;;
-    esac
-}
-
 # =============================================================================
-# MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,emit | L289-318
+# MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,emit | L289-398
 # NAV-RULE: no-insert-before
 # =============================================================================
 
 _FIND_CTR=0
+_CURRENT_IP=""
+_SKIP_AUTO_EMIT=0
 FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_07_service_verify_findings_${SESSION_TS}.jsonl"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
     (( _FIND_CTR++ )) || true
-    local fid="f-07-$(printf '%04d' "${_FIND_CTR}")"
+    local ip_slug="${_CURRENT_IP//./_}"
+    local fid="f-07-${ip_slug}-$(printf '%04d' "${_FIND_CTR}")"
     local payload
     payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"07_service_verify","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
@@ -307,12 +299,95 @@ emit_finding() {
         "$(echo "$desc"  | sed 's/"/\\"/g')" \
         "$(echo "$rec"   | sed 's/"/\\"/g')")
     echo "$payload" >> "$FINDINGS_FILE"
+    log_warn "FINDING [${sev^^}]: ${title}"
 }
 
-# Wrapper: add_result + emit_finding together for VULN-class results
+_sev_for_service() {
+    local svc="${1,,}" detail="${2:-}"
+    local sev
+    case "$svc" in
+        redis|mysql|postgres|mongodb|elasticsearch|etcd|docker) sev="critical" ;;
+        ssrf)                                                    sev="critical" ;;
+        jenkins|cups|smtp|spring-actuator|memcached|kafka)      sev="high" ;;
+        smb|ftp|mssql|telnet|ipmi|winrm|nfs)                   sev="high" ;;
+        ssh|web|wordpress|dns)                                   sev="high" ;;
+        snmp|kibana|consul|vault|kubernetes|rdp|tls)            sev="medium" ;;
+        http-headers)                                            sev="low" ;;
+        *)                                                       sev="high" ;;
+    esac
+    # Escalate on critical-indicator keywords in the detail string
+    echo "$detail" | grep -qiE "CRITICAL|RCE|remote code exec|Kubernetes secret|arbitrary file|NOAUTH.*kubernetes|script console" \
+        && sev="critical"
+    echo "$sev"
+}
+
+_rec_for_service() {
+    local svc="${1,,}" port="${2:-}"
+    case "$svc" in
+        redis)           echo "Set requirepass in redis.conf. Firewall port ${port} to application IPs only. Disable CONFIG/DEBUG commands in production." ;;
+        mysql|mssql)     echo "Require authentication for all DB connections. Remove anonymous accounts. Firewall port ${port} to application tier only." ;;
+        postgres)        echo "Set pg_hba.conf to reject passwordless local/host connections. Firewall port ${port} to application IPs only." ;;
+        mongodb)         echo "Enable MongoDB authentication (--auth). Remove open bindIp. Firewall port ${port}." ;;
+        elasticsearch)   echo "Enable X-Pack Security (xpack.security.enabled: true). Firewall port ${port} to internal IPs. Rotate any exposed credentials or index data." ;;
+        etcd)            echo "Enable TLS client certificate authentication. Never expose ports 2379/2380 externally. Rotate all Kubernetes secrets immediately." ;;
+        ftp)             echo "Disable anonymous FTP. Enforce authenticated access with minimal permissions. Replace FTP with SFTP where possible." ;;
+        smb)             echo "Disable SMB null sessions (restrict anonymous in Local Security Policy). Require SMB signing. Block ports 445/139 at perimeter." ;;
+        snmp)            echo "Change or disable the 'public' community string. Migrate to SNMPv3 with auth and encryption. Firewall UDP 161 to management hosts." ;;
+        smtp)            echo "Disable open relay in MTA config. Require SMTP AUTH for all relaying. Implement SPF/DKIM/DMARC." ;;
+        ssrf)            echo "Block SSRF to cloud metadata endpoints via WAF or egress policy. Disable IMDSv1; enforce IMDSv2 token-based access on AWS." ;;
+        tls)             echo "Renew/replace TLS certificate. Ensure chain is complete with a trusted CA. Enable HSTS with adequate max-age." ;;
+        http-headers)    echo "Add missing security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy) in server or application config." ;;
+        nfs)             echo "Restrict NFS exports to trusted hosts in /etc/exports. Require Kerberos auth. Firewall ports 111/2049 at perimeter." ;;
+        telnet)          echo "Disable Telnet immediately. Replace with SSH for all remote management." ;;
+        ipmi)            echo "Firewall IPMI port 623/UDP. Change default BMC credentials. Apply firmware updates. Disable IPMI if not operationally required." ;;
+        rdp)             echo "Restrict RDP to VPN/jump-host access only. Enable NLA. Apply BlueKeep/DejaBlue patches. Enforce MFA for RDP sessions." ;;
+        winrm)           echo "Restrict WinRM to management subnet. Require HTTPS transport. Disable 'None' authentication method." ;;
+        memcached)       echo "Firewall Memcached port ${port}. Enable SASL authentication. Never expose to untrusted networks." ;;
+        docker)          echo "Never expose Docker daemon TCP socket without mutual TLS. Use Unix socket only. Enforce user namespaces and seccomp profiles." ;;
+        kubernetes)      echo "Enable RBAC. Set --anonymous-auth=false on API server. Restrict API access to management network. Audit ClusterRoleBindings." ;;
+        consul)          echo "Enable Consul ACL system. Require TLS for agent/server communication. Firewall port ${port} to service mesh hosts." ;;
+        vault)           echo "Restrict Vault port to application servers. Enable audit logging. Enforce policy-based access control." ;;
+        kafka)           echo "Enable SASL/SCRAM authentication and TLS. Restrict port ${port} to producer/consumer IPs via firewall." ;;
+        jenkins)         echo "Disable anonymous access. Upgrade Jenkins >= 2.442 (CVE-2024-23897 patch). Restrict CLI to authenticated users. Apply matrix-based security." ;;
+        cups)            echo "Disable cups-browsed if not needed. Firewall UDP/TCP 631. Update CUPS. Restrict admin interface to localhost only." ;;
+        spring-actuator) echo "Secure actuator with Spring Security. Disable /heapdump and /env in production. Limit exposed endpoints to health and info." ;;
+        ssh)             echo "Update OpenSSH >= 9.8p1 (CVE-2024-6387 patch). Disable root login. Use key-based auth only. Apply security configuration hardening." ;;
+        web|wordpress)   echo "Apply CMS security hardening. Patch all identified vulnerabilities. Implement WAF. Enforce security headers." ;;
+        dns)             echo "Disable recursive queries for external clients. Restrict zone transfers to authorized secondaries only." ;;
+        *)               echo "Restrict service access to authorized networks. Apply vendor security patches and configuration hardening." ;;
+    esac
+}
+
+add_result() {
+    local status="$1" ip="$2" port="$3" service="$4" detail="$5" evidence="${6:-}"
+    RESULTS+=("${status}|${ip}|${port}|${service}|${detail}|${evidence}")
+    _CURRENT_IP="$ip"
+    case "$status" in
+        VULN)
+            log_ok "  [VULN]    ${service}:${port} @ ${ip} — ${detail}"
+            if [[ "${_SKIP_AUTO_EMIT:-0}" -eq 0 ]]; then
+                local _sev _rec
+                _sev="$(_sev_for_service "$service" "$detail")"
+                _rec="$(_rec_for_service "$service" "$port")"
+                emit_finding "$_sev" \
+                    "${service^^} Vulnerability — ${ip}:${port}" \
+                    "$detail" \
+                    "$_rec" \
+                    "$evidence"
+            fi
+            ;;
+        SAFE)    log_info "  [SAFE]    ${service}:${port} @ ${ip} — ${detail}" ;;
+        UNKNOWN) log_warn "  [UNKNOWN] ${service}:${port} @ ${ip} — ${detail}" ;;
+        MANUAL)  log_warn "  [MANUAL]  ${service}:${port} @ ${ip} — ${detail}" ;;
+    esac
+}
+
+# Wrapper: specific severity+rec, suppresses the generic auto-emit from add_result
 vuln_finding() {
     local ip="$1" port="$2" svc="$3" sev="$4" title="$5" desc="$6" rec="$7" ev="${8:-}"
+    _SKIP_AUTO_EMIT=1
     add_result VULN "$ip" "$port" "$svc" "$title" "$ev"
+    _SKIP_AUTO_EMIT=0
     emit_finding "$sev" "${title} (${ip}:${port})" "$desc" "$rec" "$ev"
 }
 
