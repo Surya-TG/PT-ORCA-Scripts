@@ -2,20 +2,21 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:02_NAV_TOC — Section index | nav,toc,index | L5-43
-# - MRK:02_LOG — COLOURS AND LOGGING | log,colours,logging | L44-61 | ⚠ no-insert-before
-# - MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L62-90 | ⚠ no-insert-before; propose-before-edit
-# - MRK:02_USAGE — USAGE | usage,02 | L91-115 | ⚠ no-insert-before
-# - MRK:02_ARGS — ARGUMENT PARSING | args,argument,parsing | L116-134 | ⚠ no-insert-before
-# - MRK:02_DEPS — DEPENDENCY CHECK | deps,dependency,check | L135-172 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L173-225 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L226-256 | ⚠ no-insert-before; propose-before-edit
-# - MRK:02_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L257-273 | ⚠ no-insert-before
-# - MRK:02_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L274-287 | ⚠ no-insert-before
-# - MRK:02_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L288-665 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L666-844 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_MAIN — MAIN entry point | main,entry,point | L845-896 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 12 entries | Integrity-hash: 9462e83c0dce253f | Last-indexed: 2026-06-09T07:17:36Z
+# MRK:02_NAV_TOC — Section index | nav,toc,index | L5-42
+# - MRK:02_LOG — COLOURS AND LOGGING | log,colours,logging | L44-81 | ⚠ no-insert-before
+# - MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L83-112 | ⚠ no-insert-before; propose-before-edit
+# - MRK:02_USAGE — USAGE | usage,02 | L114-137 | ⚠ no-insert-before
+# - MRK:02_ARGS — ARGUMENT PARSING | args,argument,parsing | L139-156 | ⚠ no-insert-before
+# - MRK:02_DEPS — DEPENDENCY CHECK | deps,dependency,check | L158-194 | ⚠ no-insert-before; read-toc-first
+# - MRK:02_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L196-247 | ⚠ no-insert-before; read-toc-first
+# - MRK:02_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L249-278 | ⚠ no-insert-before; propose-before-edit
+# - MRK:02_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L280-295 | ⚠ no-insert-before
+# - MRK:02_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L297-311 | ⚠ no-insert-before
+# - MRK:02_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L313-713 | ⚠ no-insert-before; read-toc-first
+# - MRK:02_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L715-912 | ⚠ no-insert-before; read-toc-first
+# - MRK:02_EXPORTS — STRUCTURED EXPORT FOR DOWNSTREAM STEPS | exports,json,downstream | L914-955 | ⚠ no-insert-before
+# - MRK:02_MAIN — MAIN entry point | main,entry,point | L957-1012 | ⚠ no-insert-before; read-toc-first
+# NAV-LEN: 13 entries | Integrity-hash: 3f8a1b2c9d4e7f0a | Last-indexed: 2026-06-16T00:00:00Z
 
 # =============================================================================
 # 02_ip_analysis.sh — PTE IP Range & Ownership Analysis — TechGuard. [VAPT-enhanced]
@@ -41,7 +42,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:02_LOG — COLOURS AND LOGGING | log,colours,logging | L44-61
+# MRK:02_LOG — COLOURS AND LOGGING | log,colours,logging | L44-81
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -57,9 +58,30 @@ log_ok()   { echo -e "${GREEN}[$(_now)] ✓${NC} $*"; }
 log_warn() { echo -e "${YELLOW}[$(_now)] ⚠${NC} $*"; }
 log_err()  { echo -e "${RED}[$(_now)] ✗${NC} $*" >&2; }
 log_info() { echo -e "${CYAN}[$(_now)]   ${NC}$*"; }
+log_find() { echo -e "${BOLD}${RED}[$(_now)] ★ FINDING: $*${NC}" >&2; }
+
+_FIND_CTR=0
+FINDINGS_FILE=""  # resolved after PROJ_SLUG is set in CONF section
+
+emit_finding() {
+    local sev="$1" title="$2" desc="$3" rec="$4"
+    (( _FIND_CTR++ )) || true
+    local fid="f-02-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-02-$(printf '%03d' "${_FIND_CTR}")"
+    local payload
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"02_ip_analysis","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+        "$fid" \
+        "$(echo "$title" | sed 's/"/\\"/g')" \
+        "$sev" \
+        "$ev_id" \
+        "$(echo "$desc" | sed 's/"/\\"/g')" \
+        "$(echo "$rec"  | sed 's/"/\\"/g')")
+    echo "$payload" >> "$FINDINGS_FILE"
+    log_find "${sev^^}: ${title}"
+}
 
 # =============================================================================
-# MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L62-90
+# MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L83-112
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -71,6 +93,7 @@ log_info() { echo -e "${CYAN}[$(_now)]   ${NC}$*"; }
 
 PROJ_SLUG="${PROJECT_NAME//[^A-Za-z0-9._-]/_}"
 EVIDENCE_BASE="${SCRIPT_DIR}/evidence/${PROJ_SLUG}"
+FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_02_ip_analysis_findings_${SESSION_TS}.jsonl"
 AUTO_YES=0   # 1 = skip interactive confirmations (not recommended for PTE)
 DRY_RUN=0    # 1 = print commands, do not execute
 CLI_TARGETS_OVERRIDE=0   # set to 1 by --targets flag; bypasses PTE_TARGETS_FILE
@@ -89,7 +112,7 @@ ABUSEIPDB_API_KEY="${ABUSEIPDB_API_KEY:-}"
 VIRUSTOTAL_API_KEY="${VIRUSTOTAL_API_KEY:-}"
 
 # =============================================================================
-# MRK:02_USAGE — USAGE | usage,02 | L91-115
+# MRK:02_USAGE — USAGE | usage,02 | L114-137
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -114,7 +137,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:02_ARGS — ARGUMENT PARSING | args,argument,parsing | L116-134
+# MRK:02_ARGS — ARGUMENT PARSING | args,argument,parsing | L139-156
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -133,7 +156,7 @@ parse_args() {
 }
 
 # =============================================================================
-# MRK:02_DEPS — DEPENDENCY CHECK | deps,dependency,check | L135-172
+# MRK:02_DEPS — DEPENDENCY CHECK | deps,dependency,check | L158-194
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -171,7 +194,7 @@ check_deps() {
 }
 
 # =============================================================================
-# MRK:02_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L173-225
+# MRK:02_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L196-247
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -224,7 +247,7 @@ load_targets() {
 }
 
 # =============================================================================
-# MRK:02_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L226-256
+# MRK:02_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L249-278
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -255,7 +278,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:02_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L257-273
+# MRK:02_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L280-295
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -272,7 +295,7 @@ run_cmd() {
 }
 
 # =============================================================================
-# MRK:02_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L274-287
+# MRK:02_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L297-311
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -284,9 +307,11 @@ declare -A IP_PREFIX      # ip -> BGP prefix
 declare -A IP_CLOUD       # ip -> cloud match string or ""
 declare -A IP_HOPS        # ip -> traceroute hop count or "n/a"
 declare -A IP_PORTS       # ip -> Shodan open ports summary or ""
+declare -A IP_ABUSEIPDB_SCORE  # ip -> AbuseIPDB confidence score (0-100) or "?"
+declare -A IP_VT_MALICIOUS     # ip -> VirusTotal malicious engine count or "?"
 
 # =============================================================================
-# MRK:02_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L288-665
+# MRK:02_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L313-713
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -310,6 +335,8 @@ analyze_ip() {
     IP_CLOUD["$ip"]=""
     IP_HOPS["$ip"]="n/a"
     IP_PORTS["$ip"]=""
+    IP_ABUSEIPDB_SCORE["$ip"]="?"
+    IP_VT_MALICIOUS["$ip"]="?"
 
     # ── Step 1: WHOIS / ASN ─────────────────────────────────────────────────
     log "  [${ip}] Step 1: WHOIS / ASN"
@@ -368,6 +395,9 @@ analyze_ip() {
             fi
         else
             log_info "  PTR: [none]"
+            emit_finding "info" "No Reverse DNS (PTR) Record: ${ip}" \
+                "The IP ${ip} does not have a PTR (reverse DNS) record. This may indicate dynamically assigned infrastructure, misconfigured DNS hygiene, or intentional anonymisation." \
+                "Verify with the client that this IP is correctly registered with its provider. Absence of PTR records is a minor DNS hygiene issue but can also be a sign of abandoned or shadow-IT infrastructure."
         fi
     fi
 
@@ -466,6 +496,9 @@ analyze_ip() {
                 IP_CLOUD["$ip"]="org:${cloud_match}"
             fi
             log_warn "  CLOUD/CDN: ${ip} — ${cloud_match} — VERIFY RoE before testing"
+            emit_finding "info" "CDN/Cloud-Fronted IP: ${ip} (${cloud_match})" \
+                "The IP ${ip} is hosted on ${cloud_match} infrastructure based on ASN/org/PTR analysis. This may be a CDN edge node or cloud-hosted service rather than a direct origin server. WAF/CDN layers may filter or alter probe responses." \
+                "Confirm origin IP with the client and add it to scope. Test direct origin access (curl -H 'Host: target.com' https://ORIGIN-IP/) to check for WAF bypass. Verify the RoE explicitly covers cloud provider infrastructure."
         else
             log_info "  Cloud/CDN: no match detected"
         fi
@@ -571,8 +604,16 @@ analyze_ip() {
                 abuse_reports=$(echo "$abuse_resp" | python3 -c \
                     "import json,sys; d=json.load(sys.stdin); print(d.get('data',{}).get('totalReports','?'))" 2>/dev/null || echo "?")
                 log_info "  AbuseIPDB score: ${abuse_score}/100 | reports: ${abuse_reports}"
-                [[ "$abuse_score" =~ ^[0-9]+$ ]] && [[ "$abuse_score" -ge 50 ]] && \
-                    log_warn "  HIGH abuse score (${abuse_score}) — IP may be flagged/blocked mid-engagement"
+                IP_ABUSEIPDB_SCORE["$ip"]="${abuse_score}"
+                if [[ "$abuse_score" =~ ^[0-9]+$ ]] && [[ "$abuse_score" -ge 75 ]]; then
+                    emit_finding "high" "High Abuse Reputation: ${ip} (score ${abuse_score}/100)" \
+                        "AbuseIPDB reports ${abuse_score}/100 abuse confidence score for ${ip} across ${abuse_reports} reports in the last 90 days. This IP carries significant abuse history and may be blacklisted by threat feeds or IDS systems." \
+                        "Investigate whether this IP is intended to be in scope or has been hijacked/reassigned. A high abuse score can cause mid-engagement blocking by IDS/WAF. Escalate to client if unexpected."
+                elif [[ "$abuse_score" =~ ^[0-9]+$ ]] && [[ "$abuse_score" -ge 50 ]]; then
+                    emit_finding "medium" "Moderate Abuse Reputation: ${ip} (score ${abuse_score}/100)" \
+                        "AbuseIPDB reports ${abuse_score}/100 abuse confidence score for ${ip} with ${abuse_reports} report(s) in the last 90 days. The IP has a moderate abuse history." \
+                        "Cross-reference with client to confirm expected IP ownership. Moderate abuse scores may cause mid-engagement blocking by security appliances. Monitor for detection during active scanning phases."
+                fi
                 log_ok "  AbuseIPDB saved: ${abuse_file}"
             fi
             sleep 1  # rate limit: free tier 1000 req/day
@@ -602,8 +643,16 @@ analyze_ip() {
                 vt_suspicious=$(echo "$vt_resp" | python3 -c \
                     "import json,sys; d=json.load(sys.stdin); print(d.get('data',{}).get('attributes',{}).get('last_analysis_stats',{}).get('suspicious','?'))" 2>/dev/null || echo "?")
                 log_info "  VirusTotal: malicious=${vt_malicious} suspicious=${vt_suspicious} harmless=${vt_harmless}"
-                [[ "$vt_malicious" =~ ^[0-9]+$ ]] && [[ "$vt_malicious" -gt 0 ]] && \
-                    log_warn "  ${vt_malicious} VT engines flagged ${ip} as malicious — investigate before scanning"
+                IP_VT_MALICIOUS["$ip"]="${vt_malicious}"
+                if [[ "$vt_malicious" =~ ^[0-9]+$ ]] && [[ "$vt_malicious" -ge 5 ]]; then
+                    emit_finding "high" "High VirusTotal Malicious Score: ${ip} (${vt_malicious} engines)" \
+                        "${vt_malicious} VirusTotal engines flagged ${ip} as malicious (suspicious=${vt_suspicious}, harmless=${vt_harmless}). This IP has significant reputation damage across threat intelligence vendors." \
+                        "Verify this IP is intended to be in scope. A high VT score may indicate prior use in malicious campaigns or current C2 infrastructure. Escalate to client before active scanning and review full VT report."
+                elif [[ "$vt_malicious" =~ ^[0-9]+$ ]] && [[ "$vt_malicious" -gt 0 ]]; then
+                    emit_finding "medium" "VirusTotal Malicious Flags: ${ip} (${vt_malicious} engine(s))" \
+                        "${vt_malicious} VirusTotal engine(s) flagged ${ip} as malicious (suspicious=${vt_suspicious}, harmless=${vt_harmless}). This may indicate past malicious activity or shared-hosting contamination." \
+                        "Investigate the VirusTotal report for this IP. Cross-reference with AbuseIPDB data. Confirm IP ownership with client before active scanning."
+                fi
                 log_ok "  VirusTotal saved: ${vt_file}"
             fi
             sleep 15  # free tier: 4 lookups/min
@@ -664,7 +713,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:02_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L666-844
+# MRK:02_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L715-912
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -707,7 +756,10 @@ write_report() {
 | Mode         | ${MODE} |
 | Script       | 02_ip_analysis.sh |
 | IP count     | ${#TARGETS[@]} |
+| Findings     | ${_FIND_CTR} (see JSONL: working/${PROJ_SLUG}_02_ip_analysis_findings_${SESSION_TS}.jsonl) |
 | Shodan       | $([ -n "$SHODAN_API_KEY" ] && echo "enabled" || echo "not configured") |
+| AbuseIPDB    | $([ -n "${ABUSEIPDB_API_KEY:-}" ] && echo "enabled" || echo "not configured") |
+| VirusTotal   | $([ -n "${VIRUSTOTAL_API_KEY:-}" ] && echo "enabled" || echo "not configured") |
 
 ---
 
@@ -725,6 +777,23 @@ EOF
                 "${IP_ASN[$ip]:-[unknown]}" \
                 "${IP_ORG[$ip]:-[unknown]}" \
                 "${IP_COUNTRY[$ip]:-[unknown]}" \
+                "$cloud_flag"
+        done
+
+        echo ""
+        echo "---"
+        echo ""
+        echo "## Threat Intelligence Summary"
+        echo ""
+        echo "| IP | AbuseIPDB Score | VT Malicious | Cloud/CDN |"
+        echo "|----|----------------|--------------|-----------|"
+        for ip in "${TARGETS[@]}"; do
+            local cloud_flag="no"
+            [[ -n "${IP_CLOUD[$ip]:-}" ]] && cloud_flag="**YES**"
+            printf "| %s | %s/100 | %s | %s |\n" \
+                "$ip" \
+                "${IP_ABUSEIPDB_SCORE[$ip]:-?}" \
+                "${IP_VT_MALICIOUS[$ip]:-?}" \
                 "$cloud_flag"
         done
 
@@ -843,7 +912,50 @@ RECS
 }
 
 # =============================================================================
-# MRK:02_MAIN — MAIN entry point | main,entry,point | L845-896
+# MRK:02_EXPORTS — STRUCTURED EXPORT FOR DOWNSTREAM STEPS | exports,json,downstream | L914-955
+# NAV-RULE: no-insert-before
+# =============================================================================
+
+write_exports() {
+    local export_dir="${EVIDENCE_BASE}/_exports"
+    mkdir -p "$export_dir"
+    local export_file="${export_dir}/02_ip_report_${SESSION_TS}.jsonl"
+    log "Writing structured export: ${export_file}"
+
+    > "$export_file"  # truncate/create
+
+    for ip in "${TARGETS[@]}"; do
+        local cloud_bool="false"
+        [[ -n "${IP_CLOUD[$ip]:-}" ]] && cloud_bool="true"
+        python3 - <<PYEOF >> "$export_file"
+import json, sys
+rec = {
+    "session_ts":     "${SESSION_TS}",
+    "project":        "${PROJECT_NAME}",
+    "phase":          "02_ip_analysis",
+    "ip":             "${ip}",
+    "ptr":            "${IP_PTR[$ip]:-}",
+    "asn":            "${IP_ASN[$ip]:-}",
+    "org":            "${IP_ORG[$ip]:-}",
+    "country":        "${IP_COUNTRY[$ip]:-}",
+    "prefix":         "${IP_PREFIX[$ip]:-}",
+    "cloud":          ${cloud_bool},
+    "cloud_detail":   "${IP_CLOUD[$ip]:-}",
+    "hops":           "${IP_HOPS[$ip]:-}",
+    "ports":          "${IP_PORTS[$ip]:-}",
+    "abuse_score":    "${IP_ABUSEIPDB_SCORE[$ip]:-?}",
+    "vt_malicious":   "${IP_VT_MALICIOUS[$ip]:-?}",
+}
+print(json.dumps(rec))
+PYEOF
+    done
+
+    log_ok "Export (JSONL): ${export_file}"
+    log_info "  Downstream steps (03, 05, 07) can read this file for cloud/CDN context."
+}
+
+# =============================================================================
+# MRK:02_MAIN — MAIN entry point | main,entry,point | L957-1012
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -879,13 +991,16 @@ main() {
     done
 
     write_report
+    write_exports
 
     echo ""
     echo -e "${GREEN}════════════════════════════════════════════════${NC}"
     echo -e "${GREEN}  IP Range Analysis Complete — ${PROJECT_NAME}${NC}"
     echo -e "${GREEN}  IPs analysed:  ${total}${NC}"
+    echo -e "${GREEN}  Findings:      ${_FIND_CTR} (${FINDINGS_FILE})${NC}"
+    echo -e "${GREEN}  Export:        ${EVIDENCE_BASE}/_exports/02_ip_report_${SESSION_TS}.jsonl${NC}"
     echo -e "${GREEN}  Evidence base: ${EVIDENCE_BASE}/_ip_analysis/${NC}"
-    echo -e "${GREEN}  Report:        working/ip_range_report_${SESSION_TS}.md${NC}"
+    echo -e "${GREEN}  Report:        working/${PROJ_SLUG}_ip_range_report_${SESSION_TS}.md${NC}"
     echo -e "${GREEN}════════════════════════════════════════════════${NC}"
     echo ""
     echo "Next step: sudo ./03_comp_scan.sh --mode pte"
