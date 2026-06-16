@@ -1,12 +1,14 @@
 ---
 name: pt-report
-version: "0.73"
+version: "0.82"
 description: >
-  [v0.73] L2 — Report content generator. Converts finding stubs into polished report
-  sections using TechGuard house style. Covers finding bodies, section text,
-  executive summary, and appendices. Input: finding stubs + engagement metadata from
-  state snapshot. Output: report-ready text for insertion into .docx via pt-orc →
-  docx skill handoff. Do NOT load directly — pt-orc dispatches this.
+  [v0.82] L2 — Report content generator. Converts finding stubs and JSONL findings into
+  polished report sections using TechGuard house style. Covers finding bodies, section
+  text, executive summary, and appendices. Input: finding stubs + JSONL findings from
+  12_report_pack + engagement metadata from state snapshot. Output: report-ready text
+  for insertion into .docx via pt-orc → docx skill handoff. Covers all 12 phases
+  including App/API (08), AI/LLM (09), Cloud (10), Active Directory (11).
+  Do NOT load directly — pt-orc dispatches this.
 ---
 
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->
@@ -90,6 +92,72 @@ Evidence: verify_summary VULN row + evidence/_verify/<ip>/web_generic_<port>_*.t
 Group all hosts missing same headers into one finding with affected hosts table
 ```
 
+### JSONL input sources (all phases — preferred primary source from 12_report_pack)
+
+Load `working/*_12_findings.jsonl` as the consolidated source. Each line is a complete finding record:
+```json
+{"id":"f-07-10_10_10_1-0001","title":"...","severity":"critical","phase":"07_service_verify",
+ "evidence_ids":["ev-07-..."],"description":"...","recommendation":"...",
+ "retest_status":"n/a","residual_risk":""}
+```
+- `severity` field maps directly to report severity — no re-rating without additional evidence
+- `phase` field identifies source script for evidence path derivation
+- `evidence_ids` → cross-reference to `evidence/` files for Appendix C evidence index
+- Group findings by phase for section assignment, then by severity within each section
+
+**Per-phase JSONL sources (use when 12 not yet run or for step-level detail):**
+- `*_07_service_verify_findings_*.jsonl` — service probe findings (07)
+- `*_08_app_api_findings_*.jsonl` — App/API review (08)
+- `*_09_ai_llm_findings_*.jsonl` — AI/LLM assessment (09)
+- `*_10_cloud_findings_*.jsonl` — cloud infrastructure (10)
+- `*_11_ad_findings_*.jsonl` — Active Directory (11)
+
+### Finding Stub Templates for VAPT-Enhanced Phases
+
+**Cloud IMDS Access → Critical finding stub:**
+```
+Title: Cloud Instance Metadata Service (IMDS) Accessible via SSRF
+Evidence: working/*_10_cloud_findings_*.jsonl (severity:critical) + evidence/<IP>/_cloud/imds_*.txt
+Phase: Cloud Infrastructure (Step 10)
+Note: Immediate credential rotation required if keys present in response
+```
+
+**S3/GCS/Azure Bucket Exposure → High–Critical finding stub:**
+```
+Title: Publicly Accessible Cloud Storage Bucket — [bucket-name]
+Evidence: working/*_10_cloud_findings_*.jsonl + evidence/<IP>/_cloud/bucket_*.txt
+Severity: Critical if sensitive data confirmed; High if empty/public-by-design
+```
+
+**Kerberoasting → High finding stub:**
+```
+Title: Kerberoastable Service Accounts Identified
+Evidence: working/*_11_ad_findings_*.jsonl (severity:high) + evidence/<IP>/_ad/kerberoast_*.txt
+Note: List SPNs in affected hosts; offline cracking vector — no exploitation required
+```
+
+**ADCS ESC1 → Critical finding stub:**
+```
+Title: Active Directory Certificate Services — ESC1 Privilege Escalation (ADCS)
+Evidence: working/*_11_ad_findings_*.jsonl (severity:critical) + evidence/_ad/certipy_*.txt
+Phase: Active Directory (Step 11)
+Note: Full certipy find output as Appendix evidence
+```
+
+**AI/LLM Prompt Injection → Critical finding stub:**
+```
+Title: Prompt Injection — [Endpoint Name]
+Evidence: working/*_09_ai_llm_findings_*.jsonl + evidence/<IP>/_llm/prompt_injection_*.txt
+Note: Include payload and response excerpt; OWASP LLM01:2025 reference
+```
+
+**JWT Algorithm:None → Critical finding stub:**
+```
+Title: JWT Authentication Bypass — Algorithm:None Accepted
+Evidence: working/*_08_app_api_findings_*.jsonl + evidence/<IP>/_api/jwt_*.txt
+Phase: App/API Review (Step 08)
+```
+
 ---
 
 ## MRK:PT_REPORT_EXIT — Exit Criteria | pt,report,exit,criteria | L95-103
@@ -137,7 +205,10 @@ Section 2 — Findings
   2.2.5 Outdated Software
   2.2.6 Authentication and Access Control
   2.2.7 WordPress Security          ← include only if WordPress assessed (06_wpscan.sh)
-  [2.2.8+ additional categories if required]
+  2.2.8 Application and API Security ← include only if 08_app_api_review.sh run with findings
+  2.2.9 AI/LLM Endpoint Security    ← include only if 09_ai_llm_review.sh run with findings
+  2.2.10 Cloud Infrastructure       ← include only if 10_cloud_testing.sh run with findings
+  [2.2.11+ additional categories if required]
 Appendices
 ```
 
@@ -536,7 +607,9 @@ positive on the generic login prompt. Right pane: browser confirms [actual devic
 | "Confidential" in header is red | Set to #1F3864 navy in header1.xml |
 
 ---
-*pt-report SKILL.md v0.73 — L2 | dispatched by pt-orc*
+*pt-report SKILL.md v0.82 — L2 | dispatched by pt-orc*
+*VAPT enhancements: JSONL input sources, stub templates for Cloud/AD/AI-LLM/App-API, PTE categories 2.2.8–2.2.10*
+<!-- NAV-NEEDS-REINDEX: 2026-06-16 — extended input sources; line ranges shifted -->
 
 <!-- L2 NAV:v1 → ../../../AUDIT-ORC-INDEX.md -->
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->

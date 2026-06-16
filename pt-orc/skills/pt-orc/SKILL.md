@@ -1,14 +1,16 @@
 ---
 name: pt-orc
-version: "0.73"
+version: "0.82"
 description: >
-  [v0.73] PRIMARY PT SKILL — load this first and only this for any penetration testing
+  [v0.82] PRIMARY PT SKILL — load this first and only this for any penetration testing
   engagement. Active dispatcher for all PT phases (recon, enum, evidence, report).
   Reconstructs full engagement context from state snapshot alone. Manages stage
   progression, return passes, and L2/L3 skill invocation. Trigger on: "pentest",
   "PT engagement", "PTI", "PTE", "findings", "recon", "scope", "nmap", "Metasploit",
   "PT report", "re-test", "db_nmap", "MSF workspace", "evidence", "save state",
-  "state snapshot", or any engagement reference code (e.g. Acme-PTI-Mar-2026).
+  "state snapshot", "cloud testing", "Active Directory", "AD", "AI/LLM", "LLM endpoint",
+  "app/API", "ADCS", "BloodHound", "Kerberoasting", "prompt injection", "IMDS", "S3 bucket",
+  or any engagement reference code (e.g. Acme-PTI-Mar-2026).
   REPLACES pt-workflow skill — do not load both.
 ---
 
@@ -161,7 +163,7 @@ L1 reads the request, maps it to an L2, passes the required context, and expects
 | L2 Skill | Triggers | Pass in from snapshot | Expect back |
 |---|---|---|---|
 | `pt-recon` | S1/S2 work; "sweep", "OSINT", "DNS", "subdomain", "IP analysis", "surface", new target range | Scope (subnets/domains), tester IPs, MSF workspace, existing host list | Updated host/service inventory, evidence paths, findings stubs |
-| `pt-enum` | S3/S4 work; named service ("SMB", "NFS", "SNMP", "TLS", "HTTP", "FTP", "WordPress", specific IP/port), "enumerate", "deeper look" | Target IP, **mode (PTI/PTE)**, **stealth tier**, known open ports/services, existing findings for that host | Evidence paths, findings stubs, validation state updates |
+| `pt-enum` | S3/S4 work; named service ("SMB", "NFS", "SNMP", "TLS", "HTTP", "FTP", "WordPress", "API", "JWT", "IDOR", "LLM", "AI endpoint", "cloud", "IMDS", "S3", "Active Directory", "Kerberoasting", "ADCS", specific IP/port), "enumerate", "deeper look" | Target IP, **mode (PTI/PTE)**, **stealth tier**, known open ports/services, existing findings for that host | Evidence paths, findings stubs, validation state updates |
 | `pt-evidence` | "process evidence", pasted tool output, "log review", "what does this mean", S6 | Raw output (pasted or file ref), existing findings index | Structured finding stub (ready to append to Findings .md) |
 | `pt-report` | "write finding", "draft report", "executive summary", "section", S7 | Findings index, scope, engagement metadata, severity distribution | Finding body text, section text, report-ready content |
 
@@ -218,7 +220,7 @@ Version: increment `v<N>` each save. Never reissue.
 | Start date | <date> |
 | End date (planned) | <date> |
 | MSF Workspace | <workspace name> |
-| Script suite version | 0.72 |
+| Script suite version | 0.82 |
 
 ---
 
@@ -314,18 +316,39 @@ Version: increment `v<N>` each save. Never reissue.
 | pt-commands | /mnt/skills/user/pt-commands/SKILL.md | L3: all CLI commands, grouped by service/tech |
 
 ### Automation Scripts (scripts/ dir)
-**PTI:** `03 --mode pti` → `04` → `05` → `06` (if WordPress) → `07` (service verify)
-**PTE:** `01` → `02` → `03 --mode pte` → `04` → `05` → `06` (if WordPress) → `07` (service verify)
+**PTI:** `03 --mode pti` → `04` → `05` → `06` (if WordPress) → `07` → `08` → `09` (if AI) → `10` (if cloud) → `11` → `12`
+**PTE:** `01` → `02` → `03 --mode pte` → `04` → `05` → `06` (if WordPress) → `07` → `08` → `09` (if AI) → `10` (if cloud) → `12`
+
+Orchestrator selects the correct subset per `--profile`. See Profiles section below.
 
 | Script | Mode | Runs as | Phase | Key output |
 |---|---|---|---|---|
-| `01_dns_recon_v<N>.sh` | PTE | root | S1 | `evidence/_dns/`, `scripts/targets.txt`, `working/dns_summary_*.md` |
-| `02_ip_range_analysis_v<N>.sh` | PTE | any | S1 (after 01) | `evidence/_ip_analysis/`, `ip_range_report_<TS>.md` — reads `targets.txt`; passive only, no target contact |
-| `03_comprehensive_scan_v<N>.sh` | PTI+PTE | root | S2+S3 | `evidence/_sweep/`, `evidence/<IP>/`, `evidence/_exports/`, `working/tls_targets.txt` |
-| `04_tls_scan_v<N>.sh` | PTI+PTE | root | S3 | `evidence/<IP>/testssl_*`, `working/tls_summary_*.md` |
-| `05_web_enum_v<N>.sh` | PTI+PTE | root | S3 | `evidence/<IP>/` web output, `working/web_summary_*.md`, `scripts/wp_targets.txt` |
-| `06_wpscan_v<N>.sh` | PTI+PTE | any | S3 | `evidence/_wpscan/<label>/`, `evidence/_wpscan/wpscan_report_*.md` |
-| `07_service_verify_v<N>.sh` | PTI+PTE | root | S4 | `working/verify_summary_*.md`, `evidence/_verify/<ip>/`, `evidence/_msf/verify_*.log` |
+| `01_dns_recon.sh` | PTE | root | S1 | `evidence/_dns/`, `scripts/targets.txt`, `working/dns_summary_*.md` |
+| `02_ip_analysis.sh` | PTE | any | S1 (after 01) | `evidence/_ip_analysis/`, `ip_range_report_<TS>.md` — passive only, no target contact |
+| `03_comp_scan.sh` | PTI+PTE | root | S2+S3 | `evidence/_sweep/`, `evidence/<IP>/`, `evidence/_exports/`, `working/tls_targets.txt` |
+| `04_tls_scan.sh` | PTI+PTE | root | S3 | `evidence/<IP>/testssl_*`, `working/tls_summary_*.md` |
+| `05_web_enum.sh` | PTI+PTE | root | S3 | `evidence/<IP>/` web output, `working/web_summary_*.md`, `scripts/wp_targets.txt` |
+| `06_wpscan.sh` | PTI+PTE | any | S3 | `evidence/_wpscan/<label>/`, `working/*_06_wpscan_findings_*.jsonl` |
+| `07_service_verify.sh` | PTI+PTE | root | S4 | `working/*_07_service_verify_findings_*.jsonl`, `evidence/_verify/<ip>/` |
+| `08_app_api_review.sh` | PTI+PTE | root | S4 | `working/*_08_app_api_findings_*.jsonl`, `evidence/<IP>/_api/` |
+| `09_ai_llm_review.sh` | PTI+PTE | root | S4 | `working/*_09_ai_llm_findings_*.jsonl`, `working/manual_followup_*.md` |
+| `10_cloud_testing.sh` | PTI+PTE | root | S4 | `working/*_10_cloud_findings_*.jsonl`, `evidence/<IP>/_cloud/` |
+| `11_active_directory.sh` | PTI | root | S4 | `working/*_11_ad_findings_*.jsonl`, `evidence/<IP>/_ad/`, `evidence/_ad/bloodhound_*.zip` |
+| `12_report_pack.sh` | PTI+PTE | root | S7 | `working/*_12_findings.jsonl` (consolidated all steps), `working/*_report_*.md` |
+
+### Engagement Profiles (for 00_pt-orc.sh --profile)
+
+| Profile | Steps run | Use case |
+|---------|-----------|----------|
+| `web` | 1 2 3 4 5 6 7 8 12 | Web application PT |
+| `external` | 1 2 3 4 5 6 7 8 9 12 | Full external PT |
+| `internal` | 1 2 3 4 5 6 7 8 9 11 12 | Full internal PT (includes AD) |
+| `api` | 1 2 4 5 7 8 12 | API-only assessment |
+| `ai_llm` | 4 5 8 9 12 | AI/LLM endpoint assessment |
+| `cloud` | 1 2 4 5 7 8 10 12 | Cloud infrastructure |
+| `ad` | 1 2 3 7 11 12 | Active Directory only |
+| `hybrid` | 1–12 | Full suite — all steps |
+| `retest` | 4 5 7 8 9 12 | Re-test / verification pass |
 
 ### Phase 07 — Service Verify (07_service_verify.sh) [VAPT-Enhanced v1.0]
 
@@ -399,6 +422,33 @@ manual_followup. Load it before generating stubs.
 - PTE: MySQL NOAUTH (35.214.247.76:3306), SSH CVE (3 hosts), web headers (13 hosts)
 - PTI: PostgreSQL NOAUTH (×2), MSSQL SA empty pw (×2), FTP anon (×5), SSH CVE (×9)
 
+### Phase 08 — App/API Review (08_app_api_review.sh)
+**Purpose:** OWASP API Top 10 checks, auth header analysis, CORS, JWT, rate-limit, IDOR sweep.
+**Output:** `working/*_08_app_api_findings_*.jsonl` — load when writing API/auth section findings.
+
+### Phase 09 — AI/LLM Review (09_ai_llm_review.sh)
+**Purpose:** OWASP LLM Top 10 (2025) — 21 prompt injection payloads, jailbreak, training data
+leakage, RAG exposure, agentic SSRF, thread IDOR, model file exposure, context window attacks.
+**Output:** `working/*_09_ai_llm_findings_*.jsonl` + `working/manual_followup_*.md` (items needing human verification).
+
+### Phase 10 — Cloud Testing (10_cloud_testing.sh)
+**Purpose:** Cloud provider auto-detection, IMDS SSRF (AWS/Azure/GCP), S3/blob/GCS bucket
+discovery, IAM metadata, K8s API exposure, cloud CNAME subdomain takeover.
+**Output:** `working/*_10_cloud_findings_*.jsonl`.
+
+### Phase 11 — Active Directory (11_active_directory.sh)
+**Purpose:** DC port map, LDAP null/auth enum, Kerberoasting, AS-REP roasting, BloodHound
+collection, ADCS ESC1-ESC8 via certipy, GPO/SYSVOL, ACL/AdminSDHolder, delegation,
+domain trust mapping, DCSync rights.
+**Output:** `working/*_11_ad_findings_*.jsonl` + `evidence/_ad/bloodhound_*.zip`.
+*PTI-only step — not run in PTE unless DC is in-scope external exposure.*
+
+### Phase 12 — Report Pack (12_report_pack.sh)
+**Purpose:** Collects JSONL findings from all steps (01–11), deduplicates, severity-ranks,
+builds consolidated `*_12_findings.jsonl` + markdown summary report.
+**Output:** `working/*_12_findings.jsonl` — the definitive consolidated finding set for report generation.
+To review: `jq -c '[.severity,.title]' working/*_12_findings.jsonl`
+
 ---
 
 ## 8. Current Position
@@ -413,7 +463,7 @@ manual_followup. Load it before generating stubs.
 | Last snapshot | state_<prev_TS>_v<N-1>.md |
 
 ---
-*pt-orc v0.72 | State snapshot schema v0.72*
+*pt-orc v0.82 | State snapshot schema v0.82*
 ````
 
 ---
@@ -496,11 +546,16 @@ manual_followup. Load it before generating stubs.
 | `--yes` used for PTE scan | Never skip PTE scope confirmation; visual confirm required every run |
 | WordPress finding without 06 evidence | Run 06 after 05 to get structured WPScan output before writing findings |
 | "No hosts in DB" during enum/udp | Check DB_DIRECT_AVAILABLE — psql may be failing (Unix socket vs TCP). CSV fallback activates automatically; enum proceeds from services_tcp_*.csv |
+| Cloud IMDS finding without 10 evidence | Run 10_cloud_testing.sh; IMDS critical findings need `evidence/<IP>/_cloud/` output |
+| AD finding from 11 without BloodHound | Kerberoasting/ADCS findings need `evidence/_ad/bloodhound_*.zip` as supporting evidence |
+| 12 run before earlier steps complete | 12_report_pack collects from all JSONL files in working/ — run only after relevant steps finish |
+| AI/LLM finding without manual_followup | 09 flags agentic/thread IDOR items to manual_followup_*.md — always review before writing stubs |
 
 ---
-*pt-orc SKILL.md v0.73-vapt — L1 Orchestrator [VAPT-Enhanced 2026-06-05]*
-*Replaces: pt-workflow v6.1 | Script suite: v0.73-vapt*
-*VAPT enhancements: 2024-2025 CVE probes, Elasticsearch/etcd/Jenkins/CUPS coverage*
+*pt-orc SKILL.md v0.82 — L1 Orchestrator [VAPT-Enhanced 2026-06-16]*
+*Replaces: pt-workflow v6.1 | Script suite: v0.82 (12-step suite)*
+*VAPT enhancements: 2024-2025 CVE probes, App/API (08), AI/LLM OWASP Top 10 (09), Cloud/IMDS/K8s (10), Active Directory/ADCS/BloodHound (11)*
+<!-- NAV-NEEDS-REINDEX: 2026-06-16 — content additions; line ranges shifted -->
 
 <!-- L2 NAV:v1 → ../../../AUDIT-ORC-INDEX.md -->
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->

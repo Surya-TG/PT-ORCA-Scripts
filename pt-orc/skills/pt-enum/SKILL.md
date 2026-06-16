@@ -1,12 +1,13 @@
 ---
 name: pt-enum
-version: "0.72"
+version: "0.82"
 description: >
-  [v0.72] L2 — Service enumeration and vulnerability assessment (Stages 3–5). Loaded by
+  [v0.82] L2 — Service enumeration and vulnerability assessment (Stages 3–5). Loaded by
   pt-orc when performing deep-dive on a specific service, protocol, or host. Dispatches
   L3 command groups by service/tech. PTI/PTE mode-aware — filters services and applies
-  external exposure severity escalation in PTE mode. Drop after enumeration objective
-  complete. Do NOT load directly — pt-orc dispatches this.
+  external exposure severity escalation in PTE mode. Covers all 12 script phases including
+  App/API (08), AI/LLM (09), Cloud (10), and Active Directory (11). Drop after enumeration
+  objective complete. Do NOT load directly — pt-orc dispatches this.
 ---
 
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->
@@ -78,6 +79,10 @@ Load `pt-commands` and navigate to the relevant group. Drop L3 after commands ex
 | Database | DB | Both | "MySQL", "MSSQL", "PostgreSQL", "MongoDB", port 1433/3306/5432/27017 — external = Critical |
 | VPN / Gateway | VPN | Both | "VPN", "Zyxel", "FortiGate", "gateway", "firewall", port 500/4500/1194 |
 | Mail | MAIL | **PTE** | "SMTP", "IMAP", "POP3", "open relay", port 25/110/143/465/587/993/995 |
+| App / API | APP_API | Both | "API", "IDOR", "JWT", "rate-limit", "CORS", "OWASP API", "auth header", port 443/8080/8443 |
+| AI / LLM endpoint | AI_LLM | Both | "LLM", "prompt injection", "jailbreak", "AI endpoint", "chatbot", "RAG", "OWASP LLM", "agentic", "training data" |
+| Cloud infrastructure | CLOUD | Both | "cloud", "IMDS", "S3", "bucket", "Azure blob", "GCS", "IAM", "K8s API", "ECS", "SSRF→IMDS", port 80/443 |
+| Active Directory | AD | **PTI** | "Active Directory", "Kerberos", "Kerberoasting", "AS-REP", "BloodHound", "ADCS", "certipy", "DCSync", "GPO", "SYSVOL", "AdminSDHolder", "domain controller", "domain trust", port 88/389/445/636/3268 |
 
 **PTE mode:** Only dispatch L3 groups marked **Both** or **PTE** from the table above.
 Services marked **PTI** (SMB, NFS, NETDEV, OOB, MQTT) are skipped in PTE unless the client
@@ -117,7 +122,11 @@ Output directory: `evidence/_wpscan/<label>/` (not `evidence/<IP>/` — WordPres
 | SSH / RDP / FTP | ✓ | ✓ | May be externally exposed |
 | Web / TLS / LDAP / Mail / DB | ✓ | ✓ | Core external attack surface |
 | VPN / Gateway ports | ✓ | ✓ | Perimeter — key PTE target |
-| WordPress | ✓ | ✓ | Detected by 05; assessed by 07 |
+| WordPress | ✓ | ✓ | Detected by 05; assessed by 06 |
+| App / API (08) | ✓ | ✓ | Auth, IDOR, JWT — both modes |
+| AI / LLM (09) | ✓ | ✓ | LLM endpoints may be internal or external |
+| Cloud (10) | ✓ | ✓ | IMDS/SSRF externally; bucket/IAM in both |
+| Active Directory (11) | ✓ | ✗ skip | DC is internal; skip unless DC in external scope |
 
 **External exposure severity escalation (PTE only):**
 
@@ -131,9 +140,14 @@ Output directory: `evidence/_wpscan/<label>/` (not `evidence/<IP>/` — WordPres
 | SNMP public externally exposed | High |
 | WordPress XML-RPC exposed (brute vector) | Medium–High |
 | WordPress user enumeration via REST API | Medium |
+| API endpoint with no auth / BOLA externally exposed | High–Critical |
+| JWT with alg:none or HS256 weak secret | High |
+| Cloud IMDS accessible via SSRF | Critical |
+| Public S3/GCS/Azure blob bucket (read/write) | High–Critical |
+| K8s API server unauthenticated | Critical |
 
-**PTI sequence within a host:** SMB/NFS/SNMP → web/TLS → application → authentication.
-**PTE sequence within a host:** Web/TLS → VPN/gateway → auth → mail → SSH → databases → WordPress.
+**PTI sequence within a host:** SMB/NFS/SNMP → web/TLS → application → auth → cloud → AD.
+**PTE sequence within a host:** Web/TLS → VPN/gateway → auth → mail → SSH → databases → WordPress → API/LLM → cloud.
 
 For each priority target:
 1. Confirm open ports (from DB — already populated by 03_comprehensive_scan.sh).
@@ -244,7 +258,9 @@ Return this block to L1 on exit:
 ```
 
 ---
-*pt-enum SKILL.md v0.72 — L2 | dispatched by pt-orc*
+*pt-enum SKILL.md v0.82 — L2 | dispatched by pt-orc*
+*VAPT enhancements: App/API (08), AI/LLM (09), Cloud (10), Active Directory (11) dispatch groups added*
+<!-- NAV-NEEDS-REINDEX: 2026-06-16 — new dispatch table rows; line ranges shifted -->
 
 <!-- L2 NAV:v1 → ../../../AUDIT-ORC-INDEX.md -->
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->

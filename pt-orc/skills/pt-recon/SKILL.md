@@ -1,10 +1,12 @@
 ---
 name: pt-recon
-version: "0.72"
+version: "0.82"
 description: >
-  [v0.72] L2 — Passive reconnaissance, OSINT, and broad sweep (Stages 1–2). Loaded by
+  [v0.82] L2 — Passive reconnaissance, OSINT, and broad sweep (Stages 1–2). Loaded by
   pt-orc when performing host discovery, DNS enumeration, IP range analysis, external
-  surface mapping, or initial sweep. Drop after stage exit criteria met.
+  surface mapping, or initial sweep. Step 02 now also flags cloud-hosted IPs that feed
+  into step 10 (cloud testing) — cloud flags from ip_range_report must be reviewed before
+  running step 10. Drop after stage exit criteria met.
   Do NOT load directly — pt-orc dispatches this.
 ---
 
@@ -222,7 +224,8 @@ Return this block to L1 on exit:
 ```
 
 ---
-*pt-recon SKILL.md v0.72 — L2 | dispatched by pt-orc*
+*pt-recon SKILL.md v0.82 — L2 | dispatched by pt-orc*
+*VAPT note: step 02 cloud flags feed into step 10 (cloud_testing.sh) — review ip_range_report before running step 10*
 
 <!-- L2 NAV:v1 → ../../../AUDIT-ORC-INDEX.md -->
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->

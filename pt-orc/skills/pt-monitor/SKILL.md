@@ -25,8 +25,8 @@ Companion to [`monitor-spec.md`](monitor-spec.md) (the Living Guide) and [`monit
 
 ## MRK:MON_ACTIVATE — Activate when | mon,activate | L26-33
 
-- User is actively running a PT-Orc phase (`00_pt-orc.sh`, `03_comp_scan.sh`, etc.) and wants monitoring
-- User says: "monitor the scan", "watch 03", "tail the log", "what's 03 doing", "check progress"
+- User is actively running a PT-Orc phase (`00_pt-orc.sh`, `03_comp_scan.sh`, `07_service_verify.sh`, `09_ai_llm_review.sh`, `10_cloud_testing.sh`, `11_active_directory.sh`, etc.) and wants monitoring
+- User says: "monitor the scan", "watch 03", "tail the log", "what's 03 doing", "check progress", "watch 07", "monitor AD scan", "check cloud testing", "what's 10 doing", "AI LLM test progress"
 - User pastes a session-start message including `Analyst: <name>`
 - User says `debrief` (session-end trigger — initiate self-update protocol)
 - User opens `/loop` referencing monitor
@@ -139,7 +139,7 @@ Required categories (full list lives in `.claude/settings.json`):
 - **VPN setup**: `openvpn`
 - **File / disk**: `ls`, `find`, `stat`, `du`, `df`, `file`
 - **Service status (read-only)**: `systemctl status`, `systemctl is-active`, `journalctl`
-- **Running phase scripts**: `./00_pt-orc.sh … ./07_service_verify.sh`, `sudo ./00_pt-orc.sh`
+- **Running phase scripts**: `./00_pt-orc.sh … ./12_report_pack.sh`, `sudo ./00_pt-orc.sh`, individual scripts 01–12
 
 Explicit denies (to prevent destructive ops even inside an interactive debug):
 - `ssh * rm -rf`, `ssh * sudo rm`, `pkill`, `kill -9`, `systemctl stop|disable|enable|restart`, `service stop`, `iptables -F|-X`, `ufw disable`
