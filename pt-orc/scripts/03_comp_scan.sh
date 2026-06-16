@@ -2,34 +2,34 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:03_NAV_TOC — Section index | nav,toc,index | L5-70
-# - MRK:03_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-80 | ⚠ no-insert-before
+# MRK:03_NAV_TOC — Section index | nav,toc,index | L5-69
+# - MRK:03_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-79 | ⚠ no-insert-before
 # - MRK:03_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L81-167 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:03_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L168-317 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L318-342 | ⚠ no-insert-before
-# - MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L343-384 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L385-408 | ⚠ no-insert-before
-# - MRK:03_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L409-468 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:03_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L469-710 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L711-767 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L768-843 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_SCOPE — TIER RESOLUTION | scope,tier,resolution | L844-939 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L940-961 | ⚠ no-insert-before
-# - MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L962-995 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:03_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L996-1029 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1030-1117 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1118-1421 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1422-1455 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1456-1803 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1804-2037 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2038-2172 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2173-2268 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2269-2274 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2275-2609 | ⚠ insert-here
-# - MRK:03_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2610-2775 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2776-2846 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_MAIN — MAIN | main,03 | L2847-2949 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 26 entries | Integrity-hash: dd282f0d20f35ac4 | Last-indexed: 2026-06-09T07:17:36Z
+# - MRK:03_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L169-317 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L319-363 | ⚠ no-insert-before
+# - MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L365-405 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L407-429 | ⚠ no-insert-before
+# - MRK:03_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L431-489 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:03_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L491-731 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L733-788 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L790-864 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_SCOPE — TIER RESOLUTION | scope,tier,resolution | L866-960 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L962-982 | ⚠ no-insert-before
+# - MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L984-1016 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:03_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L1018-1050 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1052-1138 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1140-1442 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1444-1476 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1478-1824 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1826-2058 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2060-2193 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2195-2289 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2291-2295 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2297-2666 | ⚠ insert-here
+# - MRK:03_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2668-2858 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2860-2933 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_MAIN — MAIN | main,03 | L2935-3041 | ⚠ no-insert-before; read-toc-first
+# NAV-LEN: 27 entries | Integrity-hash: 6952bf4ec76dec41 | Last-indexed: 2026-06-16T07:56:03Z
 
 # =============================================================================
 # 03_comp_scan.sh — Phase-aware, DB-driven, stealth-tiered network scanner. PTI + PTE.
@@ -68,7 +68,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:03_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-80
+# MRK:03_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-79
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -166,7 +166,7 @@ E4L_TIMEOUT=120
 # =============================================================================
 
 # =============================================================================
-# MRK:03_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L168-317
+# MRK:03_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L169-317
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # ghost    T2, max-rate 100, min-hostgroup 4.  PTI default. OT/fragile-device safe.
@@ -316,12 +316,12 @@ db_nmap_fast_flags() {
 }
 
 # =============================================================================
-# MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L318-342
+# MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L319-363
 # NAV-RULE: no-insert-before
 # =============================================================================
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-BLUE='\033[0;34m'; CYAN='\033[0;36m'; NC='\033[0m'
+BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
@@ -333,15 +333,36 @@ _now() { date +'%Y-%m-%d %H:%M:%S'; }
 
 SESSION_TS="$(_ts)"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/scan_${SESSION_TS}.log"
+FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_03_comp_scan_findings_${SESSION_TS}.jsonl"
 
-log()     { local m="[$(_now)] $1";    echo -e "${BLUE}${m}${NC}"   >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_ok()  { local m="[$(_now)] [OK] $1"; echo -e "${GREEN}${m}${NC}"  >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_warn(){ local m="[$(_now)] [WARN] $1"; echo -e "${YELLOW}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_err() { local m="[$(_now)] [ERR] $1"; echo -e "${RED}${m}${NC}"    >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
-log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}"   >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log()      { local m="[$(_now)] $1";       echo -e "${BLUE}${m}${NC}"        >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_ok()   { local m="[$(_now)] [OK] $1";  echo -e "${GREEN}${m}${NC}"       >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_warn() { local m="[$(_now)] [WARN] $1";echo -e "${YELLOW}${m}${NC}"      >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_err()  { local m="[$(_now)] [ERR] $1"; echo -e "${RED}${m}${NC}"         >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_info() { local m="[$(_now)]   $1";     echo -e "${CYAN}${m}${NC}"        >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+log_find() { local m="[$(_now)] ★ FINDING: $1"; echo -e "${BOLD}${RED}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
+
+_FIND_CTR=0
+
+emit_finding() {
+    local sev="$1" title="$2" desc="$3" rec="$4"
+    (( _FIND_CTR++ )) || true
+    local fid="f-03-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-03-$(printf '%03d' "${_FIND_CTR}")"
+    local payload
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"03_comp_scan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+        "$fid" \
+        "$(echo "$title" | sed 's/"/\\"/g')" \
+        "$sev" \
+        "$ev_id" \
+        "$(echo "$desc" | sed 's/"/\\"/g')" \
+        "$(echo "$rec"  | sed 's/"/\\"/g')")
+    echo "$payload" >> "$FINDINGS_FILE"
+    log_find "${sev^^}: ${title}"
+}
 
 # =============================================================================
-# MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L343-384
+# MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L365-405
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -383,7 +404,7 @@ if [[ "$MODE" == "pte" ]]; then
 fi
 
 # =============================================================================
-# MRK:03_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L385-408
+# MRK:03_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L407-429
 # NAV-RULE: no-insert-before
 # =============================================================================
 # evidence/
@@ -407,7 +428,7 @@ ip_dir() { local ip="$1"; mkdir -p "${EVIDENCE_BASE}/${ip}"; echo "${EVIDENCE_BA
 
 
 # =============================================================================
-# MRK:03_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L409-468
+# MRK:03_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L431-489
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -467,7 +488,7 @@ db_query() {
 }
 
 # =============================================================================
-# MRK:03_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L469-710
+# MRK:03_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L491-731
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # All db_nmap calls use msfconsole resource scripts (.rc files):
@@ -709,7 +730,7 @@ any_port_open() {
 }
 
 # =============================================================================
-# MRK:03_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L711-767
+# MRK:03_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L733-788
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Used when DB_DIRECT_AVAILABLE=0 or workspace_id() returns empty.
@@ -766,7 +787,7 @@ port_open_csv() {
 }
 
 # =============================================================================
-# MRK:03_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L768-843
+# MRK:03_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L790-864
 # NAV-RULE: no-insert-before; read-toc-first
 # both empty (e.g. fresh run where MSF DB connection was unavailable).
 # Uses tcp_deep_*.gnmap and nse_common_*.gnmap  richest port/service data.
@@ -842,7 +863,7 @@ export_db() {
 
 
 # =============================================================================
-# MRK:03_SCOPE — TIER RESOLUTION | scope,tier,resolution | L844-939
+# MRK:03_SCOPE — TIER RESOLUTION | scope,tier,resolution | L866-960
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Two levels  highest priority first:
@@ -938,7 +959,7 @@ nmap_tier_flags() {
 }
 
 # =============================================================================
-# MRK:03_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L940-961
+# MRK:03_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L962-982
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -960,7 +981,7 @@ verify_source_ip() {
 }
 
 # =============================================================================
-# MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L962-995
+# MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L984-1016
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -994,7 +1015,7 @@ scope_confirm() {
 
 
 # =============================================================================
-# MRK:03_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L996-1029
+# MRK:03_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L1018-1050
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 rate_self_test() {
@@ -1028,7 +1049,7 @@ rate_self_test() {
 }
 
 # =============================================================================
-# MRK:03_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1030-1117
+# MRK:03_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1052-1138
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1116,7 +1137,7 @@ ensure_workspace() {
 }
 
 # =============================================================================
-# MRK:03_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1118-1421
+# MRK:03_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1140-1442
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # All local IPv4 addresses are auto-detected at startup (covers multiple NICs
@@ -1420,7 +1441,7 @@ list_target_ips_in_subnet() {
 }
 
 # =============================================================================
-# MRK:03_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1422-1455
+# MRK:03_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1444-1476
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1454,7 +1475,7 @@ phase_discovery() {
 }
 
 # =============================================================================
-# MRK:03_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1456-1803
+# MRK:03_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1478-1824
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Two-pass approach:
@@ -1802,7 +1823,7 @@ phase_tcp() {
 }
 
 # =============================================================================
-# MRK:03_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1804-2037
+# MRK:03_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1826-2058
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Target set: confirmed live hosts from DB/CSV/gnmap; falls back to full scope
@@ -2036,7 +2057,7 @@ phase_sweep_nse_vapt_cve() {
 }
 
 # =============================================================================
-# MRK:03_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2038-2172
+# MRK:03_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2060-2193
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Runs against confirmed live hosts (DB-driven) after TCP Pass 2 and NSE sweep
@@ -2171,7 +2192,7 @@ phase_os_detect() {
 }
 
 # =============================================================================
-# MRK:03_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2173-2268
+# MRK:03_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2195-2289
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Derives UDP targets per host from TCP findings in DB.
@@ -2267,14 +2288,39 @@ phase_udp() {
 }
 
 # =============================================================================
-# MRK:03_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2269-2274
+# MRK:03_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2291-2295
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Per-host, per-port. Runs only scripts relevant to confirmed open services.
 # Reads from DB  no subnet-wide script runs.
 
-# MRK:03_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2275-2609
+# MRK:03_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2297-2666
 # NAV-RULE: insert-here
+
+# IP context from step 02 — populated by load_ip_context(); ip → cloud detail string or ""
+declare -A IP_CLOUD_CTX
+
+# load_ip_context — reads the latest 02_ip_report_*.jsonl export and populates
+# IP_CLOUD_CTX so phase_enum and phase_enum_pte can flag cloud/CDN-fronted targets.
+load_ip_context() {
+    local export_dir="${SCRIPT_DIR}/evidence/${PROJ_SLUG}/_exports"
+    local ip_report
+    ip_report=$(ls -1t "${export_dir}/02_ip_report_"*.jsonl 2>/dev/null | head -1)
+    if [[ -z "$ip_report" ]]; then
+        log_info "load_ip_context: no 02_ip_report export found in ${export_dir}  cloud context unavailable"
+        return 0
+    fi
+    log "Loading IP context from: ${ip_report}"
+    while IFS= read -r line; do
+        local ip cloud cloud_detail
+        ip=$(echo "$line" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('ip',''))" 2>/dev/null)
+        cloud=$(echo "$line" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('cloud','false'))" 2>/dev/null)
+        cloud_detail=$(echo "$line" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('cloud_detail',''))" 2>/dev/null)
+        [[ -n "$ip" ]] && IP_CLOUD_CTX["$ip"]="${cloud_detail}"
+    done < "$ip_report"
+    log_ok "IP cloud context loaded: ${#IP_CLOUD_CTX[@]} entries"
+}
+
 # ---------------------------------------------------------------------------
 # probe_mongodb — active unauthenticated-access test for MongoDB (default :27017).
 # Requires mongosh on tester host; gracefully skips if absent.
@@ -2293,6 +2339,9 @@ probe_mongodb() {
         log_warn "  [VULN] MongoDB:${port} NOAUTH on ${ip}  unauthenticated admin access confirmed. Databases: ${dbs}"
         add_followup "$ip" "MongoDB:${port} NOAUTH [CRITICAL]" \
             "Unauthenticated admin access confirmed. Databases: ${dbs}. Bind to localhost + enable --auth immediately."
+        emit_finding "critical" "MongoDB Unauthenticated Access: ${ip}:${port}" \
+            "Active probe confirmed unauthenticated admin access to MongoDB on ${ip}:${port}. Listed databases: ${dbs}. Any client can read, modify, or drop all data without credentials." \
+            "Immediately bind MongoDB to 127.0.0.1 (bindIp: 127.0.0.1 in mongod.conf), enable --auth, and create role-limited service accounts. Rotate all application secrets that may be stored in this database."
         return 0
     fi
     log_info "  MongoDB:${port} on ${ip}  auth required or port not responding"
@@ -2342,6 +2391,11 @@ phase_enum() {
         local flags; flags="$(nmap_tier_flags "$tier" 1)"
 
         log "Enumerating ${ip} [${tier}] [${MODE}]"
+
+        # Cloud/CDN advisory from step 02 context
+        if [[ -n "${IP_CLOUD_CTX[$ip]:-}" ]]; then
+            log_warn "  ADVISORY: ${ip} is CDN/cloud-fronted (${IP_CLOUD_CTX[$ip]}) — scan results may reflect edge node behaviour, not origin server. Coordinate with client to confirm origin before deep testing."
+        fi
 
         # PTE: skip internal-only services unlikely to be externally exposed
         local skip_internal=0
@@ -2555,6 +2609,9 @@ phase_enum() {
         if port_open "$ip" 4786 "tcp" 2>/dev/null; then
             log_warn "  CRITICAL: Cisco Smart Install port 4786 open on ${ip}"
             add_followup "$ip" "Cisco Smart Install 4786  CRITICAL" "Immediate manual verification; unauthenticated config replacement possible"
+            emit_finding "critical" "Cisco Smart Install Exposed: ${ip}:4786" \
+                "TCP port 4786 (Cisco Smart Install) is open on ${ip}. This protocol allows unauthenticated, remote replacement of device firmware and configuration. It has been exploited in the wild (CVE-2018-0171) to backdoor network infrastructure with zero authentication." \
+                "Immediately disable Smart Install on the device: 'no vstack' in global config. Block TCP 4786 at the perimeter firewall. Upgrade IOS to a version with the patch for CVE-2018-0171. Verify running config has not been tampered with."
         fi
 
         # ----- SIP / VoIP -----
@@ -2608,7 +2665,7 @@ phase_enum() {
 
 
 # =============================================================================
-# MRK:03_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2610-2775
+# MRK:03_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2668-2858
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # PTE focus: web, TLS, auth, API, SSH, VPN, mail
@@ -2640,7 +2697,12 @@ phase_enum_pte() {
 
         log "PTE enum: ${ip} [${tier}]"
 
-        #  SSH 
+        # Cloud/CDN advisory from step 02 context
+        if [[ -n "${IP_CLOUD_CTX[$ip]:-}" ]]; then
+            log_warn "  ADVISORY: ${ip} is CDN/cloud-fronted (${IP_CLOUD_CTX[$ip]}) — scan responses may reflect edge node, not origin. Confirm origin IP with client before interpreting results."
+        fi
+
+        #  SSH
         if port_open "$ip" 22 "tcp" 2>/dev/null; then
             log_info "  SSH on ${ip}"
             local out="${dir}/nmap_ssh_${ts}"
@@ -2673,28 +2735,37 @@ phase_enum_pte() {
             add_followup "$ip" "Web  SSRF/cloud metadata test" "Manual: probe for SSRF to 169.254.169.254 (AWS/Azure/GCP IMDS); check IMDSv2 enforcement if applicable"
         fi
 
-        #  SNMP 
+        #  SNMP
         if port_open "$ip" 161 "udp" 2>/dev/null; then
             log_info "  SNMP on ${ip}"
             local out="${dir}/nmap_snmp_${ts}"
             run_rc_scan "snmp-info" -Pn -sU -p 161 $flags --script "snmp-info,snmp-interfaces" "$ip" -oA "$out"
             add_followup "$ip" "SNMP (publicly exposed)" "Test public community; v1/v2c = High"
+            emit_finding "medium" "SNMP Publicly Exposed: ${ip}:161/udp" \
+                "SNMP (UDP 161) is responding on externally-reachable host ${ip}. SNMPv1/v2c use community strings (often 'public') that transmit in cleartext. Exposed SNMP can leak interface config, routing tables, running processes, and software versions to unauthenticated remote hosts." \
+                "Block SNMP port 161/udp at the perimeter firewall. If SNMP monitoring is required externally, restrict source IPs via access-list. Migrate to SNMPv3 with authPriv security level. Rotate community strings immediately."
         fi
 
-        #  LDAP (exposed externally = critical finding candidate) 
+        #  LDAP (exposed externally = critical finding candidate)
         if any_port_open "$ip" 389 636 3268; then
             log_info "  LDAP externally exposed on ${ip}  High severity candidate"
             local out="${dir}/nmap_ldap_${ts}"
             run_rc_scan "ldap-rootdse" -Pn -p 389,636,3268 $flags --script "ldap-rootdse" "$ip" -oA "$out"
             add_followup "$ip" "LDAP externally exposed  HIGH" "Anonymous bind test; confirm exposure"
+            emit_finding "high" "LDAP Externally Exposed: ${ip}" \
+                "LDAP (port 389/636/3268) is accessible from the internet on ${ip}. External LDAP exposure allows unauthenticated enumeration of directory objects (users, groups, OUs) via anonymous bind, and exposes authentication to brute-force and credential stuffing attacks." \
+                "Restrict LDAP access to internal networks and specific management CIDRs via firewall ACL. If external LDAP access is required for an application, enforce LDAPS (636) with mutual certificate authentication. Disable anonymous bind on the directory server."
         fi
 
-        #  RDP (externally exposed) 
+        #  RDP (externally exposed)
         if port_open "$ip" 3389 "tcp" 2>/dev/null; then
             log_warn "  RDP externally exposed on ${ip}  High severity"
             local out="${dir}/nmap_rdp_${ts}"
             run_rc_scan "rdp-enum-encryption" -Pn -p 3389 $flags --script "rdp-enum-encryption" "$ip" -oA "$out"
             add_followup "$ip" "RDP externally exposed  HIGH" "NLA check; brute-force surface; firewall exposure"
+            emit_finding "high" "RDP Externally Exposed: ${ip}:3389" \
+                "TCP port 3389 (RDP) is reachable from the internet on ${ip}. Externally exposed RDP is a leading initial access vector, enabling brute-force, credential stuffing, and BlueKeep-class exploitation. Without NLA enforcement, pre-authentication vulnerabilities are also exploitable." \
+                "Restrict RDP to a VPN or jump-host only; block TCP 3389 at the perimeter. If external access is required, enforce Network Level Authentication (NLA), deploy MFA, and place RDP behind a VPN gateway. Monitor for authentication failures with automated lockout."
         fi
 
         #  VPN / Firewall / Gateway 
@@ -2715,7 +2786,7 @@ phase_enum_pte() {
             add_followup "$ip" "Mail services" "Open relay check; cleartext protocol check; auth methods"
         fi
 
-        #  Database (externally exposed = critical) 
+        #  Database (externally exposed = high; critical confirmed by active probe)
         for db_port in 1433 3306 5432 27017 6379 9200; do
             if port_open "$ip" "$db_port" "tcp" 2>/dev/null; then
                 local db_name
@@ -2726,27 +2797,39 @@ phase_enum_pte() {
                 esac
                 log_warn "  EXTERNALLY EXPOSED DB: ${db_name}:${db_port} on ${ip}  CRITICAL candidate"
                 add_followup "$ip" "${db_name}:${db_port} EXTERNALLY EXPOSED  CRITICAL" "Immediate manual verification; unauthenticated access test"
+                emit_finding "high" "Externally Exposed Database Service: ${db_name}:${db_port} on ${ip}" \
+                    "TCP port ${db_port} (${db_name}) is reachable from the internet on ${ip}. Database services should never be directly internet-accessible. Port exposure does not confirm unauthenticated access but significantly increases attack surface for brute-force, credential stuffing, and protocol-level exploitation." \
+                    "Immediately restrict ${db_name} port ${db_port} to internal networks and application-tier CIDRs via firewall ACL. Conduct an active authentication probe to determine if unauthenticated access is possible and escalate to Critical if confirmed."
             fi
         done
 
-        #  FTP (externally exposed) 
+        #  FTP (externally exposed)
         if port_open "$ip" 21 "tcp" 2>/dev/null; then
             log_warn "  FTP externally exposed on ${ip}"
             local out="${dir}/nmap_ftp_${ts}"
             run_rc_scan "ftp-anon" -Pn -p 21 $flags --script "ftp-anon,ftp-syst,banner" "$ip" -oA "$out"
             add_followup "$ip" "FTP externally exposed" "Anonymous login test; cleartext protocol"
+            emit_finding "medium" "FTP Externally Exposed: ${ip}:21" \
+                "TCP port 21 (FTP) is reachable from the internet on ${ip}. FTP transmits credentials and data in cleartext, enabling passive credential capture. Anonymous login, if enabled, allows unauthenticated file access." \
+                "Replace FTP with SFTP (SSH file transfer) or FTPS with enforced TLS. Block TCP 21 at the perimeter. If FTP cannot be removed immediately, disable anonymous login, enforce strong passwords, and configure IP-restricted access-lists."
         fi
 
-        #  Telnet (flag only  extremely high severity externally) 
+        #  Telnet (flag only  extremely high severity externally)
         if port_open "$ip" 23 "tcp" 2>/dev/null; then
             log_warn "  TELNET externally exposed on ${ip}  CRITICAL"
             add_followup "$ip" "Telnet externally exposed  CRITICAL" "Banner grab only; cleartext credential risk; immediate escalation"
+            emit_finding "critical" "Telnet Externally Exposed: ${ip}:23" \
+                "TCP port 23 (Telnet) is reachable from the internet on ${ip}. Telnet transmits all data, including login credentials, in cleartext. An internet-exposed Telnet service is trivially interceptable and constitutes a critical security failure in any post-2000 deployment." \
+                "Disable Telnet immediately and replace with SSH (port 22) with key-based authentication. Block TCP 23 at the perimeter firewall. If the device cannot support SSH, treat it as end-of-life infrastructure and plan urgent replacement. Escalate to the client immediately."
         fi
 
-        #  Cisco Smart Install 
+        #  Cisco Smart Install
         if port_open "$ip" 4786 "tcp" 2>/dev/null; then
             log_warn "  CRITICAL: Cisco Smart Install 4786 on ${ip}"
             add_followup "$ip" "Cisco Smart Install 4786  CRITICAL" "Unauthenticated config replacement  immediate manual verification"
+            emit_finding "critical" "Cisco Smart Install Exposed (PTE): ${ip}:4786" \
+                "TCP port 4786 (Cisco Smart Install) is internet-reachable on ${ip}. This protocol allows unauthenticated remote replacement of device firmware and configuration (CVE-2018-0171). Internet-exposed Smart Install is an immediate critical severity finding requiring same-day remediation." \
+                "Disable Smart Install: 'no vstack' in global config. Block TCP 4786 at the perimeter firewall immediately. Patch IOS to a version addressing CVE-2018-0171. Inspect the device's running-config and startup-config for signs of tampering."
         fi
 
     done <<< "$live_hosts"
@@ -2774,7 +2857,7 @@ phase_enum_pte() {
 }
 
 # =============================================================================
-# MRK:03_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2776-2846
+# MRK:03_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2860-2933
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -2814,6 +2897,10 @@ $(ls -1 "${EVIDENCE_BASE}/_exports/" 2>/dev/null | sed 's/^/- /' || echo "- none
 ## TLS Targets (for 04_tls_scan.sh)
 $(cat "working/${PROJ_SLUG}_tls_targets.txt" 2>/dev/null | sed 's/^/- /' || echo "- none identified")
 
+## JSONL Findings (auto-ingested by 12_report_pack.sh)
+- **Count:** ${_FIND_CTR}
+- **File:** \`${FINDINGS_FILE}\`
+
 ## Manual Follow-up Required
 See: \`${FOLLOWUP_FILE}\`
 
@@ -2845,7 +2932,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:03_MAIN — MAIN | main,03 | L2847-2949
+# MRK:03_MAIN — MAIN | main,03 | L2935-3041
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -2857,12 +2944,15 @@ main() {
     echo "  Project: ${PROJECT_NAME}"
     echo "  Mode:    ${MODE} | Tier: $(effective_tier_label)"
     echo "  Phase:   ${PHASE}$([ "$DRY_RUN" -eq 1 ] && echo " [DRY RUN]")"
+    echo "  Findings file: ${FINDINGS_FILE}"
     echo ""
     echo -e "${NC}"
 
     setup_dirs          # directories first  log file path must exist
+    mkdir -p "${SCRIPT_DIR}/working"
     parse_db_conf       # read DB credentials before any workspace ops
     init_exclude_list   # detect tester IPs before scope banner is shown
+    load_ip_context     # consume step 02 IP export for CDN/cloud awareness
 
     # PTE safety check: TARGET_SUBNETS should be empty for external engagements.
     # If the operator forgot to clear the PTI example values, internal RFC-1918
@@ -2937,11 +3027,12 @@ main() {
     # Session end log
     {
         echo "# Session End"
-        echo "# Time:    $(_now)"
-        echo "# Project: ${PROJECT_NAME}"
-        echo "# Phases:  ${run_phases[*]}"
+        echo "# Time:     $(_now)"
+        echo "# Project:  ${PROJECT_NAME}"
+        echo "# Phases:   ${run_phases[*]}"
+        echo "# Findings: ${_FIND_CTR} written to ${FINDINGS_FILE}"
     } >> "$LOG_FILE"
-    log_ok "All phases complete. Session: ${SESSION_TS}"
+    log_ok "All phases complete. Session: ${SESSION_TS} | Findings: ${_FIND_CTR}"
 }
 
 main
