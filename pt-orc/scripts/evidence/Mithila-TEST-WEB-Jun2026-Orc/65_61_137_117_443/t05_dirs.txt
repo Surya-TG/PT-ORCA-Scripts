@@ -1,1 +1,0 @@
-[T05] Gobuster found 0 paths

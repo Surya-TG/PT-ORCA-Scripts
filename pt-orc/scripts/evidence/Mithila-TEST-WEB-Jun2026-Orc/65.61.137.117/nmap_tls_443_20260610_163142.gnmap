@@ -1,4 +1,0 @@
-# Nmap 7.99 scan initiated Wed Jun 10 16:31:53 2026 as: /usr/lib/nmap/nmap -Pn -p 443 --script ssl-enum-ciphers,ssl-cert --script-timeout 2m -T3 -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/nmap_tls_443_20260610_163142 -oX /root/.msf4/local/msf-db-nmap-20260610-39972-pc987.xml 65.61.137.117
-Host: 65.61.137.117 ()	Status: Up
-Host: 65.61.137.117 ()	Ports: 443/open/tcp//https///
-# Nmap done at Wed Jun 10 16:32:07 2026 -- 1 IP address (1 host up) scanned in 13.34 seconds

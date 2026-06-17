@@ -1,5 +1,0 @@
-spool /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_common_20260610_135910_20260610_135910.log
-workspace -a TEST-WEBSITE-Jun2026-Orc
-db_nmap -sS -sV -O -sC --open -Pn -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 --exclude 10.0.2.15 -p 21,22,23,25,53,80,110,111,135,139,143,389,443,445,465,587,636,993,995,1433,1521,2049,3306,3389,5432,5900,5985,5986,8080,8443,8888,9200,10443,27017,6379,11211,2181 -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_nse_sweep.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/nse_common_20260610_135910
-spool off
-exit

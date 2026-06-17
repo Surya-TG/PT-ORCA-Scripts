@@ -1,5 +1,0 @@
-[T15] Function calling probe: 
-[T15] Plugin manifest /.well-known/ai-plugin.json → HTTP 404
-[T15] Plugin manifest /ai-plugin.json → HTTP 404
-[T15] Plugin manifest /plugin.json → HTTP 404
-[T15] Plugin manifest /api/plugin → HTTP 404

@@ -1,9 +1,0 @@
-[2026-06-10 16:23:57] PT-Orc 08_app_api_review.sh v2.0 — OWASP API Top 10 + Advanced Attacks
-[2026-06-10 16:23:57] Session: 20260610_162357 | Profile: standard | Tier: normal
-[2026-06-10 16:23:57]   Profile: standard
-[2026-06-10 16:23:57] ⚠ get_web_hosts_from_db: workspace 'Mithila-TEST-WEB-Jun2026-Orc' not found — trying CSV fallback
-[2026-06-10 16:23:57] ✗ No targets found. Use --host, --targets, or --from-db with an active MSF workspace.
-[2026-06-10 16:23:57] ⚠ === SCOPE CONFIRMATION — App/API Review v2.0 ===
-[2026-06-10 16:23:57] ⚠ Profile: standard | Tier: normal | Tests: 1-20
-[2026-06-10 16:23:57] ⚠ Targets (0):
-[2026-06-10 16:26:07] ✗ Aborted by user.

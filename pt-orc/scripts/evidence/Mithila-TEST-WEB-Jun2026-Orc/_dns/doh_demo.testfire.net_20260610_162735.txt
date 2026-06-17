@@ -1,6 +1,0 @@
-# DNS-over-HTTPS probe — demo.testfire.net — 2026-06-10 16:28:08
----
-DoH [] Status=0
-  A: 65.61.137.117
-DoH [] Status=0
-  A: 65.61.137.117

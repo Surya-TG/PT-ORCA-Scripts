@@ -1,7 +1,0 @@
-[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/udp_fallback_20260610_122835_20260610_122835.log...
-resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/udp_fallback_20260610_122835_20260610_122835.rc)> workspace -a TEST-WEBSITE-Jun2026-Orc
-[0m[1m[31m[-][0m Database not connected
-resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/udp_fallback_20260610_122835_20260610_122835.rc)> db_nmap -Pn -sU -sV -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 -p 53,67,68,69,123,137,138,161,162,389,443,500,623,1194,1434,1701,2049,4500 -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_udp_fallback.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/udp_fallback_20260610_122835
-[0m[1m[31m[-][0m Database not connected
-resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/udp_fallback_20260610_122835_20260610_122835.rc)> spool off
-[0m

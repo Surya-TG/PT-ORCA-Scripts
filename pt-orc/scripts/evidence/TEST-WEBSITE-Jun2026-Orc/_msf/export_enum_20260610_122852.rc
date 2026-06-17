@@ -1,7 +1,0 @@
-spool /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/export_enum_20260610_122852.log
-workspace -a TEST-WEBSITE-Jun2026-Orc
-hosts    -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_exports/hosts_enum_20260610_122852.csv
-services -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_exports/services_enum_20260610_122852.csv
-notes    -o /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_exports/notes_enum_20260610_122852.csv
-spool off
-exit

@@ -1,2 +1,0 @@
-[2026-06-10 16:23:33] [OK] DB direct: TCP OK (127.0.0.1:5432, user=msf, db=msf)
-[2026-06-10 16:23:33] [OK] Tester exclusions (1): 10.0.2.15

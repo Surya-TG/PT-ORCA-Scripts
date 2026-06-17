@@ -1,3 +1,0 @@
-# DNSSEC Validation — testphp.vulnweb.com — 2026-06-10 13:35:54
----
-[DNSSEC] No DS record — DNSSEC NOT configured for testphp.vulnweb.com

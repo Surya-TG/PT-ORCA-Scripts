@@ -1,5 +1,0 @@
-[2026-06-10 16:23:54] === 07_service_verify.sh | pte | tier=normal | severity=critical ===
-[2026-06-10 16:23:54] [ALERT] _db_get_workspace_id: no workspace found for name='Mithila-TEST-WEB-Jun2026-Orc'
-[2026-06-10 16:23:54] ⚠ Missing tools (probes will fall back to MSF or MANUAL):
-[2026-06-10 16:23:54] ⚠   - mongosh (apt install mongodb-mongosh) — MongoDB probe will use MSF
-[2026-06-10 16:23:54] ⚠ No manual_followup MD found in working/ — probe queue will rely on --host args and DB

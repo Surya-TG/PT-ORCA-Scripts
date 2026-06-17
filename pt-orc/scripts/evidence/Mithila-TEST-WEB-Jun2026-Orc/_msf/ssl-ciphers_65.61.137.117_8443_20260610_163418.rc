@@ -1,5 +1,0 @@
-spool /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/_msf/ssl-ciphers_65.61.137.117_8443_20260610_163418.log
-workspace -a Mithila-TEST-WEB-Jun2026-Orc
-db_nmap -Pn -p 8443 --script ssl-enum-ciphers,ssl-cert --script-timeout 2m -T3 65.61.137.117 -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/Mithila-TEST-WEB-Jun2026-Orc/65.61.137.117/nmap_tls_8443_20260610_163408
-spool off
-exit

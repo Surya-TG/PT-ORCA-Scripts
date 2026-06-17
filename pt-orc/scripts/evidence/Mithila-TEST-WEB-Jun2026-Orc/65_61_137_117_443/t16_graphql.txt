@@ -1,8 +1,0 @@
-[T16] /graphql → HTTP 404
-[T16] /api/graphql → HTTP 404
-[T16] /graphiql → HTTP 404
-[T16] /playground → HTTP 404
-[T16] /gql → HTTP 404
-[T16] /api/gql → HTTP 404
-[T16] /v1/graphql → HTTP 404
-[T16] /query → HTTP 404

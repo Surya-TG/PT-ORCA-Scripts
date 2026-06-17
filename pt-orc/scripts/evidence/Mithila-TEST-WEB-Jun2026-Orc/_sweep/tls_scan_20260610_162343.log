@@ -1,4 +1,0 @@
-[2026-06-10 16:23:43] [ALERT] _db_get_workspace_id: no workspace found for name='Mithila-TEST-WEB-Jun2026-Orc'
-[2026-06-10 16:23:43] ⚠ Targets file not found: working/Mithila-TEST-WEB-Jun2026-Orc_tls_targets.txt
-[2026-06-10 16:23:43] ⚠ No TLS-specific targets file — falling back to /home/kali/audit-orc-vapt/pt-orc/scripts/targets.txt (1 IP(s)) with ports 443 8443 4443
-[2026-06-10 16:23:43] TLS targets: 3

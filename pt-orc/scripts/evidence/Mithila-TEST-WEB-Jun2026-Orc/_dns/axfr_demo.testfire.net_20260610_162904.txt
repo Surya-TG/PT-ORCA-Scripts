@@ -1,3 +1,0 @@
-# AXFR Attempts — demo.testfire.net — 2026-06-10 16:29:25
----
-No NS records found

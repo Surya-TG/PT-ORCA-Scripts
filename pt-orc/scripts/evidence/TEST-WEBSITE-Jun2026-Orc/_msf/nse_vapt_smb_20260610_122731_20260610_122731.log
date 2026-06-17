@@ -1,7 +1,0 @@
-[1m[34m[*][0m Spooling to file /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_smb_20260610_122731_20260610_122731.log...
-resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_smb_20260610_122731_20260610_122731.rc)> workspace -a TEST-WEBSITE-Jun2026-Orc
-[0m[1m[31m[-][0m Database not connected
-resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_smb_20260610_122731_20260610_122731.rc)> db_nmap -sS -Pn --open -T3 --min-rate 500 --max-rate 2000 --min-hostgroup 16 --max-retries 4 --host-timeout 5m --script-timeout 2m --version-intensity 5 --exclude 10.0.2.15 -p 445,139 --script smb-vuln-ms17-010,smb-security-mode,smb2-security-mode,smb-vuln-cve-2017-7494 --script-timeout 30s -iL /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/targets_nse_sweep.txt -oA /home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_sweep/nse_vapt_smb_20260610_122731
-[0m[1m[31m[-][0m Database not connected
-resource (/home/kali/audit-orc-vapt/pt-orc/scripts/evidence/TEST-WEBSITE-Jun2026-Orc/_msf/nse_vapt_smb_20260610_122731_20260610_122731.rc)> spool off
-[0m

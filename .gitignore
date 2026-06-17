@@ -7,3 +7,33 @@ __pycache__/
 *.pyc
 MAIN-INDEX.md
 INDEX.md
+
+# ── Engagement runtime output — NEVER commit ──────────────────────────────────
+# These directories contain client data, raw evidence, scan logs, and findings.
+# They are generated at runtime and must stay out of source control.
+
+# Raw evidence (nmap, testssl, curl, tool output per target)
+pt-orc/scripts/evidence/*
+!pt-orc/scripts/evidence/.gitkeep
+
+# Working outputs (JSONL findings, markdown summaries, orchestrator logs)
+pt-orc/scripts/working/*
+!pt-orc/scripts/working/.gitkeep
+working/*
+!working/.gitkeep
+
+# Run bundles (report_bundle.json, scope.json, findings.jsonl per run)
+pt-orc/scripts/run/*
+!pt-orc/scripts/run/.gitkeep
+
+# Engagement-specific target lists (populated by 01_dns_recon.sh at runtime)
+pt-orc/scripts/targets.txt
+pt-orc/scripts/wp_targets.txt
+scripts/targets.txt
+
+# Generated PDF/HTML reports
+*.pdf
+*.html
+
+# MSF DB spool logs
+*.log

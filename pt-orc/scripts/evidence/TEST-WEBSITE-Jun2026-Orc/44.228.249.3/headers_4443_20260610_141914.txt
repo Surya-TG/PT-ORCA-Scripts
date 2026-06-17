@@ -1,5 +1,0 @@
-# HTTP Security Headers — 44.228.249.3:4443
-# Engagement: TEST-WEBSITE-Jun2026-Orc
-# Date/Time:  2026-06-10 14:20:55
----
-[WARN] curl failed

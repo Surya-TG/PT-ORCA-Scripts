@@ -1,7 +1,0 @@
-# Gobuster — https://65.61.137.117:443
-# Wordlist: /usr/share/wordlists/dirb/common.txt | Extensions: php,asp,aspx,jsp,txt,html,bak,zip,json,xml,conf,config,yml,yaml | Threads: 10
----
-account.jsp          (Status: 302) [Size: 0] [--> /login.jsp]
-admin                (Status: 302) [Size: 0] [--> /login.jsp]
-aux                  (Status: 200) [Size: 0]
-bank                 (Status: 302) [Size: 0] [--> /login.jsp]
