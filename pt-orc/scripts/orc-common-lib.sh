@@ -2,12 +2,13 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:ORC_COMMON_LIB_NAV_TOC — Section index | nav,toc,index | L5-53
-# - MRK:COM_DB — MSF / POSTGRES DIRECT ACCESS | com,db,msf,postgres,direct | L54-179
-# - MRK:COM_TRAIL — MSF NOTES WRITER | com,trail,msf,notes,writer | L180-435
-# - MRK:COM_BANNER — standalone banner | com,banner,standalone | L436-502
-# - MRK:COM_SELFTEST — reserved for future --test mode | com,selftest,reserved,future,test | L503-524
-# NAV-LEN: 4 entries | Integrity-hash: 27baa3ffab3f3133 | Last-indexed: 2026-06-09T07:17:36Z
+# MRK:ORC_COMMON_LIB_NAV_TOC — Section index | nav,toc,index | L5-54
+# - MRK:COM_DB — MSF / POSTGRES DIRECT ACCESS | com,db,msf,postgres,direct | L55-180
+# - MRK:COM_TRAIL — MSF NOTES WRITER | com,trail,msf,notes,writer | L181-439
+# - MRK:COM_BANNER — standalone banner | com,banner,standalone | L440-506
+# - MRK:COM_PROXY — PROXY SETUP | com,proxy,setup,http,socks5 | L507-526
+# - MRK:COM_SELFTEST — reserved for future --test mode | com,selftest,reserved,future,test | L527-548
+# NAV-LEN: 5 entries | Integrity-hash: 6572c8916ae99d5e | Last-indexed: 2026-06-18T09:08:48Z
 
 # =============================================================================
 # orc-common-lib.sh -- PT-Orc shared helper library
@@ -51,7 +52,7 @@ _alert() {
 }
 
 # =============================================================================
-# MRK:COM_DB — MSF / POSTGRES DIRECT ACCESS | com,db,msf,postgres,direct | L54-179
+# MRK:COM_DB — MSF / POSTGRES DIRECT ACCESS | com,db,msf,postgres,direct | L55-180
 # =============================================================================
 # Direct TCP psql against the MSF DB. Reads credentials from database.yml.
 # NEVER uses Unix socket (peer auth fails under root / non-msf users on Kali).
@@ -177,7 +178,7 @@ _db_get_host_id() {
 _sql_esc() { local s="${1//\'/\'\'}"; echo -n "$s"; }
 
 # =============================================================================
-# MRK:COM_TRAIL — MSF NOTES WRITER | com,trail,msf,notes,writer | L180-435
+# MRK:COM_TRAIL — MSF NOTES WRITER | com,trail,msf,notes,writer | L181-439
 # =============================================================================
 # Design (confirmed 2026-04-21):
 #   Q1 a = one psql INSERT per trail_* call (no batching)
@@ -436,7 +437,7 @@ trail_export() {
 }
 
 # =============================================================================
-# MRK:COM_BANNER — standalone banner | com,banner,standalone | L436-502
+# MRK:COM_BANNER — standalone banner | com,banner,standalone | L440-506
 # =============================================================================
 
 _orc_common_banner() {
@@ -503,7 +504,27 @@ EOF
 }
 
 # =============================================================================
-# MRK:COM_SELFTEST — reserved for future --test mode | com,selftest,reserved,future,test | L503-524
+# MRK:COM_PROXY — PROXY SETUP | com,proxy,setup,http,socks5 | L507-526
+# =============================================================================
+# Export HTTP_PROXY / ALL_PROXY from GLOBAL_PROXY_URL so curl, wget, gobuster,
+# nikto, wpscan, ffuf, nuclei, and other tools pick it up automatically.
+# Called once on source — requires pt-orc.conf to be sourced first.
+setup_proxy() {
+    local url="${GLOBAL_PROXY_URL:-}"
+    [[ -z "$url" ]] && return 0
+    export HTTP_PROXY="$url"
+    export HTTPS_PROXY="$url"
+    export ALL_PROXY="$url"
+    export http_proxy="$url"
+    export https_proxy="$url"
+    export all_proxy="$url"
+    log_info "Proxy: ${url} (HTTP_PROXY / ALL_PROXY exported)"
+}
+# Auto-apply on source so every script that sources this lib gets proxy support.
+setup_proxy
+
+# =============================================================================
+# MRK:COM_SELFTEST — reserved for future --test mode | com,selftest,reserved,future,test | L527-548
 # =============================================================================
 # TODO: add --test flag that runs:
 #   1. parse_db_conf (connection test)

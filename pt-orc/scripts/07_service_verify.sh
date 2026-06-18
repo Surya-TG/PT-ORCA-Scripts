@@ -4,47 +4,47 @@
 
 # MRK:07_NAV_TOC — Section index | nav,toc,index | L5-99
 # - MRK:07_ROOT — ROOT CHECK | root,check | L100-109 | ⚠ no-insert-before
-# - MRK:07_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L110-155 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:07_LOG — COLOURS AND LOGGING | log,colours,logging | L156-177 | ⚠ no-insert-before
-# - MRK:07_ARGS — ARGUMENT PARSING | args,argument,parsing | L178-205 | ⚠ no-insert-before
-# - MRK:07_DB — MSF DB + MODULE RUNNER | db,msf,module,runner,tcp | L206-270 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:07_RESULTS — RESULT TRACKING  "STATUS | results,result,tracking,status,ip | L271-288 | ⚠ no-insert-before
-# - MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,emit | L289-318 | ⚠ no-insert-before
-# - MRK:07_PARSE — INPUT PARSING | parse,input,parsing,manual,followup | L319-640 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_TOOLS — TOOL AVAILABILITY | tools,tool,availability,check,startup | L641-665 | ⚠ no-insert-before
-# - MRK:07_DIR — EVIDENCE DIR HELPER | dir,evidence,helper | L666-677 | ⚠ no-insert-before
-# - MRK:07_P_REDIS — PROBE: REDIS NOAUTH | redis,probe,noauth,cli,ping | L678-748 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_MYSQL — PROBE: MYSQL NOAUTH / ANONYMOUS LOGIN | mysql,probe,noauth,anonymous,login | L749-809 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_PG — PROBE: POSTGRESQL NOAUTH | pg,probe,postgresql,noauth,postgres | L810-874 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_MONGO — PROBE: MONGODB NOAUTH | mongo,probe,mongodb,noauth,listdatabases | L875-940 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_SSH — PROBE: SSH VERSION | ssh,probe,version,cve,regresshion | L941-1071 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_FTP — PROBE: FTP ANONYMOUS LOGIN | ftp,probe,anonymous,login | L1072-1143 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_SMB — PROBE: SMB NULL SESSION (PTI) | smb,probe,null,session,pti | L1144-1215 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_SNMP — PROBE: SNMP DEFAULT COMMUNITY | snmp,probe,default,community,v1 | L1216-1277 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_SMTP — PROBE: SMTP OPEN RELAY | smtp,probe,open,relay,swaks | L1278-1344 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_SSRF — PROBE: SSRF → IMDS (PTE) | ssrf,probe,imds,pte,aws | L1345-1419 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_TLS — PROBE: TLS CERT VALIDITY | tls,probe,cert,validity,expiry | L1420-1485 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_WEBH — PROBE: HTTP SECURITY HEADERS | webh,probe,http,security,headers | L1486-1533 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_ENUM — POST-VULN ENUMERATION | enum,post,vuln,enumeration,redis | L1534-1705 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_MSSQL — PROBE: MSSQL | mssql,probe,unauthenticated,sa,empty | L1706-1752 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_NFS — PROBE: NFS | nfs,probe,showmount,world,accessible | L1753-1791 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_TELNET — PROBE: Telnet | telnet,probe,banner,grab,cleartext | L1792-1828 | ⚠ no-insert-before
-# - MRK:07_P_IPMI — PROBE: IPMI | ipmi,probe,version,cipher,zero | L1829-1883 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_RDP — PROBE: RDP | rdp,probe,nla,check,encryption | L1884-1927 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_WINRM — PROBE: WinRM | winrm,probe,auth,exposure,check | L1928-1979 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_MEMCACHED — PROBE: Memcached NOAUTH | memcached,probe,noauth | L1980-2019 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_DOCKER — PROBE: Docker Remote API | docker,probe,remote,api,unauth | L2020-2066 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_K8S — PROBE: Kubernetes API RBAC | k8s,probe,kubernetes,api,rbac | L2067-2136 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_CONSUL — PROBE: Consul ACL Bypass | consul,probe,acl,bypass | L2137-2189 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_VAULT — PROBE: Vault Dev/Root Token | vault,probe,dev,root,token | L2190-2253 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_KAFKA — PROBE: Kafka NOAUTH | kafka,probe,noauth,sasl | L2254-2304 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_P_WEBGEN — PROBE: Web generic + 2025 CVEs | webgen,probe,web,generic,cves | L2305-2899 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_INGEST — PHASE 0 INGEST | ingest,phase,parse,prior,tls | L2900-3204 | ⚠ insert-here
-# - MRK:07_DISPATCH — PROBE DISPATCHER | dispatch,probe,dispatcher,svc,function | L3205-3339 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_REPORT — REPORT WRITER | report,writer,working,verify,summary | L3340-3447 | ⚠ no-insert-before; read-toc-first
-# - MRK:07_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L3448-3475 | ⚠ no-insert-before; propose-before-edit
-# - MRK:07_MAIN — MAIN entry point | main,entry,point | L3476-3538 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 41 entries | Integrity-hash: f53a1145385c27f3 | Last-indexed: 2026-06-09T07:17:36Z
+# - MRK:07_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L110-156 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:07_LOG — COLOURS AND LOGGING | log,colours,logging | L157-178 | ⚠ no-insert-before
+# - MRK:07_ARGS — ARGUMENT PARSING | args,argument,parsing | L179-206 | ⚠ no-insert-before
+# - MRK:07_DB — MSF DB + MODULE RUNNER | db,msf,module,runner,tcp | L207-271 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:07_RESULTS — RESULT TRACKING + FINDING WRITER | results,result,tracking,finding,writer | L272-281 | ⚠ no-insert-before
+# - MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,emit | L282-400 | ⚠ no-insert-before
+# - MRK:07_PARSE — INPUT PARSING | parse,input,parsing,manual,followup | L401-722 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_TOOLS — TOOL AVAILABILITY | tools,tool,availability,check,startup | L723-747 | ⚠ no-insert-before
+# - MRK:07_DIR — EVIDENCE DIR HELPER | dir,evidence,helper | L748-759 | ⚠ no-insert-before
+# - MRK:07_P_REDIS — PROBE: REDIS NOAUTH | redis,probe,noauth,cli,ping | L760-830 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_MYSQL — PROBE: MYSQL NOAUTH / ANONYMOUS LOGIN | mysql,probe,noauth,anonymous,login | L831-891 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_PG — PROBE: POSTGRESQL NOAUTH | pg,probe,postgresql,noauth,postgres | L892-956 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_MONGO — PROBE: MONGODB NOAUTH | mongo,probe,mongodb,noauth,listdatabases | L957-1022 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_SSH — PROBE: SSH VERSION | ssh,probe,version,cve,regresshion | L1023-1199 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_FTP — PROBE: FTP ANONYMOUS LOGIN | ftp,probe,anonymous,login | L1200-1271 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_SMB — PROBE: SMB NULL SESSION (PTI) | smb,probe,null,session,pti | L1272-1343 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_SNMP — PROBE: SNMP DEFAULT COMMUNITY | snmp,probe,default,community,v1 | L1344-1405 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_SMTP — PROBE: SMTP OPEN RELAY | smtp,probe,open,relay,swaks | L1406-1472 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_SSRF — PROBE: SSRF → IMDS (PTE) | ssrf,probe,imds,pte,aws | L1473-1547 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_TLS — PROBE: TLS CERT VALIDITY | tls,probe,cert,validity,expiry | L1548-1613 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_WEBH — PROBE: HTTP SECURITY HEADERS | webh,probe,http,security,headers | L1614-1661 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_ENUM — POST-VULN ENUMERATION | enum,post,vuln,enumeration,redis | L1662-1833 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_MSSQL — PROBE: MSSQL | mssql,probe,unauthenticated,sa,empty | L1834-1880 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_NFS — PROBE: NFS | nfs,probe,showmount,world,accessible | L1881-1919 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_TELNET — PROBE: Telnet | telnet,probe,banner,grab,cleartext | L1920-1956 | ⚠ no-insert-before
+# - MRK:07_P_IPMI — PROBE: IPMI | ipmi,probe,version,cipher,zero | L1957-2011 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_RDP — PROBE: RDP | rdp,probe,nla,check,encryption | L2012-2055 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_WINRM — PROBE: WinRM | winrm,probe,auth,exposure,check | L2056-2107 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_MEMCACHED — PROBE: Memcached NOAUTH | memcached,probe,noauth | L2108-2147 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_DOCKER — PROBE: Docker Remote API | docker,probe,remote,api,unauth | L2148-2194 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_K8S — PROBE: Kubernetes API RBAC | k8s,probe,kubernetes,api,rbac | L2195-2264 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_CONSUL — PROBE: Consul ACL Bypass | consul,probe,acl,bypass | L2265-2317 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_VAULT — PROBE: Vault Dev/Root Token | vault,probe,dev,root,token | L2318-2381 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_KAFKA — PROBE: Kafka NOAUTH | kafka,probe,noauth,sasl | L2382-2432 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_P_WEBGEN — PROBE: Web generic + 2025 CVEs | webgen,probe,web,generic,cves | L2433-3027 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_INGEST — PHASE 0 INGEST | ingest,phase,parse,prior,tls | L3028-3332 | ⚠ insert-here
+# - MRK:07_DISPATCH — PROBE DISPATCHER | dispatch,probe,dispatcher,svc,function | L3333-3482 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_REPORT — REPORT WRITER | report,writer,working,verify,summary | L3483-3590 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L3591-3618 | ⚠ no-insert-before; propose-before-edit
+# - MRK:07_MAIN — MAIN entry point | main,entry,point | L3619-3681 | ⚠ no-insert-before; read-toc-first
+# NAV-LEN: 41 entries | Integrity-hash: 96837cda95c1bb59 | Last-indexed: 2026-06-18T09:08:20Z
 
 # =============================================================================
 # 07_service_verify.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
@@ -107,7 +107,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:07_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L110-155
+# MRK:07_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L110-156
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -154,7 +154,7 @@ PROBE_TIMEOUT="$(tier_timeout "$TIER")"
 CONNECT_TIMEOUT="$(tier_connect "$TIER")"
 
 # =============================================================================
-# MRK:07_LOG — COLOURS AND LOGGING | log,colours,logging | L156-177
+# MRK:07_LOG — COLOURS AND LOGGING | log,colours,logging | L157-178
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -176,7 +176,7 @@ log_err() { local m="[$(_now)] ✗ $1"; echo -e "${RED}${m}${NC}"    >&2; echo "
 log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}"   >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:07_ARGS — ARGUMENT PARSING | args,argument,parsing | L178-205
+# MRK:07_ARGS — ARGUMENT PARSING | args,argument,parsing | L179-206
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -204,7 +204,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:07_DB — MSF DB + MODULE RUNNER | db,msf,module,runner,tcp | L206-270
+# MRK:07_DB — MSF DB + MODULE RUNNER | db,msf,module,runner,tcp | L207-271
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -269,14 +269,17 @@ run_msf_module() {
 }
 
 # =============================================================================
-# MRK:07_RESULTS — RESULT TRACKING + FINDING WRITER | results,find,jsonl,emit | L271-398
+# MRK:07_RESULTS — RESULT TRACKING + FINDING WRITER | results,result,tracking,finding,writer | L272-281
 # NAV-RULE: no-insert-before
 # =============================================================================
 
 RESULTS=()
+# Temp dir for inter-process result files (parallel probe subshells write here)
+RESULTS_DIR="$(mktemp -d /tmp/ptorc_results_XXXXXX)"
+trap 'rm -rf "${RESULTS_DIR:-/tmp/ptorc_results_NOOP}"' EXIT
 
 # =============================================================================
-# MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,emit | L289-398
+# MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,emit | L282-400
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -289,7 +292,8 @@ emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
     (( _FIND_CTR++ )) || true
     local ip_slug="${_CURRENT_IP//./_}"
-    local fid="f-07-${ip_slug}-$(printf '%04d' "${_FIND_CTR}")"
+    # Include BASHPID to prevent ID collisions when probes run in parallel subshells
+    local fid="f-07-${ip_slug}-${BASHPID}-$(printf '%04d' "${_FIND_CTR}")"
     local payload
     payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"07_service_verify","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
@@ -360,7 +364,9 @@ _rec_for_service() {
 
 add_result() {
     local status="$1" ip="$2" port="$3" service="$4" detail="$5" evidence="${6:-}"
-    RESULTS+=("${status}|${ip}|${port}|${service}|${detail}|${evidence}")
+    # Write to temp file so parallel subshells can persist results across process boundaries
+    echo "${status}|${ip}|${port}|${service}|${detail}|${evidence}" \
+        >> "${RESULTS_DIR}/r_${ip//./_}_${port}_${service}_${BASHPID}.txt" 2>/dev/null || true
     _CURRENT_IP="$ip"
     case "$status" in
         VULN)
@@ -392,7 +398,7 @@ vuln_finding() {
 }
 
 # =============================================================================
-# MRK:07_PARSE — INPUT PARSING | parse,input,parsing,manual,followup | L319-640
+# MRK:07_PARSE — INPUT PARSING | parse,input,parsing,manual,followup | L401-722
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -714,7 +720,7 @@ build_probe_queue() {
 }
 
 # =============================================================================
-# MRK:07_TOOLS — TOOL AVAILABILITY | tools,tool,availability,check,startup | L641-665
+# MRK:07_TOOLS — TOOL AVAILABILITY | tools,tool,availability,check,startup | L723-747
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -739,7 +745,7 @@ check_tools() {
 }
 
 # =============================================================================
-# MRK:07_DIR — EVIDENCE DIR HELPER | dir,evidence,helper | L666-677
+# MRK:07_DIR — EVIDENCE DIR HELPER | dir,evidence,helper | L748-759
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -751,7 +757,7 @@ verify_dir_for() {
 }
 
 # =============================================================================
-# MRK:07_P_REDIS — PROBE: REDIS NOAUTH | redis,probe,noauth,cli,ping | L678-748
+# MRK:07_P_REDIS — PROBE: REDIS NOAUTH | redis,probe,noauth,cli,ping | L760-830
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -822,7 +828,7 @@ probe_redis() {
 }
 
 # =============================================================================
-# MRK:07_P_MYSQL — PROBE: MYSQL NOAUTH / ANONYMOUS LOGIN | mysql,probe,noauth,anonymous,login | L749-809
+# MRK:07_P_MYSQL — PROBE: MYSQL NOAUTH / ANONYMOUS LOGIN | mysql,probe,noauth,anonymous,login | L831-891
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -883,7 +889,7 @@ probe_mysql() {
 }
 
 # =============================================================================
-# MRK:07_P_PG — PROBE: POSTGRESQL NOAUTH | pg,probe,postgresql,noauth,postgres | L810-874
+# MRK:07_P_PG — PROBE: POSTGRESQL NOAUTH | pg,probe,postgresql,noauth,postgres | L892-956
 # NAV-RULE: no-insert-before; read-toc-first
 # NOTE: MSF postgres_login RPORT confirmed bad (MSF 6.4+) — see action-plan.
 # =============================================================================
@@ -948,7 +954,7 @@ probe_postgres() {
 }
 
 # =============================================================================
-# MRK:07_P_MONGO — PROBE: MONGODB NOAUTH | mongo,probe,mongodb,noauth,listdatabases | L875-940
+# MRK:07_P_MONGO — PROBE: MONGODB NOAUTH | mongo,probe,mongodb,noauth,listdatabases | L957-1022
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1014,7 +1020,7 @@ probe_mongodb() {
 }
 
 # =============================================================================
-# MRK:07_P_SSH — PROBE: SSH VERSION | ssh,probe,version,cve,regresshion | L941-1071
+# MRK:07_P_SSH — PROBE: SSH VERSION | ssh,probe,version,cve,regresshion | L1023-1199
 # NAV-RULE: no-insert-before; read-toc-first
 # Vulnerable range: OpenSSH 8.5p1 – 9.7p1 (fixed in 9.8p1)
 # Also checks < 4.4p1 (historic — unlikely in 2026 but included)
@@ -1031,9 +1037,22 @@ probe_ssh_version() {
     fi
 
     local banner=""
+    local audit_out="" audit_cves="" ssh_audit_ran=0
 
-    if [[ "${MSF_ONLY}" -eq 0 ]] && have nc; then
-        banner=$(timeout "${PROBE_TIMEOUT}" nc -w3 "$ip" "$port" 2>/dev/null | head -1 || true)
+    if [[ "${MSF_ONLY}" -eq 0 ]] && { have nc || have ncat; }; then
+        local _proxy_url="${GLOBAL_PROXY_URL:-}"
+        if [[ -n "$_proxy_url" ]] && have ncat; then
+            # ncat supports --proxy host:port --proxy-type socks5|http
+            local _ptype _phost _pport
+            _ptype=$(echo "$_proxy_url" | grep -oP '^[a-z0-9]+(?=://)' || echo "socks5")
+            _phost=$(echo "$_proxy_url" | sed 's|.*://||' | cut -d: -f1)
+            _pport=$(echo "$_proxy_url" | sed 's|.*://||' | cut -d: -f2)
+            banner=$(timeout "${PROBE_TIMEOUT}" \
+                ncat --proxy "${_phost}:${_pport}" --proxy-type "$_ptype" \
+                "$ip" "$port" 2>/dev/null | head -1 || true)
+        else
+            banner=$(timeout "${PROBE_TIMEOUT}" nc -w3 "$ip" "$port" 2>/dev/null | head -1 || true)
+        fi
         echo "# SSH banner @ ${ip}:${port} — $(_now)" > "$evfile"
         echo "$banner" >> "$evfile"
     fi
@@ -1060,11 +1079,26 @@ probe_ssh_version() {
         fi
     fi
 
+    # --- ssh-audit: algorithm-level CVE detection (runs if installed) ----------
+    if have ssh-audit; then
+        audit_out="${vdir}/ssh_audit_${SESSION_TS}.txt"
+        timeout 30 ssh-audit -n "${ip}:${port}" > "$audit_out" 2>&1 || true
+        { echo ""; echo "# ssh-audit @ ${ip}:${port} — $(_now)"; cat "$audit_out"; } >> "$evfile"
+        ssh_audit_ran=1
+        if [[ -z "$banner" ]]; then
+            banner=$(grep -oP 'SSH-[0-9.-]+OpenSSH[_/][0-9p.]+[^\s]*' "$audit_out" 2>/dev/null | head -1 || true)
+        fi
+        audit_cves=$(grep -oP 'CVE-[0-9]+-[0-9]+' "$audit_out" 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/[[:space:]]*$//' || true)
+    fi
+    # ---------------------------------------------------------------------------
+
     if [[ -z "$banner" ]]; then
         if grep -qi "EHOSTUNREACH\|No route to host\|Connection refused\|refused" "$evfile" 2>/dev/null; then
             add_result SAFE "$ip" "$port" "ssh" "SSH unreachable at probe time — not assessed for CVE-2024-6387" "$evfile"
         else
-            add_result UNKNOWN "$ip" "$port" "ssh" "Could not retrieve banner — port may be filtered" "$evfile"
+            local no_banner_note="Could not retrieve banner — port may be filtered"
+            [[ "$ssh_audit_ran" -eq 1 ]] && no_banner_note+=" (ssh-audit: also no response)"
+            add_result UNKNOWN "$ip" "$port" "ssh" "$no_banner_note" "$evfile"
         fi
         return
     fi
@@ -1087,6 +1121,19 @@ probe_ssh_version() {
         fi
         if echo "$banner" | grep -qi "zyxel\|ZyXEL"; then
             add_result MANUAL "$ip" "$port" "ssh" "Zyxel SSH server — vendor firmware; check version manually against Zyxel security advisories. Banner: ${banner}" "$evfile"
+            return
+        fi
+        if echo "$banner" | grep -qi 'openssh'; then
+            # Version string redacted/truncated — common on appliances (Sophos, Cisco, Fortinet)
+            if [[ "$ssh_audit_ran" -eq 1 && -n "$audit_cves" ]]; then
+                add_result VULN "$ip" "$port" "ssh" \
+                    "OpenSSH detected (version hidden by appliance) — ssh-audit identified: ${audit_cves}. Version-based CVE-2024-6387 check requires manual server-side verification." "$evfile"
+            else
+                local openssh_note="OpenSSH server detected but version redacted or truncated — CVE-2024-6387 range check not possible."
+                [[ "$ssh_audit_ran" -eq 1 ]] && openssh_note+=" ssh-audit: no algorithm-level CVEs detected."
+                openssh_note+=" Verify manually: nmap --script ssh2-enum-algos -p ${port} ${ip}"
+                add_result UNKNOWN "$ip" "$port" "ssh" "$openssh_note" "$evfile"
+            fi
             return
         fi
         add_result UNKNOWN "$ip" "$port" "ssh" "Banner received but version not parseable: ${banner}" "$evfile"
@@ -1138,14 +1185,19 @@ probe_ssh_version() {
     echo "Parsed: major=${major} minor=${minor} patch=${patch} vuln_6387=${vuln} vuln_6409=${vuln_6409} vuln_terrapin=${vuln_terrapin}" >> "$evfile"
 
     if [[ ${#cve_notes[@]} -gt 0 ]]; then
-        add_result VULN "$ip" "$port" "ssh" "${ver_str} — CVE candidates: $(IFS='; '; echo "${cve_notes[*]}")" "$evfile"
+        local audit_suffix=""
+        [[ "$ssh_audit_ran" -eq 1 && -n "$audit_cves" ]] && audit_suffix="; ssh-audit confirmed: ${audit_cves}"
+        add_result VULN "$ip" "$port" "ssh" \
+            "${ver_str} — CVE candidates: $(IFS='; '; echo "${cve_notes[*]}")${audit_suffix}. Note: Debian/Ubuntu/RHEL may backport fixes without version bump — confirm with: dpkg -l openssh-server" "$evfile"
     else
-        add_result SAFE "$ip" "$port" "ssh" "${ver_str} — outside CVE-2024-6387/6409/2023-48795 vulnerable ranges" "$evfile"
+        local safe_audit_note=""
+        [[ "$ssh_audit_ran" -eq 1 && -n "$audit_cves" ]] && safe_audit_note="; ssh-audit flagged: ${audit_cves} — review evidence"
+        add_result SAFE "$ip" "$port" "ssh" "${ver_str} — outside CVE-2024-6387/6409/2023-48795 vulnerable ranges${safe_audit_note}" "$evfile"
     fi
 }
 
 # =============================================================================
-# MRK:07_P_FTP — PROBE: FTP ANONYMOUS LOGIN | ftp,probe,anonymous,login | L1072-1143
+# MRK:07_P_FTP — PROBE: FTP ANONYMOUS LOGIN | ftp,probe,anonymous,login | L1200-1271
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1217,7 +1269,7 @@ probe_ftp_anon() {
 }
 
 # =============================================================================
-# MRK:07_P_SMB — PROBE: SMB NULL SESSION (PTI) | smb,probe,null,session,pti | L1144-1215
+# MRK:07_P_SMB — PROBE: SMB NULL SESSION (PTI) | smb,probe,null,session,pti | L1272-1343
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1289,7 +1341,7 @@ probe_smb_null() {
 }
 
 # =============================================================================
-# MRK:07_P_SNMP — PROBE: SNMP DEFAULT COMMUNITY | snmp,probe,default,community,v1 | L1216-1277
+# MRK:07_P_SNMP — PROBE: SNMP DEFAULT COMMUNITY | snmp,probe,default,community,v1 | L1344-1405
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1351,7 +1403,7 @@ probe_snmp() {
 }
 
 # =============================================================================
-# MRK:07_P_SMTP — PROBE: SMTP OPEN RELAY | smtp,probe,open,relay,swaks | L1278-1344
+# MRK:07_P_SMTP — PROBE: SMTP OPEN RELAY | smtp,probe,open,relay,swaks | L1406-1472
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1418,7 +1470,7 @@ probe_smtp_relay() {
 }
 
 # =============================================================================
-# MRK:07_P_SSRF — PROBE: SSRF → IMDS (PTE) | ssrf,probe,imds,pte,aws | L1345-1419
+# MRK:07_P_SSRF — PROBE: SSRF → IMDS (PTE) | ssrf,probe,imds,pte,aws | L1473-1547
 # NAV-RULE: no-insert-before; read-toc-first
 # Tests whether server-side request forgery can reach cloud IMDS at
 # 169.254.169.254. Sweeps common SSRF parameter names at root path.
@@ -1493,7 +1545,7 @@ probe_ssrf_imds() {
 }
 
 # =============================================================================
-# MRK:07_P_TLS — PROBE: TLS CERT VALIDITY | tls,probe,cert,validity,expiry | L1420-1485
+# MRK:07_P_TLS — PROBE: TLS CERT VALIDITY | tls,probe,cert,validity,expiry | L1548-1613
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1559,7 +1611,7 @@ probe_tls_cert() {
 }
 
 # =============================================================================
-# MRK:07_P_WEBH — PROBE: HTTP SECURITY HEADERS | webh,probe,http,security,headers | L1486-1533
+# MRK:07_P_WEBH — PROBE: HTTP SECURITY HEADERS | webh,probe,http,security,headers | L1614-1661
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1607,7 +1659,7 @@ probe_web_headers() {
 }
 
 # =============================================================================
-# MRK:07_ENUM — POST-VULN ENUMERATION | enum,post,vuln,enumeration,redis | L1534-1705
+# MRK:07_ENUM — POST-VULN ENUMERATION | enum,post,vuln,enumeration,redis | L1662-1833
 # NAV-RULE: no-insert-before; read-toc-first
 # Called after NOAUTH is confirmed; appends to evfile.
 # =============================================================================
@@ -1779,7 +1831,7 @@ enumerate_mongodb_vuln() {
 }
 
 # =============================================================================
-# MRK:07_P_MSSQL — PROBE: MSSQL | mssql,probe,unauthenticated,sa,empty | L1706-1752
+# MRK:07_P_MSSQL — PROBE: MSSQL | mssql,probe,unauthenticated,sa,empty | L1834-1880
 # NAV-RULE: no-insert-before; read-toc-first
 # NOTE: MSF mssql_ping + mssql_login RPORT confirmed bad (MSF 6.4+) — action-plan.
 # =============================================================================
@@ -1826,7 +1878,7 @@ probe_mssql() {
 }
 
 # =============================================================================
-# MRK:07_P_NFS — PROBE: NFS | nfs,probe,showmount,world,accessible | L1753-1791
+# MRK:07_P_NFS — PROBE: NFS | nfs,probe,showmount,world,accessible | L1881-1919
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 probe_nfs() {
@@ -1865,7 +1917,7 @@ probe_nfs() {
 }
 
 # =============================================================================
-# MRK:07_P_TELNET — PROBE: Telnet | telnet,probe,banner,grab,cleartext | L1792-1828
+# MRK:07_P_TELNET — PROBE: Telnet | telnet,probe,banner,grab,cleartext | L1920-1956
 # NAV-RULE: no-insert-before
 # =============================================================================
 probe_telnet() {
@@ -1902,7 +1954,7 @@ probe_telnet() {
 }
 
 # =============================================================================
-# MRK:07_P_IPMI — PROBE: IPMI | ipmi,probe,version,cipher,zero | L1829-1883
+# MRK:07_P_IPMI — PROBE: IPMI | ipmi,probe,version,cipher,zero | L1957-2011
 # NAV-RULE: no-insert-before; read-toc-first
 # Cipher-zero allows authentication bypass on most IPMI 2.0 implementations.
 # =============================================================================
@@ -1957,7 +2009,7 @@ probe_ipmi() {
 }
 
 # =============================================================================
-# MRK:07_P_RDP — PROBE: RDP | rdp,probe,nla,check,encryption | L1884-1927
+# MRK:07_P_RDP — PROBE: RDP | rdp,probe,nla,check,encryption | L2012-2055
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 probe_rdp() {
@@ -2001,7 +2053,7 @@ probe_rdp() {
 }
 
 # =============================================================================
-# MRK:07_P_WINRM — PROBE: WinRM | winrm,probe,auth,exposure,check | L1928-1979
+# MRK:07_P_WINRM — PROBE: WinRM | winrm,probe,auth,exposure,check | L2056-2107
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 probe_winrm() {
@@ -2053,7 +2105,7 @@ probe_winrm() {
 
 # =============================================================================
 # =============================================================================
-# MRK:07_P_MEMCACHED — PROBE: Memcached NOAUTH | memcached,probe,noauth | L1980-2019
+# MRK:07_P_MEMCACHED — PROBE: Memcached NOAUTH | memcached,probe,noauth | L2108-2147
 # NAV-RULE: no-insert-before; read-toc-first
 # CWE-306: Missing Authentication for Critical Function
 # Remediation: Bind memcached to 127.0.0.1; use SASL auth; firewall port 11211.
@@ -2093,7 +2145,7 @@ probe_memcached() {
 }
 
 # =============================================================================
-# MRK:07_P_DOCKER — PROBE: Docker Remote API | docker,probe,remote,api,unauth | L2020-2066
+# MRK:07_P_DOCKER — PROBE: Docker Remote API | docker,probe,remote,api,unauth | L2148-2194
 # NAV-RULE: no-insert-before; read-toc-first
 # CVE risk: Unauthenticated Docker API → container escape → host root (CWE-306)
 # Remediation: Disable TCP socket; use Unix socket; enable TLS mutual auth.
@@ -2140,7 +2192,7 @@ probe_docker_api() {
 }
 
 # =============================================================================
-# MRK:07_P_K8S — PROBE: Kubernetes API RBAC | k8s,probe,kubernetes,api,rbac | L2067-2136
+# MRK:07_P_K8S — PROBE: Kubernetes API RBAC | k8s,probe,kubernetes,api,rbac | L2195-2264
 # NAV-RULE: no-insert-before; read-toc-first
 # Risk: Anonymous API access / overly permissive RBAC → cluster takeover
 # Remediation: Disable anonymous auth; enforce RBAC; audit ClusterRoleBindings.
@@ -2210,7 +2262,7 @@ probe_kubernetes_api() {
 }
 
 # =============================================================================
-# MRK:07_P_CONSUL — PROBE: Consul ACL Bypass | consul,probe,acl,bypass | L2137-2189
+# MRK:07_P_CONSUL — PROBE: Consul ACL Bypass | consul,probe,acl,bypass | L2265-2317
 # NAV-RULE: no-insert-before; read-toc-first
 # Risk: No ACL / legacy ACL → full KV read/write, service registration, policy bypass
 # Remediation: Enable ACLs; set default_policy=deny; use token-based auth.
@@ -2263,7 +2315,7 @@ probe_consul() {
 }
 
 # =============================================================================
-# MRK:07_P_VAULT — PROBE: Vault Dev/Root Token | vault,probe,dev,root,token | L2190-2253
+# MRK:07_P_VAULT — PROBE: Vault Dev/Root Token | vault,probe,dev,root,token | L2318-2381
 # NAV-RULE: no-insert-before; read-toc-first
 # Risk: Vault in dev mode or with root token exposed → all secrets readable
 # Remediation: Never run dev mode in production; revoke root token; enable auditing.
@@ -2327,7 +2379,7 @@ probe_vault_dev() {
 }
 
 # =============================================================================
-# MRK:07_P_KAFKA — PROBE: Kafka NOAUTH | kafka,probe,noauth,sasl | L2254-2304
+# MRK:07_P_KAFKA — PROBE: Kafka NOAUTH | kafka,probe,noauth,sasl | L2382-2432
 # NAV-RULE: no-insert-before; read-toc-first
 # Risk: Kafka without SASL/TLS → topic enumeration, produce/consume of all messages
 # Remediation: Enable SASL_SSL; set listener.security.protocol.map; ACL all topics.
@@ -2378,7 +2430,7 @@ probe_kafka_noauth() {
 }
 
 # =============================================================================
-# MRK:07_P_WEBGEN — PROBE: Web generic + 2025 CVEs | webgen,probe,web,generic,cves | L2305-2899
+# MRK:07_P_WEBGEN — PROBE: Web generic + 2025 CVEs | webgen,probe,web,generic,cves | L2433-3027
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 probe_web_generic() {
@@ -2973,7 +3025,7 @@ probe_cups_ipp() {
 }
 
 # =============================================================================
-# MRK:07_INGEST — PHASE 0 INGEST | ingest,phase,parse,prior,tls | L2900-3204
+# MRK:07_INGEST — PHASE 0 INGEST | ingest,phase,parse,prior,tls | L3028-3332
 # NAV-RULE: insert-here
 # =============================================================================
 
@@ -3278,7 +3330,7 @@ ingest_prior_summaries() {
 }
 
 # =============================================================================
-# MRK:07_DISPATCH — PROBE DISPATCHER | dispatch,probe,dispatcher,svc,function | L3205-3339
+# MRK:07_DISPATCH — PROBE DISPATCHER | dispatch,probe,dispatcher,svc,function | L3333-3482
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -3389,9 +3441,15 @@ run_all_probes() {
         return
     fi
 
-    # Process in order (priority already encoded in queue build order)
+    # Semaphore-based parallel dispatch — probes run as background subshells.
+    # Results written to RESULTS_DIR temp files (bash arrays can't cross subshell
+    # boundaries); write_verify_summary() collects them after all jobs finish.
     # FD 3 isolates the queue from stdin so subprocesses (nc, ssh, msfconsole)
     # cannot steal remaining entries by reading from FD 0.
+    local max_threads="${MAX_PROBE_THREADS:-5}"
+    log "Probe parallelism: ${max_threads} threads"
+    local _jobs=0
+
     while IFS= read -r entry <&3; do
         [[ -z "$entry" ]] && continue
         local category; category=$(echo "$entry" | cut -d: -f1)
@@ -3404,16 +3462,25 @@ run_all_probes() {
         [[ -z "$ip" || -z "$port" || -z "$svc" ]] && continue
 
         log "Probe [$(( processed + 1 ))/${total}] ${category}: ${svc}:${port} @ ${ip}"
-        dispatch_probe "$ip" "$port" "$svc"
+        dispatch_probe "$ip" "$port" "$svc" &
+        (( _jobs++ ))
         (( processed++ )) || true
+
+        # Wait for a slot to free up once max_threads is reached
+        if (( _jobs >= max_threads )); then
+            wait -n 2>/dev/null || wait
+            (( _jobs-- ))
+        fi
 
     done 3<<< "$queue_raw"
 
+    # Drain remaining background probes
+    wait
     log "Probes complete: ${processed}/${total}"
 }
 
 # =============================================================================
-# MRK:07_REPORT — REPORT WRITER | report,writer,working,verify,summary | L3340-3447
+# MRK:07_REPORT — REPORT WRITER | report,writer,working,verify,summary | L3483-3590
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -3421,8 +3488,8 @@ write_verify_summary() {
     local report_file="working/${PROJ_SLUG}_verify_summary_${SESSION_TS}.md"
     local vuln_rows=() safe_rows=() unknown_rows=() manual_rows=()
 
-    for r in "${RESULTS[@]+"${RESULTS[@]}"}"; do
-        IFS='|' read -r status ip port svc detail evfile <<< "$r"
+    while IFS='|' read -r status ip port svc detail evfile; do
+        [[ -z "$status" ]] && continue
         local ev_rel="${evfile/#$(pwd)\//}"
         case "$status" in
             VULN)    vuln_rows+=(   "| ${ip} | ${port} | ${svc} | ${detail} | \`${ev_rel}\` |") ;;
@@ -3430,7 +3497,7 @@ write_verify_summary() {
             UNKNOWN) unknown_rows+=("| ${ip} | ${port} | ${svc} | ${detail} | \`${ev_rel}\` |") ;;
             MANUAL)  manual_rows+=( "| ${ip} | ${port} | ${svc} | ${detail} | — |") ;;
         esac
-    done
+    done < <(cat "${RESULTS_DIR}"/r_*.txt 2>/dev/null | sort)
 
     local n_vuln=${#vuln_rows[@]}
     local n_safe=${#safe_rows[@]}
@@ -3521,7 +3588,7 @@ write_verify_summary() {
 }
 
 # =============================================================================
-# MRK:07_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L3448-3475
+# MRK:07_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L3591-3618
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -3549,7 +3616,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:07_MAIN — MAIN entry point | main,entry,point | L3476-3538
+# MRK:07_MAIN — MAIN entry point | main,entry,point | L3619-3681
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
