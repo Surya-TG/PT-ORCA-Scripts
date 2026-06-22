@@ -126,12 +126,13 @@ OPT_NUCLEI=0
 OPT_RETEST=0
 OPT_API_KEY=""
 OPT_PROJECT_ID=""
+OPT_BURP_KEY=""
 
-# Result tracking (steps 1-12)
+# Result tracking (steps 1-13)
 declare -A STEP_STATUS
 declare -A STEP_DURATION
 declare -A STEP_SCRIPT
-for _n in 1 2 3 4 5 6 7 8 9 10 11 12; do
+for _n in 1 2 3 4 5 6 7 8 9 10 11 12 13; do
     STEP_STATUS[$_n]="—"
     STEP_DURATION[$_n]="—"
     STEP_SCRIPT[$_n]="—"
@@ -178,6 +179,7 @@ Per-step flags:
   --aggressive          07: aggressive probe mode (more CVE checks)
   --nuclei              07: run nuclei templates after service probes
   --api-key <key>       09: bearer/API key for authenticated LLM testing
+  --burp-key <key>      13: override BURP_API_KEY from pt-orc.conf
   --project-id <uuid>   12: override ORCHESTRATOR_PROJECT_ID from pt-orc.conf
   --retest              12: set retest_status=pending in report_bundle
 
@@ -191,6 +193,7 @@ Steps:
   7  Service Verify     (07_service_verify)
   8  App / API Review   (08_app_api_review)
   9  AI / LLM Review    (09_ai_llm_review)
+ 13  Active Fuzz        (13_active_fuzz)   ← Burp/sqlmap/dalfox/nuclei/commix/ffuf
  12  Report Pack        (12_report_pack)   ← exports to TG Audit Orchestrator
 
 Examples:
@@ -227,8 +230,9 @@ list_profiles() {
   ─────────────────────────────────────────────────────────
 
   Step reference:
-    1  DNS Recon       3  Comp Scan     5  Web Enum    7  Svc Verify   9  AI/LLM
-    2  IP Analysis     4  TLS Scan      6  WPScan      8  App/API     12  Report Pack
+    1  DNS Recon       3  Comp Scan     5  Web Enum    7  Svc Verify   9  AI/LLM     13  Active Fuzz
+    2  IP Analysis     4  TLS Scan      6  WPScan      8  App/API     10  Cloud       12  Report Pack
+                                                       11 AD Testing
 
   Usage:
     sudo ./00_pt-orc.sh --profile web --yes
@@ -268,6 +272,7 @@ while [[ $# -gt 0 ]]; do
         --aggressive)        OPT_AGGRESSIVE=1; shift ;;
         --nuclei)            OPT_NUCLEI=1; shift ;;
         --api-key)           OPT_API_KEY="$2"; shift 2 ;;
+        --burp-key)          OPT_BURP_KEY="$2"; shift 2 ;;
         --project-id)        OPT_PROJECT_ID="$2"; shift 2 ;;
         --retest)            OPT_RETEST=1; shift ;;
         -h|--help)           usage; exit 0 ;;
@@ -389,6 +394,7 @@ print_summary() {
         [10]="Cloud Testing"
         [11]="AD Testing"
         [12]="Report Pack"
+        [13]="Active Fuzz"
     )
     local line; line="$(printf '━%.0s' {1..60})"
 
@@ -404,7 +410,7 @@ print_summary() {
 
     local all_ok=1
     local n
-    for n in 1 2 3 4 5 6 7 8 9 10 11 12; do
+    for n in 1 2 3 4 5 6 7 8 9 10 11 13 12; do
         local status="${STEP_STATUS[$n]:-—}"
         local dur="${STEP_DURATION[$n]:-—}"
         local scr="${STEP_SCRIPT[$n]:-—}"
@@ -430,7 +436,7 @@ print_summary() {
         echo "=== PT-Orc Suite Summary ==="
         echo "Project: ${PROJECT_NAME:-[project]}"
         [[ -n "$total" ]] && echo "Total elapsed: ${total}"
-        for n in 1 2 3 4 5 6 7 8 9 10 11 12; do
+        for n in 1 2 3 4 5 6 7 8 9 10 11 13 12; do
             printf "  Step %-2s  %-22s  %-14s  %s\n" \
                 "$n" "${names[$n]}" "${STEP_STATUS[$n]:-—}" "${STEP_DURATION[$n]:-—}"
         done
@@ -507,7 +513,7 @@ main() {
         if [[ -n "$_psteps" ]]; then
             log "Profile '${ENGAGEMENT_PROFILE}' active — running steps: ${_psteps}"
             local _s
-            for _s in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            for _s in 1 2 3 4 5 6 7 8 9 10 11 12 13; do
                 [[ " ${_psteps} " == *" ${_s} "* ]] || SKIP_STEPS+=("$_s")
             done
             [[ "${#SKIP_STEPS[@]}" -gt 0 ]] && log "  Auto-skipping: ${SKIP_STEPS[*]}"
@@ -520,7 +526,7 @@ main() {
     local suite_start; suite_start=$(date +%s)
     local n
 
-    for n in 1 2 3 4 5 6 7 8 9 10 11 12; do
+    for n in 1 2 3 4 5 6 7 8 9 10 11 13 12; do
         if ! should_run "$n"; then
             STEP_STATUS[$n]="SKIP"
             STEP_DURATION[$n]="—"
@@ -586,13 +592,17 @@ main() {
                 [[ -n "${AD_PASSWORD:-}"  ]] && flags+=("--pass"    "$AD_PASSWORD")
                 [[ -n "${AD_NT_HASH:-}"   ]] && flags+=("--hash"    "$AD_NT_HASH")
                 ;;
+            13)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "$OPT_BURP_KEY" ]] && flags+=("--burp-key" "$OPT_BURP_KEY")
+                ;;
             12)
                 [[ -n "$OPT_PROJECT_ID" ]] && flags+=("--project-id" "$OPT_PROJECT_ID")
                 [[ "$OPT_RETEST" -eq 1  ]] && flags+=("--retest")
                 ;;
         esac
 
-        local step_names=([1]="DNS Recon" [2]="IP Analysis" [3]="Comprehensive Scan" [4]="TLS Scan" [5]="Web Enumeration" [6]="WPScan" [7]="Service Verify" [8]="App / API Review" [9]="AI / LLM Review" [10]="Cloud Testing" [11]="AD Testing" [12]="Report Pack")
+        local step_names=([1]="DNS Recon" [2]="IP Analysis" [3]="Comprehensive Scan" [4]="TLS Scan" [5]="Web Enumeration" [6]="WPScan" [7]="Service Verify" [8]="App / API Review" [9]="AI / LLM Review" [10]="Cloud Testing" [11]="AD Testing" [12]="Report Pack" [13]="Active Fuzz")
 
         if ! run_step "$n" "${step_names[$n]}" "${flags[@]+"${flags[@]}"}"; then
             if [[ "$CONTINUE_ON_ERROR" -eq 1 ]]; then

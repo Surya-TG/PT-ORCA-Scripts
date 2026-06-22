@@ -83,6 +83,7 @@ RETEST=0
 AI_REPORT=1             # 0 = skip AI report; disable with --no-ai-report
 AI_NO_PDF=0             # 1 = skip PDF (HTML + JSON only); enable with --no-pdf
 AI_MODEL="claude-haiku-4-5-20251001"
+BASELINE_RUN_DIR=""     # set via --baseline <prior_run_dir>; enables retest diff
 RUN_DIR_ACTUAL=""       # set by write_output; consumed by generate_ai_report
 
 # =============================================================================
@@ -126,6 +127,9 @@ while [[ $# -gt 0 ]]; do
             OUTPUT_DIR="$2"; shift 2 ;;
         --retest)
             RETEST=1; shift ;;
+        --baseline)
+            [[ -z "${2:-}" ]] && { echo "[ERR] --baseline requires a path to a prior run directory"; exit 1; }
+            BASELINE_RUN_DIR="$2"; RETEST=1; shift 2 ;;
         --dry-run)
             DRY_RUN=1; shift ;;
         --no-ai-report)
@@ -836,10 +840,12 @@ API_KEY     = os.environ.get("TG_API_KEY", "")
 GEMINI_KEY  = os.environ.get("TG_GEMINI_API_KEY", "")
 MODEL        = os.environ.get("TG_MODEL", "claude-haiku-4-5-20251001")
 GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
-NO_PDF      = os.environ.get("TG_NO_PDF", "0") == "1"
-DRY_RUN     = os.environ.get("TG_DRY_RUN", "0") == "1"
-SCRIPT_DIR  = Path(os.environ.get("TG_SCRIPT_DIR", ""))
-WORKING_DIR = SCRIPT_DIR / "working"
+NO_PDF       = os.environ.get("TG_NO_PDF", "0") == "1"
+DRY_RUN      = os.environ.get("TG_DRY_RUN", "0") == "1"
+SCRIPT_DIR   = Path(os.environ.get("TG_SCRIPT_DIR", ""))
+WORKING_DIR  = SCRIPT_DIR / "working"
+_bl_env      = os.environ.get("TG_BASELINE_DIR", "")
+BASELINE_DIR = Path(_bl_env) if _bl_env else None
 
 MAX_EVIDENCE_LINES = 120
 SEV_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3, "informational": 4}
@@ -931,6 +937,66 @@ def _read_truncated(path, max_lines):
         return "\n".join(lines)
     except Exception as e:
         return f"[ERROR reading {path.name}: {e}]"
+
+def _finding_key(f):
+    title = re.sub(r'\s+on\s+(port\s+)?\d+$', '', f.get("title", ""), flags=re.IGNORECASE).strip().lower()
+    return (title, f.get("severity", "low").lower())
+
+def load_and_diff_baseline(baseline_dir, current_findings):
+    fpath = baseline_dir / "findings.jsonl"
+    if not fpath.exists():
+        print(f"[WARN] Baseline findings.jsonl not found at {fpath} — retest diff skipped")
+        return None
+    baseline = load_and_deduplicate_findings(baseline_dir)
+    if not baseline:
+        print("[WARN] Baseline findings.jsonl is empty — retest diff skipped")
+        return None
+
+    SEV_ORDER_LOCAL = {"critical": 0, "high": 1, "medium": 2, "low": 3, "informational": 4}
+
+    baseline_map  = {_finding_key(f): f for f in baseline}
+    current_map   = {_finding_key(f): f for f in current_findings}
+
+    fixed      = []
+    persists   = []
+    regressed  = []
+    new        = []
+
+    for key, bf in baseline_map.items():
+        if key not in current_map:
+            fixed.append({"title": bf.get("title"), "severity": bf.get("severity","Low").capitalize()})
+        else:
+            cf = current_map[key]
+            b_sev = SEV_ORDER_LOCAL.get(bf.get("severity","low").lower(), 5)
+            c_sev = SEV_ORDER_LOCAL.get(cf.get("severity","low").lower(), 5)
+            if c_sev < b_sev:
+                regressed.append({
+                    "title":    cf.get("title"),
+                    "severity": cf.get("severity","Low").capitalize(),
+                    "was":      bf.get("severity","Low").capitalize(),
+                })
+            else:
+                persists.append({"title": cf.get("title"), "severity": cf.get("severity","Low").capitalize()})
+
+    for key, cf in current_map.items():
+        if key not in baseline_map:
+            new.append({"title": cf.get("title"), "severity": cf.get("severity","Low").capitalize()})
+
+    return {
+        "baseline_run":    str(baseline_dir),
+        "baseline_count":  len(baseline),
+        "current_count":   len(current_findings),
+        "fixed":           fixed,
+        "persists":        persists,
+        "regressed":       regressed,
+        "new":             new,
+        "counts": {
+            "fixed":     len(fixed),
+            "persists":  len(persists),
+            "regressed": len(regressed),
+            "new":       len(new),
+        },
+    }
 
 def collect_evidence_summaries(config):
     blocks = []
@@ -1024,6 +1090,7 @@ Rules:
 6. Remediation steps must be specific and actionable.
 7. Include informational findings (WAF present, CORS correctly configured) as "Informational" severity.
 8. Sort findings: Critical → High → Medium → Low → Informational.
+9. Identify 2–5 multi-step attack chains where chaining two or more findings reaches a higher-impact outcome than any single finding alone. Each path must reference finding IDs from the findings array above.
 
 Required JSON schema:
 {{
@@ -1066,6 +1133,22 @@ Required JSON schema:
       "effort": "Low|Medium|High",
       "priority": 1,
       "timeframe": "Immediate (0-7 days)|Short-term (1-4 weeks)|Medium-term (1-3 months)|Long-term (3+ months)"
+    }}
+  ],
+  "attack_paths": [
+    {{
+      "id": "AP-001",
+      "title": "<chain name>",
+      "combined_severity": "Critical|High|Medium|Low",
+      "combined_cvss_score": 9.0,
+      "entry_point": "<initial access vector, e.g. unauthenticated HTTP request>",
+      "finding_ids": ["F-001", "F-003"],
+      "steps": [
+        {{"step": 1, "finding_id": "F-001", "action": "<what attacker does>", "outcome": "<what they gain>"}},
+        {{"step": 2, "finding_id": "F-003", "action": "<what attacker does next>", "outcome": "<escalated access>"}}
+      ],
+      "narrative": "<2-3 sentence kill-chain story explaining how the chain works end-to-end>",
+      "final_impact": "<worst-case business impact if the full chain is exploited>"
     }}
   ],
   "methodology_notes": "<brief testing methodology>",
@@ -1507,7 +1590,67 @@ table.roadmap tr:nth-child(even) td { background: #f5f5ff; }
 {% endfor %}
 </div>
 <div class="page-section">
-<h2 class="sec-hdr"><span class="n">05</span>Remediation Roadmap</h2>
+<h2 class="sec-hdr"><span class="n">05</span>Attack Path Analysis</h2>
+{% if attack_paths %}
+{% for ap in attack_paths %}
+<div class="finding-card sev-{{ ap.combined_severity | lower }}" style="margin-bottom:18px;">
+  <div class="finding-hdr">
+    <span class="finding-id">{{ ap.id }}</span>
+    <span class="finding-title">{{ ap.title }}</span>
+    <span class="sev-badge {{ ap.combined_severity | lower }}" style="margin-left:auto;">{{ ap.combined_severity }}</span>
+    <span style="margin-left:12px;font-size:8.5pt;color:#546e7a;">Combined CVSS {{ ap.combined_cvss_score }}</span>
+  </div>
+  <div class="finding-body">
+    <div class="finding-row"><span class="finding-lbl">Entry Point</span><span>{{ ap.entry_point }}</span></div>
+    <div class="finding-row"><span class="finding-lbl">Finding IDs</span><span>{{ ap.finding_ids | join(', ') }}</span></div>
+    <div class="finding-row"><span class="finding-lbl">Kill Chain</span>
+      <ol style="margin:4px 0 0 16px;padding:0;font-size:9pt;line-height:1.7;">
+        {% for s in ap.steps %}
+        <li><strong>{{ s.finding_id }}</strong> — {{ s.action }} → <em>{{ s.outcome }}</em></li>
+        {% endfor %}
+      </ol>
+    </div>
+    <div class="finding-row"><span class="finding-lbl">Narrative</span><span>{{ ap.narrative }}</span></div>
+    <div class="finding-row"><span class="finding-lbl">Final Impact</span><span>{{ ap.final_impact }}</span></div>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<p style="font-size:9.5pt;color:#546e7a;">No multi-step attack chains identified in this assessment.</p>
+{% endif %}
+</div>
+<div class="page-section">
+{% if retest_diff %}
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">06</span>Retest Comparison</h2>
+{% set c = retest_diff.counts %}
+<div class="risk-banner {{ 'high' if c.regressed > 0 else ('medium' if c.new > 0 else 'low') }}" style="margin-bottom:16px;">
+  <span class="risk-banner-lbl">Baseline:</span> {{ retest_diff.baseline_count }} findings &nbsp;|&nbsp;
+  <span class="risk-banner-lbl">Current:</span> {{ retest_diff.current_count }} findings &nbsp;&nbsp;
+  <strong style="color:#2e7d32;">&#10003; Fixed: {{ c.fixed }}</strong> &nbsp;&nbsp;
+  <strong style="color:#546e7a;">&#8635; Persists: {{ c.persists }}</strong> &nbsp;&nbsp;
+  {% if c.new > 0 %}<strong style="color:#e64a19;">&#43; New: {{ c.new }}</strong> &nbsp;&nbsp;{% endif %}
+  {% if c.regressed > 0 %}<strong style="color:#c62828;">&#8593; Regressed: {{ c.regressed }}</strong>{% endif %}
+</div>
+<table class="roadmap">
+  <tr><th>Status</th><th>Finding</th><th style="width:90px;">Severity</th><th style="width:70px;">Was</th></tr>
+  {% for f in retest_diff.fixed %}
+  <tr><td style="color:#2e7d32;font-weight:700;">Fixed</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
+  {% endfor %}
+  {% for f in retest_diff.persists %}
+  <tr><td style="color:#546e7a;">Persists</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
+  {% endfor %}
+  {% for f in retest_diff.regressed %}
+  <tr><td style="color:#c62828;font-weight:700;">Regressed</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>{{ f.was }}</td></tr>
+  {% endfor %}
+  {% for f in retest_diff.new %}
+  <tr><td style="color:#e64a19;font-weight:700;">New</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endif %}
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">{{ '07' if retest_diff else '06' }}</span>Remediation Roadmap</h2>
 <table class="roadmap">
   <tr><th style="width:60px;">ID</th><th>Finding</th><th style="width:90px;">Severity</th><th style="width:80px;">Effort</th><th style="width:170px;">Timeframe</th></tr>
   {% for f in findings | sort(attribute='priority') %}
@@ -1523,7 +1666,7 @@ table.roadmap tr:nth-child(even) td { background: #f5f5ff; }
 </table>
 </div>
 <div class="page-section">
-<h2 class="sec-hdr"><span class="n">06</span>Disclaimer &amp; Legal</h2>
+<h2 class="sec-hdr"><span class="n">{{ '08' if retest_diff else '07' }}</span>Disclaimer &amp; Legal</h2>
 <div class="disc"><h3>Important Notice</h3><p>{{ disclaimer }}</p></div>
 {% if methodology_notes %}
 <div style="margin-top:20px;">
@@ -1577,7 +1720,7 @@ def build_scope_targets(config):
         targets.append({"host": "See pt-orc.conf", "ports": "—", "protocol": "—", "application": "—"})
     return targets
 
-def generate_html(analysis, config):
+def generate_html(analysis, config, retest_diff=None):
     summary  = analysis.get("engagement_summary", {})
     findings = analysis.get("findings", [])
     for f in findings:
@@ -1599,6 +1742,8 @@ def generate_html(analysis, config):
         rm=build_risk_matrix(findings),
         owasp_coverage=build_owasp_coverage(findings),
         scope_targets=build_scope_targets(config),
+        attack_paths=analysis.get("attack_paths", []),
+        retest_diff=retest_diff,
         disclaimer=analysis.get("disclaimer","This report was produced for authorized penetration testing purposes only."),
         methodology_notes=analysis.get("methodology_notes",""),
     )
@@ -1630,6 +1775,16 @@ def main():
     findings = load_and_deduplicate_findings(RUN_DIR)
     print(f"[INFO] Findings  : {len(findings)} deduplicated")
 
+    retest_diff = None
+    if BASELINE_DIR:
+        print(f"[INFO] Baseline  : {BASELINE_DIR}")
+        retest_diff = load_and_diff_baseline(BASELINE_DIR, findings)
+        if retest_diff:
+            diff_out = OUTPUT_DIR / "retest_diff.json"
+            diff_out.write_text(json.dumps(retest_diff, indent=2))
+            c = retest_diff["counts"]
+            print(f"[OK]   retest_diff.json — fixed:{c['fixed']} persists:{c['persists']} regressed:{c['regressed']} new:{c['new']}")
+
     ts   = datetime.now().strftime("%Y%m%d_%H%M%S")
     safe = re.sub(r'[^A-Za-z0-9_-]', '_', project_name)
     html_out = OUTPUT_DIR / f"ai_report_{safe}_{ts}.html"
@@ -1648,6 +1803,15 @@ def main():
         print(f"[INFO] AI backend: {backend}")
         print("[INFO] Collecting evidence summaries...")
         evidence_block = collect_evidence_summaries(config)
+        if retest_diff:
+            c = retest_diff["counts"]
+            evidence_block += (
+                f"\n\n## Retest Comparison vs Baseline\n"
+                f"Baseline findings: {retest_diff['baseline_count']} | Current: {retest_diff['current_count']}\n"
+                f"Fixed: {c['fixed']} | Persists: {c['persists']} | Regressed: {c['regressed']} | New: {c['new']}\n"
+                f"Regressed items: {[r['title'] for r in retest_diff['regressed']] or 'none'}\n"
+                f"New items: {[n['title'] for n in retest_diff['new']] or 'none'}\n"
+            )
         print(f"[INFO] Evidence  : {len(evidence_block):,} chars")
         analysis = analyze_with_ai(API_KEY, GEMINI_KEY, MODEL, config, findings, evidence_block)
         f_count = len(analysis.get("findings",[]))
@@ -1657,7 +1821,7 @@ def main():
     print(f"[OK]   JSON      : {json_out.name}")
 
     print("[INFO] Rendering HTML report...")
-    html_content = generate_html(analysis, config)
+    html_content = generate_html(analysis, config, retest_diff)
     html_out.write_text(html_content, encoding="utf-8")
     print(f"[OK]   HTML      : {html_out}")
 
@@ -1681,6 +1845,7 @@ PYTHON_EOF
         "TG_NO_PDF=${AI_NO_PDF}"
         "TG_DRY_RUN=${DRY_RUN}"
         "TG_SCRIPT_DIR=${SCRIPT_DIR}"
+        "TG_BASELINE_DIR=${BASELINE_RUN_DIR}"
     )
     if [[ -n "$_as_user" ]]; then
         sudo -u "$_as_user" env "${_py_env[@]}" "$_py_exe" "$tmp_py"
@@ -1717,6 +1882,7 @@ main() {
     echo "  Evidence: ${EVIDENCE_BASE}"
     [[ "$DRY_RUN"   -eq 1 ]] && echo "  Mode:     DRY-RUN"
     [[ "$RETEST"    -eq 1 ]] && echo "  Retest:   YES (retest_status=pending)"
+    [[ -n "$BASELINE_RUN_DIR" ]] && echo "  Baseline: ${BASELINE_RUN_DIR}"
     [[ "$AI_REPORT" -eq 0 ]] && echo "  AI Report: DISABLED (--no-ai-report)"
     [[ "$AI_NO_PDF" -eq 1 ]] && echo "  PDF:       DISABLED (--no-pdf)"
     echo "════════════════════════════════════════════════════════════"
