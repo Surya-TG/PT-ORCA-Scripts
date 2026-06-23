@@ -760,7 +760,7 @@ generate_ai_report() {
     local api_key="${ANTHROPIC_API_KEY:-}"
     local gemini_key="${GEMINI_API_KEY:-}"
     local ollama_host="${OLLAMA_HOST:-}"
-    local ollama_model="${OLLAMA_MODEL:-mistral}"
+    local ollama_model="${OLLAMA_MODEL:-qwen2.5:3b}"
     local ollama_ok=0
 
     if [[ -n "$ollama_host" ]]; then
@@ -872,7 +872,7 @@ API_KEY      = os.environ.get("TG_API_KEY", "")
 GEMINI_KEY   = os.environ.get("TG_GEMINI_API_KEY", "")
 MODEL        = os.environ.get("TG_MODEL", "claude-haiku-4-5-20251001")
 OLLAMA_HOST  = os.environ.get("TG_OLLAMA_HOST", "")
-OLLAMA_MODEL = os.environ.get("TG_OLLAMA_MODEL", "mistral")
+OLLAMA_MODEL = os.environ.get("TG_OLLAMA_MODEL", "qwen2.5:3b")
 GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
 NO_PDF       = os.environ.get("TG_NO_PDF", "0") == "1"
 DRY_RUN      = os.environ.get("TG_DRY_RUN", "0") == "1"

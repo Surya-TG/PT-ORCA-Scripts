@@ -98,7 +98,7 @@ fi
 
 # Ollama local inference — override in pt-orc.conf
 : "${OLLAMA_HOST:=http://127.0.0.1:11434}"
-: "${OLLAMA_MODEL:=mistral}"
+: "${OLLAMA_MODEL:=qwen2.5:3b}"
 
 # Anthropic Claude API — set ANTHROPIC_API_KEY in pt-orc.conf or environment.
 # Model used for ai_query fallback. Haiku is fast and cheap for synthesis prompts.
@@ -720,7 +720,7 @@ Rate limits (NVD API v2):
 
 pt-orc.conf variables consumed:
   OLLAMA_HOST           (default: http://127.0.0.1:11434)
-  OLLAMA_MODEL          (default: mistral)
+  OLLAMA_MODEL          (default: qwen2.5:3b)
   ANTHROPIC_API_KEY     (default: empty — Anthropic fallback disabled)
   AI_CLAUDE_MODEL       (default: claude-haiku-4-5-20251001)
   NVD_API_KEY           (default: empty — 5 req/30s mode)
