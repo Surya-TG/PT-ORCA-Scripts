@@ -416,7 +416,10 @@ collect_findings() {
         -o -name "*08_app_api_findings_*.jsonl" \
         -o -name "*09_ai_llm_findings_*.jsonl" \
         -o -name "*10_cloud_findings_*.jsonl" \
-        -o -name "*11_ad_findings_*.jsonl" \) \
+        -o -name "*11_ad_findings_*.jsonl" \
+        -o -name "*13_fuzz_findings_*.jsonl" \
+        -o -name "*14_corpus_findings_*.jsonl" \
+        -o -name "*15_attack_chain_findings_*.jsonl" \) \
         -type f -print0 2>/dev/null | sort -z)
 
     for pf in "${pregen_files[@]:-}"; do
