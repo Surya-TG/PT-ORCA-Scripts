@@ -1,8 +1,8 @@
 ---
 name: pt-orc
-version: "0.82"
+version: "0.83"
 description: >
-  [v0.82] PRIMARY PT SKILL — load this first and only this for any penetration testing
+  [v0.83] PRIMARY PT SKILL — load this first and only this for any penetration testing
   engagement. Active dispatcher for all PT phases (recon, enum, evidence, report).
   Reconstructs full engagement context from state snapshot alone. Manages stage
   progression, return passes, and L2/L3 skill invocation. Trigger on: "pentest",
@@ -10,6 +10,8 @@ description: >
   "PT report", "re-test", "db_nmap", "MSF workspace", "evidence", "save state",
   "state snapshot", "cloud testing", "Active Directory", "AD", "AI/LLM", "LLM endpoint",
   "app/API", "ADCS", "BloodHound", "Kerberoasting", "prompt injection", "IMDS", "S3 bucket",
+  "CVE corpus", "NVD", "vuln corpus", "attack chain", "nuclei full", "orc-ai-lib",
+  "Mythos AI", "ollama", "active fuzz",
   or any engagement reference code (e.g. Acme-PTI-Mar-2026).
   REPLACES pt-workflow skill — do not load both.
 ---
@@ -220,7 +222,7 @@ Version: increment `v<N>` each save. Never reissue.
 | Start date | <date> |
 | End date (planned) | <date> |
 | MSF Workspace | <workspace name> |
-| Script suite version | 0.82 |
+| Script suite version | 0.83 |
 
 ---
 
@@ -316,10 +318,14 @@ Version: increment `v<N>` each save. Never reissue.
 | pt-commands | /mnt/skills/user/pt-commands/SKILL.md | L3: all CLI commands, grouped by service/tech |
 
 ### Automation Scripts (scripts/ dir)
-**PTI:** `03 --mode pti` → `04` → `05` → `06` (if WordPress) → `07` → `08` → `09` (if AI) → `10` (if cloud) → `11` → `12`
-**PTE:** `01` → `02` → `03 --mode pte` → `04` → `05` → `06` (if WordPress) → `07` → `08` → `09` (if AI) → `10` (if cloud) → `12`
+**PTI:** `03 --mode pti` → `04` → `05` → `06` (if WordPress) → `07` → `08` → `09` (if AI) → `10` (if cloud) → `11` → `13` → `14` → `15` → `12`
+**PTE:** `01` → `02` → `03 --mode pte` → `04` → `05` → `06` (if WordPress) → `07` → `08` → `09` (if AI) → `10` (if cloud) → `13` → `14` → `15` → `12`
 
 Orchestrator selects the correct subset per `--profile`. See Profiles section below.
+
+**Shared libraries (sourced by steps, not run directly):**
+- `orc-common-lib.sh` — colour output, `_alert()`, `tool_available()`, `rate_limit_wait()`, standalone detection
+- `orc-ai-lib.sh` — Mythos AI layer: `ai_query()` (ollama→Anthropic fallback), `nvd_cve_lookup_keyword()`, `nvd_cpe_lookup()`, `osv_lookup()`, `exploitdb_search()`. Requires `NVD_API_KEY` (optional) and `OLLAMA_HOST` / `ANTHROPIC_API_KEY` (optional) in pt-orc.conf.
 
 | Script | Mode | Runs as | Phase | Key output |
 |---|---|---|---|---|
@@ -334,21 +340,24 @@ Orchestrator selects the correct subset per `--profile`. See Profiles section be
 | `09_ai_llm_review.sh` | PTI+PTE | root | S4 | `working/*_09_ai_llm_findings_*.jsonl`, `working/manual_followup_*.md` |
 | `10_cloud_testing.sh` | PTI+PTE | root | S4 | `working/*_10_cloud_findings_*.jsonl`, `evidence/<IP>/_cloud/` |
 | `11_active_directory.sh` | PTI | root | S4 | `working/*_11_ad_findings_*.jsonl`, `evidence/<IP>/_ad/`, `evidence/_ad/bloodhound_*.zip` |
-| `12_report_pack.sh` | PTI+PTE | root | S7 | `working/*_12_findings.jsonl` (consolidated all steps), `working/*_report_*.md` |
+| `13_active_fuzz.sh` | PTI+PTE | root | S4+S5 | `working/*_13_fuzz_findings_*.jsonl`, `evidence/_fuzz/<ip>/` |
+| `14_vuln_corpus.sh` | PTI+PTE | root | S4 | `working/*_14_corpus_findings_*.jsonl` — NVD/EDB/OSV/Nuclei correlation |
+| `15_attack_chain.sh` | PTI+PTE | root | S4 | `working/*_15_attack_chain_findings_*.jsonl` — ranked AI attack paths |
+| `12_report_pack.sh` | PTI+PTE | root | S7 | `working/*_12_findings.jsonl` (consolidated steps 01–15), `working/*_report_*.md` |
 
 ### Engagement Profiles (for 00_pt-orc.sh --profile)
 
 | Profile | Steps run | Use case |
 |---------|-----------|----------|
-| `web` | 1 2 3 4 5 6 7 8 12 | Web application PT |
-| `external` | 1 2 3 4 5 6 7 8 9 12 | Full external PT |
-| `internal` | 1 2 3 4 5 6 7 8 9 11 12 | Full internal PT (includes AD) |
-| `api` | 1 2 4 5 7 8 12 | API-only assessment |
-| `ai_llm` | 4 5 8 9 12 | AI/LLM endpoint assessment |
-| `cloud` | 1 2 4 5 7 8 10 12 | Cloud infrastructure |
+| `web` | 1 2 3 4 5 6 7 8 13 14 15 12 | Web application PT |
+| `external` | 1 2 3 4 5 6 7 8 9 13 14 15 12 | Full external PT |
+| `internal` | 1 2 3 4 5 6 7 8 9 11 13 14 15 12 | Full internal PT (includes AD) |
+| `api` | 1 2 4 5 7 8 13 14 15 12 | API-only assessment |
+| `ai_llm` | 4 5 8 9 13 14 15 12 | AI/LLM endpoint assessment |
+| `cloud` | 1 2 4 5 7 8 10 12 | Cloud infrastructure (no active fuzz / corpus) |
 | `ad` | 1 2 3 7 11 12 | Active Directory only |
-| `hybrid` | 1–12 | Full suite — all steps |
-| `retest` | 4 5 7 8 9 12 | Re-test / verification pass |
+| `hybrid` | 1 2 3 4 5 6 7 8 9 10 11 13 14 15 12 | Full suite — all steps |
+| `retest` | 4 5 7 8 9 13 12 | Re-test / verification pass (speed-focused, skips corpus+chain) |
 
 ### Phase 07 — Service Verify (07_service_verify.sh) [VAPT-Enhanced v1.0]
 
@@ -444,10 +453,39 @@ domain trust mapping, DCSync rights.
 *PTI-only step — not run in PTE unless DC is in-scope external exposure.*
 
 ### Phase 12 — Report Pack (12_report_pack.sh)
-**Purpose:** Collects JSONL findings from all steps (01–11), deduplicates, severity-ranks,
-builds consolidated `*_12_findings.jsonl` + markdown summary report.
+**Purpose:** Collects JSONL findings from all steps (01–15, excluding 12 itself), deduplicates,
+severity-ranks, builds consolidated `*_12_findings.jsonl` + markdown and HTML summary reports.
+Explicitly globs: `*_0{1..9}_*`, `*_1{0,1}_*`, `*_13_fuzz_*`, `*_14_corpus_*`, `*_15_attack_chain_*`.
+Run only after all relevant steps complete. Steps 13/14/15 JSONL are included automatically.
 **Output:** `working/*_12_findings.jsonl` — the definitive consolidated finding set for report generation.
 To review: `jq -c '[.severity,.title]' working/*_12_findings.jsonl`
+
+### Phase 13 — Active Fuzz (13_active_fuzz.sh)
+**Purpose:** Active fuzzing and exploitation validation. T01 HTTP parameter fuzzing (ffuf), T02 SQLi
+(sqlmap), T03 XSS/SSTI/SSRF (Burp/ffuf payloads), T04 auth bypass, T05 file inclusion, T06 command
+injection, T07 deserialization probes, T08 race conditions, T09 business logic edge cases, T10 nuclei
+targeted templates. Runs after passive enum (steps 01–11) to avoid premature active payloads.
+**Flags:** `--profile <baseline|standard|deep>` `--tier <ghost|normal|loud>` `--burp-key <key>`
+**Output:** `working/*_13_fuzz_findings_*.jsonl`, `evidence/_fuzz/<ip>/`
+
+### Phase 14 — Vuln Corpus (14_vuln_corpus.sh)
+**Purpose:** Mythos AI CVE corpus correlation engine. Cross-references discovered service banners
+against NVD API v2 (T01), ExploitDB (T02), OSV.dev package advisories (T03), and runs the full
+Nuclei 9,500+ template suite (T04). Emits findings with a `cve_ids` JSON array for report linkage.
+Sources `orc-ai-lib.sh` for NVD/EDB/OSV API helpers.
+**Rate limits:** 7s/req without NVD_API_KEY (5 req/30s); 0.6s/req with key (50 req/30s). Cache-miss-only sleeping.
+**Flags:** `--profile <baseline|standard|deep>` `--tier <ghost|normal|loud>` `--dry-run`
+**Key conf vars:** `NVD_API_KEY`, `NVD_CACHE_TTL_DAYS`, `CORPUS_MIN_CVSS` (default 7.0), `CORPUS_MAX_SERVICES` (default 50)
+**Output:** `working/*_14_corpus_findings_*.jsonl` — each finding has `cve_ids: [...]` array
+
+### Phase 15 — Attack Chain AI (15_attack_chain.sh)
+**Purpose:** Mythos AI attack path synthesiser. Loads all prior JSONL findings (capped at
+`CHAIN_MAX_INPUT_FINDINGS`), sends compact summary to LLM (ollama first → Anthropic fallback),
+requests ranked `{"attack_chains": [...]}` with steps/impact/likelihood/confidence per chain.
+Falls back to 3-pass heuristic (PoC findings → CVE findings → compound) when no LLM is available.
+**Flags:** `--no-ai` (skip LLM, heuristic only) `--dry-run` `--yes`
+**Key conf vars:** `CHAIN_MAX_INPUT_FINDINGS` (default 200), `CHAIN_OUTPUT_PATHS` (default 5), `CHAIN_MIN_CONFIDENCE` (default "unverified")
+**Output:** `working/*_15_attack_chain_findings_*.jsonl` — each finding has `chain_steps: [...]` array
 
 ---
 
@@ -463,7 +501,7 @@ To review: `jq -c '[.severity,.title]' working/*_12_findings.jsonl`
 | Last snapshot | state_<prev_TS>_v<N-1>.md |
 
 ---
-*pt-orc v0.82 | State snapshot schema v0.82*
+*pt-orc v0.83 | State snapshot schema v0.83*
 ````
 
 ---
@@ -550,12 +588,17 @@ To review: `jq -c '[.severity,.title]' working/*_12_findings.jsonl`
 | AD finding from 11 without BloodHound | Kerberoasting/ADCS findings need `evidence/_ad/bloodhound_*.zip` as supporting evidence |
 | 12 run before earlier steps complete | 12_report_pack collects from all JSONL files in working/ — run only after relevant steps finish |
 | AI/LLM finding without manual_followup | 09 flags agentic/thread IDOR items to manual_followup_*.md — always review before writing stubs |
+| 14 NVD sweep returning no results | Check CORPUS_MIN_CVSS threshold (default 7.0) — lower it or verify NVD_CACHE_TTL_DAYS; banner keyword must be ≥2 words after `_banner_to_keyword()` normalisation |
+| 14 T03 OSV sweep skipped entirely | Step 08 must emit findings with `package_name` and `ecosystem` fields to activate T03; check 08 JSONL |
+| 15 attack chains all "unverified" | No LLM configured — set `OLLAMA_HOST` or `ANTHROPIC_API_KEY` in pt-orc.conf; use `--no-ai` if heuristic output is sufficient |
+| 15 run before 14 | Step 15 reads all prior JSONL including 14's corpus findings; run 14 first for richer chain synthesis |
+| NVD API rate-limit errors | Add `NVD_API_KEY` to pt-orc.conf for 10× throughput (50 req/30s vs 5 req/30s) |
 
 ---
-*pt-orc SKILL.md v0.82 — L1 Orchestrator [VAPT-Enhanced 2026-06-16]*
-*Replaces: pt-workflow v6.1 | Script suite: v0.82 (12-step suite)*
-*VAPT enhancements: 2024-2025 CVE probes, App/API (08), AI/LLM OWASP Top 10 (09), Cloud/IMDS/K8s (10), Active Directory/ADCS/BloodHound (11)*
-<!-- NAV-NEEDS-REINDEX: 2026-06-16 — content additions; line ranges shifted -->
+*pt-orc SKILL.md v0.83 — L1 Orchestrator [VAPT-Enhanced 2026-06-23]*
+*Replaces: pt-workflow v6.1 | Script suite: v0.83 (15-step suite)*
+*VAPT enhancements: 2024-2025 CVE probes, App/API (08), AI/LLM OWASP Top 10 (09), Cloud/IMDS/K8s (10), Active Directory/ADCS/BloodHound (11), Active Fuzz (13), Mythos AI CVE Corpus (14), Mythos AI Attack Chain (15)*
+<!-- NAV-NEEDS-REINDEX: 2026-06-23 — v0.83 content additions; line ranges shifted -->
 
 <!-- L2 NAV:v1 → ../../../AUDIT-ORC-INDEX.md -->
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->
