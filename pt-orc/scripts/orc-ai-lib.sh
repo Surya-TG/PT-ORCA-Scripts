@@ -216,25 +216,22 @@ ai_status() {
 _ai_ollama_query() {
     local sys_prompt="$1" usr_prompt="$2"
 
-    local full_prompt="${sys_prompt}
-
-${usr_prompt}"
-
     local body; body=$(_real_jq -nc \
         --arg model  "$OLLAMA_MODEL" \
-        --arg prompt "$full_prompt" \
-        '{"model": $model, "prompt": $prompt, "stream": false}') || return 1
+        --arg sys    "$sys_prompt" \
+        --arg usr    "$usr_prompt" \
+        '{"model": $model, "messages": [{"role": "system", "content": $sys}, {"role": "user", "content": $usr}], "stream": false}') || return 1
 
     local resp
     resp=$(curl -sf --connect-timeout 10 --max-time 180 \
-        -X POST "${OLLAMA_HOST}/api/generate" \
+        -X POST "${OLLAMA_HOST}/api/chat" \
         -H "Content-Type: application/json" \
         -d "$body" 2>/dev/null) || return 1
 
     [[ -z "$resp" ]] && return 1
 
-    # Extract .response field — empty string if parse fails (done=false, error, etc.)
-    local text; text=$(echo "$resp" | _real_jq -r '.response // empty' 2>/dev/null) || return 1
+    # Extract .message.content — empty string if parse fails
+    local text; text=$(echo "$resp" | _real_jq -r '.message.content // empty' 2>/dev/null) || return 1
     [[ -z "$text" ]] && return 1
 
     echo "$text"
