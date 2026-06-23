@@ -759,9 +759,21 @@ generate_ai_report() {
 
     local api_key="${ANTHROPIC_API_KEY:-}"
     local gemini_key="${GEMINI_API_KEY:-}"
+    local ollama_host="${OLLAMA_HOST:-}"
+    local ollama_model="${OLLAMA_MODEL:-mistral}"
+    local ollama_ok=0
 
-    if [[ -z "$api_key" && -z "$gemini_key" ]]; then
-        log_err "No AI API key — set ANTHROPIC_API_KEY (primary) or GEMINI_API_KEY (fallback) in audit-orc-vapt/.env"
+    if [[ -n "$ollama_host" ]]; then
+        if curl -sf --max-time 3 "${ollama_host}/api/tags" >/dev/null 2>&1; then
+            ollama_ok=1
+        else
+            log_warn "Ollama configured at ${ollama_host} but not reachable — skipping local backend"
+            ollama_host=""
+        fi
+    fi
+
+    if [[ -z "$api_key" && -z "$gemini_key" && "$ollama_ok" -eq 0 ]]; then
+        log_err "No AI backend — set ANTHROPIC_API_KEY, GEMINI_API_KEY, or configure OLLAMA_HOST in pt-orc.conf"
         log_warn "AI report skipped."
         return 1
     fi
@@ -800,14 +812,26 @@ generate_ai_report() {
         log_warn "google-generativeai not installed (pip install google-generativeai) — Gemini unavailable"
         gemini_key=""
     fi
-    if [[ -z "$api_key" && -z "$gemini_key" ]]; then
-        log_err "No usable AI backend after dependency check — install required packages"
+    if [[ -z "$api_key" && -z "$gemini_key" && "$ollama_ok" -eq 0 ]]; then
+        log_err "No usable AI backend after dependency check — install required packages or configure Ollama"
         return 1
     fi
 
-    [[ -n "$api_key"    && -n "$gemini_key" ]] && log "AI backends: Claude primary, Gemini fallback"
-    [[ -n "$api_key"    && -z "$gemini_key" ]] && log "AI backend:  Claude only (no Claude key)"
-    [[ -z "$api_key"    && -n "$gemini_key" ]] && log "AI backend:  Gemini only (no Claude key)"
+    if [[ "$ollama_ok" -eq 1 && -z "$api_key" && -z "$gemini_key" ]]; then
+        log "AI backend:  Ollama only (${ollama_host} model=${ollama_model})"
+    elif [[ "$ollama_ok" -eq 1 && -n "$api_key" && -n "$gemini_key" ]]; then
+        log "AI backends: Ollama primary → Claude → Gemini fallback"
+    elif [[ "$ollama_ok" -eq 1 && -n "$api_key" ]]; then
+        log "AI backends: Ollama primary → Claude fallback"
+    elif [[ "$ollama_ok" -eq 1 && -n "$gemini_key" ]]; then
+        log "AI backends: Ollama primary → Gemini fallback"
+    elif [[ -n "$api_key" && -n "$gemini_key" ]]; then
+        log "AI backends: Claude primary, Gemini fallback"
+    elif [[ -n "$api_key" ]]; then
+        log "AI backend:  Claude only"
+    else
+        log "AI backend:  Gemini only"
+    fi
     log "Generating AI report (model: ${AI_MODEL}) ..."
 
     local tmp_py; tmp_py=$(mktemp /tmp/tg_ai_report_XXXXXX.py)
@@ -822,8 +846,13 @@ from pathlib import Path
 
 try:
     import anthropic
+    _ANTHROPIC_AVAILABLE = True
 except ImportError:
-    sys.exit("[ERROR] anthropic not installed: pip install anthropic")
+    _ANTHROPIC_AVAILABLE = False
+try:
+    import urllib.request as _urllib_req
+except ImportError:
+    _urllib_req = None
 try:
     from jinja2 import Template
 except ImportError:
@@ -839,9 +868,11 @@ _conf_env   = os.environ.get("TG_CONF", "")
 CONF_FILE   = Path(_conf_env) if _conf_env else None
 _out_env    = os.environ.get("TG_OUTPUT_DIR", "")
 OUTPUT_DIR  = Path(_out_env) if _out_env else RUN_DIR
-API_KEY     = os.environ.get("TG_API_KEY", "")
-GEMINI_KEY  = os.environ.get("TG_GEMINI_API_KEY", "")
+API_KEY      = os.environ.get("TG_API_KEY", "")
+GEMINI_KEY   = os.environ.get("TG_GEMINI_API_KEY", "")
 MODEL        = os.environ.get("TG_MODEL", "claude-haiku-4-5-20251001")
+OLLAMA_HOST  = os.environ.get("TG_OLLAMA_HOST", "")
+OLLAMA_MODEL = os.environ.get("TG_OLLAMA_MODEL", "mistral")
 GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
 NO_PDF       = os.environ.get("TG_NO_PDF", "0") == "1"
 DRY_RUN      = os.environ.get("TG_DRY_RUN", "0") == "1"
@@ -1174,6 +1205,8 @@ def _parse_ai_json(raw, provider):
         raise RuntimeError(f"{provider} returned non-JSON. First 400 chars:\n{raw[:400]}")
 
 def analyze_with_claude(api_key, model, config, findings, evidence_block):
+    if not _ANTHROPIC_AVAILABLE:
+        raise RuntimeError("anthropic package not installed: pip install anthropic")
     config_block = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
     prompt = PROMPT_TEMPLATE.format(
         config_block=config_block,
@@ -1228,8 +1261,47 @@ def analyze_with_gemini(gemini_key, gemini_models, config, findings, evidence_bl
             raise
     raise RuntimeError(f"All Gemini models failed (quota or unavailable): {last_err}") from last_err
 
-def analyze_with_ai(api_key, gemini_key, claude_model, config, findings, evidence_block):
-    """Try Claude first; fall back to Gemini model chain on any failure."""
+def analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_block):
+    """Call local Ollama instance — no API key, no cost. Prompt is truncated for local context limits."""
+    if _urllib_req is None:
+        raise RuntimeError("urllib.request unavailable")
+    config_block = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
+    prompt = PROMPT_TEMPLATE.format(
+        config_block=config_block,
+        finding_count=len(findings),
+        findings_json=json.dumps(findings, indent=2)[:12000],
+        evidence_block=evidence_block[:16000],
+    )
+    payload = json.dumps({
+        "model": ollama_model,
+        "messages": [{"role": "user", "content": prompt}],
+        "stream": False,
+    }).encode()
+    req = _urllib_req.Request(
+        f"{ollama_host}/api/chat",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    print(f"[INFO] Calling Ollama ({ollama_model} @ {ollama_host}) — {len(prompt):,} chars prompt...")
+    with _urllib_req.urlopen(req, timeout=600) as resp:
+        data = json.loads(resp.read())
+    text = data.get("message", {}).get("content", "")
+    if not text:
+        raise RuntimeError(f"Ollama returned empty content: {str(data)[:200]}")
+    return _parse_ai_json(text, "Ollama")
+
+def analyze_with_ai(api_key, gemini_key, claude_model, ollama_host, ollama_model, config, findings, evidence_block):
+    """Try Ollama first (local/free), then Claude, then Gemini."""
+    if ollama_host:
+        try:
+            return analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_block)
+        except Exception as e:
+            print(f"[WARN] Ollama failed: {str(e)[:200]}")
+            if api_key or gemini_key:
+                print("[INFO] Falling back to cloud AI...")
+            else:
+                raise RuntimeError(f"Ollama failed and no cloud API key configured: {e}") from e
     if api_key:
         try:
             return analyze_with_claude(api_key, claude_model, config, findings, evidence_block)
@@ -1802,11 +1874,22 @@ def main():
         print("[INFO] Dry run — skipping AI API call")
         analysis = build_dry_run_analysis(findings, config)
     else:
-        if not API_KEY and not GEMINI_KEY:
-            sys.exit("[ERROR] Neither TG_API_KEY nor TG_GEMINI_API_KEY is set")
-        backend = "Claude" if API_KEY else "Gemini"
-        if API_KEY and GEMINI_KEY:
+        if not API_KEY and not GEMINI_KEY and not OLLAMA_HOST:
+            sys.exit("[ERROR] No AI backend — set TG_API_KEY, TG_GEMINI_API_KEY, or TG_OLLAMA_HOST")
+        if OLLAMA_HOST and not API_KEY and not GEMINI_KEY:
+            backend = f"Ollama ({OLLAMA_MODEL} @ {OLLAMA_HOST})"
+        elif OLLAMA_HOST and API_KEY and GEMINI_KEY:
+            backend = f"Ollama primary ({OLLAMA_MODEL}), Claude + Gemini fallback"
+        elif OLLAMA_HOST and API_KEY:
+            backend = f"Ollama primary ({OLLAMA_MODEL}), Claude fallback"
+        elif OLLAMA_HOST and GEMINI_KEY:
+            backend = f"Ollama primary ({OLLAMA_MODEL}), Gemini fallback"
+        elif API_KEY and GEMINI_KEY:
             backend = "Claude (Gemini fallback ready)"
+        elif API_KEY:
+            backend = "Claude"
+        else:
+            backend = "Gemini"
         print(f"[INFO] AI backend: {backend}")
         print("[INFO] Collecting evidence summaries...")
         evidence_block = collect_evidence_summaries(config)
@@ -1820,7 +1903,7 @@ def main():
                 f"New items: {[n['title'] for n in retest_diff['new']] or 'none'}\n"
             )
         print(f"[INFO] Evidence  : {len(evidence_block):,} chars")
-        analysis = analyze_with_ai(API_KEY, GEMINI_KEY, MODEL, config, findings, evidence_block)
+        analysis = analyze_with_ai(API_KEY, GEMINI_KEY, MODEL, OLLAMA_HOST, OLLAMA_MODEL, config, findings, evidence_block)
         f_count = len(analysis.get("findings",[]))
         print(f"[INFO] Analysis complete — {f_count} findings in report")
 
@@ -1849,6 +1932,8 @@ PYTHON_EOF
         "TG_API_KEY=${api_key}"
         "TG_GEMINI_API_KEY=${gemini_key}"
         "TG_MODEL=${AI_MODEL}"
+        "TG_OLLAMA_HOST=${ollama_host}"
+        "TG_OLLAMA_MODEL=${ollama_model}"
         "TG_NO_PDF=${AI_NO_PDF}"
         "TG_DRY_RUN=${DRY_RUN}"
         "TG_SCRIPT_DIR=${SCRIPT_DIR}"
