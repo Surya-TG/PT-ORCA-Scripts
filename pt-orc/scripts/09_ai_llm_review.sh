@@ -163,6 +163,7 @@ SESSION_TS="$(_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/ai_llm_review_${SESSION_TS}.log"
+FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_09_ai_llm_findings_${SESSION_TS}.jsonl"
 : > "$FINDINGS_FILE"
 
 log()     { local m="[$(_now)] $1";   echo -e "${BLUE}${m}${NC}" >&2;    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -301,7 +302,6 @@ assemble_targets() {
 # =============================================================================
 
 _FIND_CTR=0
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_09_ai_llm_findings_${SESSION_TS}.jsonl"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="$5"
