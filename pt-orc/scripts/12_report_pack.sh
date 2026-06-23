@@ -1122,6 +1122,7 @@ Required JSON schema:
       "cwe_name": "Configuration",
       "cwe_url": "https://cwe.mitre.org/data/definitions/16.html",
       "cve_ids": [],
+      "chain_steps": [],
       "affected_hosts": ["172.16.12.1:443"],
       "description": "<clear technical description>",
       "technical_detail": "<observed evidence>",
@@ -1264,6 +1265,7 @@ def build_dry_run_analysis(findings, config):
             "cwe_name":        "Configuration",
             "cwe_url":         "https://cwe.mitre.org/data/definitions/16.html",
             "cve_ids":         [],
+            "chain_steps":     [],
             "affected_hosts":  [],
             "description":     f.get("description", ""),
             "technical_detail":"[Dry run — AI analysis not performed]",
@@ -1578,6 +1580,7 @@ table.roadmap tr:nth-child(even) td { background: #f5f5ff; }
   </div>
   <div class="fc-body">
     {% if f.cve_ids %}<div class="fc-sec"><div class="fc-sec-title">CVE References</div>{% for cve in f.cve_ids %}<span class="tag cve">{{ cve }}</span>{% endfor %}</div>{% endif %}
+    {% if f.chain_steps %}<div class="fc-sec"><div class="fc-sec-title">Attack Chain Steps</div><ol class="steps">{% for step in f.chain_steps %}<li>{{ step }}</li>{% endfor %}</ol></div>{% endif %}
     <div class="fc-sec"><div class="fc-sec-title">Affected Hosts</div>{% for h in f.affected_hosts %}<span class="tag host">{{ h }}</span>{% endfor %}{% if not f.affected_hosts %}<span class="tag host">See description</span>{% endif %}</div>
     <div class="fc-sec"><div class="fc-sec-title">Description</div><p>{{ f.description }}</p></div>
     <div class="fc-sec"><div class="fc-sec-title">Technical Detail</div><p>{{ f.technical_detail }}</p></div>
@@ -1735,6 +1738,7 @@ def generate_html(analysis, config, retest_diff=None):
         f.setdefault("remediation_steps", [])
         f.setdefault("affected_hosts", [])
         f.setdefault("cve_ids", [])
+        f.setdefault("chain_steps", [])
         f.setdefault("references", [])
     tpl = Template(HTML_TEMPLATE)
     return tpl.render(
