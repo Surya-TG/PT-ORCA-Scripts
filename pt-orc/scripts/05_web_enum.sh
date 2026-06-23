@@ -95,7 +95,7 @@ EVIDENCE_BASE="${SCAN_EVIDENCE_DIR:-${SCRIPT_DIR}/evidence}/${PROJ_SLUG}"
 CURL_TIMEOUT="${CURL_TIMEOUT:-10}"
 CURL_CONNECT=5
 GOBUSTER_TIMEOUT="${GOBUSTER_TIMEOUT:-300}"
-NIKTO_TIMEOUT="${NIKTO_TIMEOUT:-300}"
+NIKTO_TIMEOUT="${NIKTO_TIMEOUT:-120}"
 WHATWEB_TIMEOUT="${WHATWEB_TIMEOUT:-30}"
 FFUF_TIMEOUT="${FFUF_TIMEOUT:-120}"
 
@@ -274,7 +274,13 @@ assemble_targets() {
         log_err "No targets. Use --host, --targets, or --from-db."
         exit 1
     fi
-    printf '%s\n' "${all[@]}"
+    # Dedup — MSF DB can return the same ip:port multiple times across scan passes
+    local -A _seen=()
+    local -a deduped=()
+    for _e in "${all[@]}"; do
+        [[ -z "${_seen[$_e]+x}" ]] && { _seen[$_e]=1; deduped+=("$_e"); }
+    done
+    printf '%s\n' "${deduped[@]}"
 }
 
 # =============================================================================
