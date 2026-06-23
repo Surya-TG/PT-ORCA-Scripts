@@ -1,8 +1,8 @@
 ---
 name: pt-orc
-version: "0.83"
+version: "0.84"
 description: >
-  [v0.83] PRIMARY PT SKILL — load this first and only this for any penetration testing
+  [v0.84] PRIMARY PT SKILL — load this first and only this for any penetration testing
   engagement. Active dispatcher for all PT phases (recon, enum, evidence, report).
   Reconstructs full engagement context from state snapshot alone. Manages stage
   progression, return passes, and L2/L3 skill invocation. Trigger on: "pentest",
@@ -11,7 +11,7 @@ description: >
   "state snapshot", "cloud testing", "Active Directory", "AD", "AI/LLM", "LLM endpoint",
   "app/API", "ADCS", "BloodHound", "Kerberoasting", "prompt injection", "IMDS", "S3 bucket",
   "CVE corpus", "NVD", "vuln corpus", "attack chain", "nuclei full", "orc-ai-lib",
-  "Mythos AI", "ollama", "active fuzz",
+  "Mythos AI", "ollama", "active fuzz", "package manifest", "T21", "OSV",
   or any engagement reference code (e.g. Acme-PTI-Mar-2026).
   REPLACES pt-workflow skill — do not load both.
 ---
@@ -222,7 +222,7 @@ Version: increment `v<N>` each save. Never reissue.
 | Start date | <date> |
 | End date (planned) | <date> |
 | MSF Workspace | <workspace name> |
-| Script suite version | 0.83 |
+| Script suite version | 0.84 |
 
 ---
 
@@ -433,7 +433,8 @@ manual_followup. Load it before generating stubs.
 
 ### Phase 08 — App/API Review (08_app_api_review.sh)
 **Purpose:** OWASP API Top 10 checks, auth header analysis, CORS, JWT, rate-limit, IDOR sweep.
-**Output:** `working/*_08_app_api_findings_*.jsonl` — load when writing API/auth section findings.
+**T21 — Package Manifests:** Probes 7 exposed manifest paths (`package.json` → npm, `requirements.txt`/`Pipfile` → PyPI, `go.mod` → Go, `pom.xml` → Maven, `Gemfile.lock` → RubyGems, `composer.json` → Packagist). Emits one `low` finding per exposed file, plus one `info` finding per extracted package (capped at 10 per manifest) with `package_name` and `ecosystem` fields. These fields activate step 14 T03 (OSV.dev sweep) — without T21 output, T03 is permanently dead. T21 is disabled in the `quick` profile.
+**Output:** `working/*_08_app_api_findings_*.jsonl` — includes `package_name`/`ecosystem` fields on T21 records for OSV linkage.
 
 ### Phase 09 — AI/LLM Review (09_ai_llm_review.sh)
 **Purpose:** OWASP LLM Top 10 (2025) — 21 prompt injection payloads, jailbreak, training data
@@ -457,6 +458,8 @@ domain trust mapping, DCSync rights.
 severity-ranks, builds consolidated `*_12_findings.jsonl` + markdown and HTML summary reports.
 Explicitly globs: `*_0{1..9}_*`, `*_1{0,1}_*`, `*_13_fuzz_*`, `*_14_corpus_*`, `*_15_attack_chain_*`.
 Run only after all relevant steps complete. Steps 13/14/15 JSONL are included automatically.
+**AI backend priority (v0.84):** Ollama (local, zero cost) → Claude (Anthropic API) → Gemini. Bash probes `{OLLAMA_HOST}/api/tags` with a 3s curl before launching the Python subprocess — unreachable Ollama is skipped silently. The `anthropic` package is a soft/deferred import so a missing package does not abort when Ollama is configured. All three backends are optional; the first reachable one wins.
+**Conf vars:** `OLLAMA_HOST` (e.g. `http://localhost:11434`), `OLLAMA_MODEL` (default `mistral`), `ANTHROPIC_API_KEY`, `AI_CLAUDE_MODEL`, `GEMINI_API_KEY`
 **Output:** `working/*_12_findings.jsonl` — the definitive consolidated finding set for report generation.
 To review: `jq -c '[.severity,.title]' working/*_12_findings.jsonl`
 
@@ -501,7 +504,7 @@ Falls back to 3-pass heuristic (PoC findings → CVE findings → compound) when
 | Last snapshot | state_<prev_TS>_v<N-1>.md |
 
 ---
-*pt-orc v0.83 | State snapshot schema v0.83*
+*pt-orc v0.84 | State snapshot schema v0.84*
 ````
 
 ---
@@ -589,16 +592,19 @@ Falls back to 3-pass heuristic (PoC findings → CVE findings → compound) when
 | 12 run before earlier steps complete | 12_report_pack collects from all JSONL files in working/ — run only after relevant steps finish |
 | AI/LLM finding without manual_followup | 09 flags agentic/thread IDOR items to manual_followup_*.md — always review before writing stubs |
 | 14 NVD sweep returning no results | Check CORPUS_MIN_CVSS threshold (default 7.0) — lower it or verify NVD_CACHE_TTL_DAYS; banner keyword must be ≥2 words after `_banner_to_keyword()` normalisation |
-| 14 T03 OSV sweep skipped entirely | Step 08 must emit findings with `package_name` and `ecosystem` fields to activate T03; check 08 JSONL |
+| 14 T03 OSV sweep skipped entirely | Step 08 must emit findings with `package_name` and `ecosystem` fields to activate T03; check 08 JSONL — requires T21 to have run (not disabled by `quick` profile) |
 | 15 attack chains all "unverified" | No LLM configured — set `OLLAMA_HOST` or `ANTHROPIC_API_KEY` in pt-orc.conf; use `--no-ai` if heuristic output is sufficient |
 | 15 run before 14 | Step 15 reads all prior JSONL including 14's corpus findings; run 14 first for richer chain synthesis |
 | NVD API rate-limit errors | Add `NVD_API_KEY` to pt-orc.conf for 10× throughput (50 req/30s vs 5 req/30s) |
+| 12 AI call fails when Ollama configured but not running | Bash probes `/api/tags` before Python starts — unreachable Ollama is skipped. Verify with `curl ${OLLAMA_HOST}/api/tags`. If no cloud key is set either, 12 exits with "No AI backend" |
+| `anthropic` package missing, Claude key set | Now a soft import — `analyze_with_claude()` raises RuntimeError at call time; Ollama/Gemini are tried first. Install `pip install anthropic` to re-enable Claude |
+| T21 not running in quick profile | `quick` profile disables T21 — step 08 emits no `package_name`/`ecosystem` fields, T03 in step 14 gets zero input. Use `standard` or `deep` profile if OSV scanning is needed |
 
 ---
-*pt-orc SKILL.md v0.83 — L1 Orchestrator [VAPT-Enhanced 2026-06-23]*
-*Replaces: pt-workflow v6.1 | Script suite: v0.83 (15-step suite)*
-*VAPT enhancements: 2024-2025 CVE probes, App/API (08), AI/LLM OWASP Top 10 (09), Cloud/IMDS/K8s (10), Active Directory/ADCS/BloodHound (11), Active Fuzz (13), Mythos AI CVE Corpus (14), Mythos AI Attack Chain (15)*
-<!-- NAV-NEEDS-REINDEX: 2026-06-23 — v0.83 content additions; line ranges shifted -->
+*pt-orc SKILL.md v0.84 — L1 Orchestrator [VAPT-Enhanced 2026-06-23]*
+*Replaces: pt-workflow v6.1 | Script suite: v0.84 (15-step suite)*
+*VAPT enhancements: 2024-2025 CVE probes, App/API + T21 package manifests (08), AI/LLM OWASP Top 10 (09), Cloud/IMDS/K8s (10), Active Directory/ADCS/BloodHound (11), Active Fuzz (13), Mythos AI CVE Corpus (14), Mythos AI Attack Chain (15), Ollama primary AI backend (12)*
+<!-- NAV-NEEDS-REINDEX: 2026-06-23 — v0.84 content additions; line ranges shifted -->
 
 <!-- L2 NAV:v1 → ../../../AUDIT-ORC-INDEX.md -->
 <!-- L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count) -->
