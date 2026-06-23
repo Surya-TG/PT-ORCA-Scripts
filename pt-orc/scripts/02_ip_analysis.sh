@@ -538,10 +538,12 @@ analyze_ip() {
                 fi
             } > "$tr_file" || true
 
-            # Count hops: lines that start with a hop number
+            # Count hops: lines that start with a hop number.
+            # grep -c exits 1 on zero matches (still outputs "0"), so || echo 0
+            # would double-print; use || true + default instead.
             local hop_count
-            hop_count=$(grep -cE '^\s*[0-9]+\.' "$tr_file" 2>/dev/null || echo 0)
-            IP_HOPS["$ip"]="$hop_count"
+            hop_count=$(grep -cE '^\s*[0-9]+\.' "$tr_file" 2>/dev/null || true)
+            IP_HOPS["$ip"]="${hop_count:-0}"
 
             # Warn if destination not reached (last hop is not the target IP)
             if ! grep -qE "${ip//./\\.}" "$tr_file" 2>/dev/null; then
@@ -927,27 +929,23 @@ write_exports() {
     for ip in "${TARGETS[@]}"; do
         local cloud_bool="false"
         [[ -n "${IP_CLOUD[$ip]:-}" ]] && cloud_bool="true"
-        python3 - <<PYEOF >> "$export_file"
-import json, sys
-rec = {
-    "session_ts":     "${SESSION_TS}",
-    "project":        "${PROJECT_NAME}",
-    "phase":          "02_ip_analysis",
-    "ip":             "${ip}",
-    "ptr":            "${IP_PTR[$ip]:-}",
-    "asn":            "${IP_ASN[$ip]:-}",
-    "org":            "${IP_ORG[$ip]:-}",
-    "country":        "${IP_COUNTRY[$ip]:-}",
-    "prefix":         "${IP_PREFIX[$ip]:-}",
-    "cloud":          ${cloud_bool},
-    "cloud_detail":   "${IP_CLOUD[$ip]:-}",
-    "hops":           "${IP_HOPS[$ip]:-}",
-    "ports":          "${IP_PORTS[$ip]:-}",
-    "abuse_score":    "${IP_ABUSEIPDB_SCORE[$ip]:-?}",
-    "vt_malicious":   "${IP_VT_MALICIOUS[$ip]:-?}",
-}
-print(json.dumps(rec))
-PYEOF
+        jq -nc \
+            --arg  session_ts   "${SESSION_TS}" \
+            --arg  project      "${PROJECT_NAME}" \
+            --arg  ip           "$ip" \
+            --arg  ptr          "${IP_PTR[$ip]:-}" \
+            --arg  asn          "${IP_ASN[$ip]:-}" \
+            --arg  org          "${IP_ORG[$ip]:-}" \
+            --arg  country      "${IP_COUNTRY[$ip]:-}" \
+            --arg  prefix       "${IP_PREFIX[$ip]:-}" \
+            --argjson cloud     "$cloud_bool" \
+            --arg  cloud_detail "${IP_CLOUD[$ip]:-}" \
+            --arg  hops         "${IP_HOPS[$ip]:-0}" \
+            --arg  ports        "${IP_PORTS[$ip]:-}" \
+            --arg  abuse_score  "${IP_ABUSEIPDB_SCORE[$ip]:-?}" \
+            --arg  vt_malicious "${IP_VT_MALICIOUS[$ip]:-?}" \
+            '{phase:"02_ip_analysis",session_ts:$session_ts,project:$project,ip:$ip,ptr:$ptr,asn:$asn,org:$org,country:$country,prefix:$prefix,cloud:$cloud,cloud_detail:$cloud_detail,hops:$hops,ports:$ports,abuse_score:$abuse_score,vt_malicious:$vt_malicious}' \
+            >> "$export_file"
     done
 
     log_ok "Export (JSONL): ${export_file}"
