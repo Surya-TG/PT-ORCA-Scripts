@@ -33,9 +33,11 @@
 # - MRK:08_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527 | ⚠ read-toc-first
 # - MRK:08_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562 | ⚠ read-toc-first
 # - MRK:08_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633 | ⚠ read-toc-first
-# - MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1634-1706 | ⚠ no-insert-before; read-toc-first
+# - MRK:08_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
+# - MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1636-1706 | ⚠ no-insert-before; read-toc-first
 # - MRK:08_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1707-1819 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 32 entries | Integrity-hash: 3c9c5ee858e6f5b4 | Last-indexed: 2026-06-09T07:17:36Z
+# NAV-LEN: 33 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-23
+# <!-- NAV-NEEDS-REINDEX: 2026-06-23 — T21 added; line ranges shifted -->
 
 # =============================================================================
 # 08_app_api_review.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
@@ -43,7 +45,8 @@
 # Coverage: HTTP methods, schema discovery, auth bypass, rate limiting, CORS,
 #   BOLA/IDOR, mass assignment, security headers, JWT attacks, GraphQL, SSRF,
 #   XXE, SSTI, HTTP smuggling, host header injection, API versioning,
-#   sensitive data exposure, business logic, WebSocket detection, TLS checks
+#   sensitive data exposure, business logic, WebSocket detection, TLS checks,
+#   package manifest exposure (package.json/requirements.txt/go.mod/pom.xml/etc.)
 # Profiles: quick | standard (default) | deep | owasp-api
 # Proxy:    --intercept-proxy http://127.0.0.1:8080 (Burp/ZAP)
 # Consumes: MSF DB (web hosts from 03_comp_scan / 05_web_enum) or --host/--targets
@@ -113,7 +116,7 @@ ONLY_TESTS=()
 
 # Test flags (set by setup_profile)
 _T_ENABLED=()
-for _i in $(seq 1 20); do _T_ENABLED[$_i]=1; done
+for _i in $(seq 1 21); do _T_ENABLED[$_i]=1; done
 
 # Target options
 TIER="${GLOBAL_TIER:-normal}"
@@ -331,6 +334,28 @@ emit_finding() {
     log_hi "FINDING [${sev^^}]: ${title}"
 }
 
+# emit_package_finding — like emit_finding but includes package_name + ecosystem fields
+# consumed by step 14 T03 (OSV.dev correlation)
+emit_package_finding() {
+    local sev="$1" title="$2" desc="$3" rec="$4" pkg_name="$5" ecosystem="$6" ev_tag="${7:-}"
+    (( _FIND_CTR++ )) || true
+    local ip_slug="${_CURRENT_IP//./_}"
+    local fid="f-08-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-08-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local payload
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"08_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","package_name":"%s","ecosystem":"%s"}' \
+        "$fid" \
+        "$(echo "$title"     | sed 's/"/\\"/g')" \
+        "$sev" \
+        "${ev_tag:-$ev_id}" \
+        "$(echo "$desc"      | sed 's/"/\\"/g')" \
+        "$(echo "$rec"       | sed 's/"/\\"/g')" \
+        "$(echo "$pkg_name"  | sed 's/"/\\"/g')" \
+        "$(echo "$ecosystem" | sed 's/"/\\"/g')")
+    echo "$payload" >> "$FINDINGS_FILE"
+    log_hi "FINDING [${sev^^}]: ${title} [pkg:${ecosystem}/${pkg_name}]"
+}
+
 # =============================================================================
 # MRK:08_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397
 # NAV-RULE: no-insert-before
@@ -406,7 +431,7 @@ setup_profile() {
     case "$PROFILE" in
         quick)
             # T01 T08 T03 T04 T05 only
-            for i in 2 6 7 9 10 11 12 13 14 15 16 17 18 19 20; do
+            for i in 2 6 7 9 10 11 12 13 14 15 16 17 18 19 20 21; do
                 _T_ENABLED[$i]=0
             done
             ;;
@@ -1633,6 +1658,144 @@ test_20_tls_transport() {
 }
 
 # =============================================================================
+# MRK:08_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
+# NAV-RULE: read-toc-first
+# Probes for exposed package manifests (package.json, requirements.txt, etc.)
+# Emits:
+#   - emit_finding("low") for each exposed manifest (information disclosure)
+#   - emit_package_finding("info") per extracted package — consumed by step 14 T03 (OSV sweep)
+# =============================================================================
+
+test_21_package_manifests() {
+    local base_url="$1" ev_dir="$2" ip="$3" port="$4"
+    local evfile="${ev_dir}/t21_pkg_manifests.txt"
+    log "T21: Package Manifest Exposure — ${base_url}"
+
+    # manifest → ecosystem (colon-separated pairs)
+    local -a manifest_map=(
+        "package.json:npm"
+        "requirements.txt:PyPI"
+        "Pipfile:PyPI"
+        "go.mod:Go"
+        "pom.xml:Maven"
+        "Gemfile.lock:RubyGems"
+        "composer.json:Packagist"
+    )
+
+    local found_any=0
+
+    local entry
+    for entry in "${manifest_map[@]}"; do
+        local mfile="${entry%%:*}" eco="${entry##*:}"
+        local url="${base_url}/${mfile}"
+
+        local http_code
+        http_code=$(_curl -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
+        [[ "$http_code" != "200" ]] && continue
+
+        local body
+        body=$(_curl "$url" 2>/dev/null | head -200 || true)
+        [[ -z "$body" ]] && continue
+
+        # Sanity-check: confirm this looks like the expected manifest type
+        case "$mfile" in
+            package.json)    echo "$body" | grep -q '"name"'      || continue ;;
+            requirements.txt) echo "$body" | grep -qP '^[A-Za-z]' || continue ;;
+            go.mod)          echo "$body" | grep -q '^module'     || continue ;;
+            pom.xml)         echo "$body" | grep -q '<project'    || continue ;;
+            Gemfile.lock)    echo "$body" | grep -q 'GEM'         || continue ;;
+            composer.json)   echo "$body" | grep -q '"require"'   || continue ;;
+            Pipfile)         echo "$body" | grep -q '\[packages\]' || continue ;;
+        esac
+
+        found_any=1
+        echo "[T21] ${mfile} exposed (HTTP ${http_code})" >> "$evfile"
+        echo "$body" | head -30 >> "$evfile"
+
+        emit_finding "low" \
+            "Package Manifest Exposed — /${mfile} (${ip}:${port})" \
+            "The file /${mfile} is publicly accessible at ${url}. Package manifests expose exact dependency versions, aiding targeted CVE identification and exploitation. Ecosystem: ${eco}." \
+            "Deny access to manifest files in your web server config. Add location blocks (Nginx) or Deny directives (.htaccess/Apache) for: package.json, requirements.txt, go.mod, pom.xml, Gemfile.lock, composer.json, Pipfile." \
+            "ev-08-${ip//./_}-t21-${mfile//./_}"
+
+        # Extract package names (max 10 per manifest)
+        local -a pkgs=()
+        case "$mfile" in
+            package.json)
+                local pname
+                pname=$(echo "$body" | grep -m1 '"name"' \
+                    | sed 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' \
+                    | tr -d '\r\n ')
+                [[ -n "$pname" ]] && pkgs+=("$pname")
+                # top-level dependencies
+                while IFS= read -r dep; do
+                    [[ -n "$dep" ]] && pkgs+=("$dep")
+                done < <(echo "$body" \
+                    | grep -oP '"[^"]+"\s*:\s*"\^?[0-9~*][^"]*"' \
+                    | grep -oP '^"[^"]+"' | tr -d '"' \
+                    | grep -v '^version$\|^name$\|^description$\|^main$\|^license$\|^author$' \
+                    | head -9)
+                ;;
+            requirements.txt)
+                while IFS= read -r dep; do
+                    [[ -n "$dep" ]] && pkgs+=("$dep")
+                done < <(echo "$body" | grep -oP '^[A-Za-z0-9_.-]+' | head -10)
+                ;;
+            Pipfile)
+                while IFS= read -r dep; do
+                    [[ -n "$dep" ]] && pkgs+=("$dep")
+                done < <(echo "$body" \
+                    | awk '/^\[packages\]/{p=1;next} /^\[/{p=0} p && /=/{print $1}' \
+                    | head -10)
+                ;;
+            go.mod)
+                local mod
+                mod=$(echo "$body" | grep '^module' | awk '{print $2}' | head -1 | tr -d '\r\n')
+                [[ -n "$mod" ]] && pkgs+=("$mod")
+                while IFS= read -r dep; do
+                    [[ -n "$dep" ]] && pkgs+=("$dep")
+                done < <(echo "$body" | grep -P '^\t[^\t]' | awk '{print $1}' | head -9)
+                ;;
+            pom.xml)
+                while IFS= read -r dep; do
+                    [[ -n "$dep" ]] && pkgs+=("$dep")
+                done < <(echo "$body" | grep -oP '(?<=<artifactId>)[^<]+' | head -10)
+                ;;
+            Gemfile.lock)
+                while IFS= read -r dep; do
+                    [[ -n "$dep" ]] && pkgs+=("$dep")
+                done < <(echo "$body" | grep -oP '^\s{4}[a-zA-Z0-9_-]+' | tr -d ' ' | head -10)
+                ;;
+            composer.json)
+                while IFS= read -r dep; do
+                    [[ -n "$dep" ]] && pkgs+=("$dep")
+                done < <(echo "$body" \
+                    | grep -oP '"[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+"' \
+                    | tr -d '"' | head -10)
+                ;;
+        esac
+
+        local pkg_count=0
+        local pkg
+        for pkg in "${pkgs[@]+"${pkgs[@]}"}"; do
+            [[ "$pkg_count" -ge 10 ]] && break
+            [[ -z "$pkg" ]] && continue
+            emit_package_finding "info" \
+                "Package Detected — ${pkg} (${eco}, ${ip}:${port})" \
+                "Package '${pkg}' (ecosystem: ${eco}) identified from exposed /${mfile} at ${ip}:${port}. Step 14 (Vuln Corpus) will query OSV.dev for known vulnerabilities in this package." \
+                "Keep ${pkg} up to date. Review https://osv.dev/list?ecosystem=${eco}&q=${pkg} for advisories. Remove manifest exposure (see related low finding)." \
+                "$pkg" "$eco" \
+                "ev-08-${ip//./_}-t21-${mfile//./_}"
+            (( pkg_count++ )) || true
+        done
+
+        log_ok "T21: /${mfile} — ${pkg_count} package(s) emitted [${eco}]"
+    done
+
+    [[ "$found_any" -eq 0 ]] && log_info "T21: No exposed package manifests found at ${base_url}"
+}
+
+# =============================================================================
 # MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1634-1706
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
@@ -1696,8 +1859,9 @@ test_target() {
     _test_skip 16 || test_16_versioning     "$base_url" "$ev_dir" "$ip" "$port"
     _test_skip 17 || test_17_sensitive_data "$base_url" "$ev_dir" "$ip" "$port"
     _test_skip 18 || test_18_business_logic "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 19 || test_19_websocket      "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 20 || test_20_tls_transport  "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 19 || test_19_websocket        "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 20 || test_20_tls_transport   "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 21 || test_21_package_manifests "$base_url" "$ev_dir" "$ip" "$port"
 
     local target_finds=$(( _FIND_CTR - _FIND_AT_START ))
     log_ok "Target ${base_url} complete — ${target_finds} finding(s)"
