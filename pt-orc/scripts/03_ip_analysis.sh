@@ -2,24 +2,24 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:02_NAV_TOC — Section index | nav,toc,index | L5-42
-# - MRK:02_LOG — COLOURS AND LOGGING | log,colours,logging | L44-81 | ⚠ no-insert-before
-# - MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L83-112 | ⚠ no-insert-before; propose-before-edit
-# - MRK:02_USAGE — USAGE | usage,02 | L114-137 | ⚠ no-insert-before
-# - MRK:02_ARGS — ARGUMENT PARSING | args,argument,parsing | L139-156 | ⚠ no-insert-before
-# - MRK:02_DEPS — DEPENDENCY CHECK | deps,dependency,check | L158-194 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L196-247 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L249-278 | ⚠ no-insert-before; propose-before-edit
-# - MRK:02_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L280-295 | ⚠ no-insert-before
-# - MRK:02_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L297-311 | ⚠ no-insert-before
-# - MRK:02_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L313-713 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L715-912 | ⚠ no-insert-before; read-toc-first
-# - MRK:02_EXPORTS — STRUCTURED EXPORT FOR DOWNSTREAM STEPS | exports,json,downstream | L914-955 | ⚠ no-insert-before
-# - MRK:02_MAIN — MAIN entry point | main,entry,point | L957-1012 | ⚠ no-insert-before; read-toc-first
+# MRK:03_NAV_TOC — Section index | nav,toc,index | L5-42
+# - MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L44-81 | ⚠ no-insert-before
+# - MRK:03_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L83-112 | ⚠ no-insert-before; propose-before-edit
+# - MRK:03_USAGE — USAGE | usage,02 | L114-137 | ⚠ no-insert-before
+# - MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L139-156 | ⚠ no-insert-before
+# - MRK:03_DEPS — DEPENDENCY CHECK | deps,dependency,check | L158-194 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L196-247 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L249-278 | ⚠ no-insert-before; propose-before-edit
+# - MRK:03_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L280-295 | ⚠ no-insert-before
+# - MRK:03_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L297-311 | ⚠ no-insert-before
+# - MRK:03_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L313-713 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L715-912 | ⚠ no-insert-before; read-toc-first
+# - MRK:03_EXPORTS — STRUCTURED EXPORT FOR DOWNSTREAM STEPS | exports,json,downstream | L914-955 | ⚠ no-insert-before
+# - MRK:03_MAIN — MAIN entry point | main,entry,point | L957-1012 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 13 entries | Integrity-hash: 3f8a1b2c9d4e7f0a | Last-indexed: 2026-06-16T00:00:00Z
 
 # =============================================================================
-# 02_ip_analysis.sh — PTE IP Range & Ownership Analysis — TechGuard. [VAPT-enhanced]
+# 03_ip_analysis.sh — PTE IP Range & Ownership Analysis — TechGuard. [VAPT-enhanced]
 # VAPT additions: AbuseIPDB threat intel (Step 8), VirusTotal IP report (Step 9),
 #   cloud JSON range validation, expanded PTR cloud fingerprints, CDN bypass hints.
 # =============================================================================
@@ -42,7 +42,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:02_LOG — COLOURS AND LOGGING | log,colours,logging | L44-81
+# MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L44-81
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -83,10 +83,10 @@ FINDINGS_FILE=""  # resolved after PROJ_SLUG is set in CONF section
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4"
     (( _FIND_CTR++ )) || true
-    local fid="f-02-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-02-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-03-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-03-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"02_ip_analysis","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"03_ip_analysis","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -98,7 +98,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L83-112
+# MRK:03_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L83-112
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -110,7 +110,7 @@ emit_finding() {
 
 PROJ_SLUG="${PROJECT_NAME//[^A-Za-z0-9._-]/_}"
 EVIDENCE_BASE="${SCRIPT_DIR}/evidence/${PROJ_SLUG}"
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "02-ip-findings" "jsonl")"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "03-ip-findings" "jsonl")"
 AUTO_YES=0   # 1 = skip interactive confirmations (not recommended for PTE)
 DRY_RUN=0    # 1 = print commands, do not execute
 CLI_TARGETS_OVERRIDE=0   # set to 1 by --targets flag; bypasses PTE_TARGETS_FILE
@@ -129,7 +129,7 @@ ABUSEIPDB_API_KEY="${ABUSEIPDB_API_KEY:-}"
 VIRUSTOTAL_API_KEY="${VIRUSTOTAL_API_KEY:-}"
 
 # =============================================================================
-# MRK:02_USAGE — USAGE | usage,02 | L114-137
+# MRK:03_USAGE — USAGE | usage,02 | L114-137
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -154,7 +154,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:02_ARGS — ARGUMENT PARSING | args,argument,parsing | L139-156
+# MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L139-156
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -173,7 +173,7 @@ parse_args() {
 }
 
 # =============================================================================
-# MRK:02_DEPS — DEPENDENCY CHECK | deps,dependency,check | L158-194
+# MRK:03_DEPS — DEPENDENCY CHECK | deps,dependency,check | L158-194
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -211,7 +211,7 @@ check_deps() {
 }
 
 # =============================================================================
-# MRK:02_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L196-247
+# MRK:03_TARGETS — TARGET LOADING | targets,target,loading,pte,override | L196-247
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -264,7 +264,7 @@ load_targets() {
 }
 
 # =============================================================================
-# MRK:02_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L249-278
+# MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L249-278
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -273,7 +273,7 @@ scope_confirm() {
 
     echo ""
     echo -e "${BOLD}${YELLOW}════════════════════════════════════════════════${NC}"
-    echo -e "${BOLD}  SCOPE CONFIRMATION — 02_ip_analysis.sh${NC}"
+    echo -e "${BOLD}  SCOPE CONFIRMATION — 03_ip_analysis.sh${NC}"
     echo -e "${BOLD}${YELLOW}════════════════════════════════════════════════${NC}"
     printf "  %-22s %s\n" "Project:"     "$PROJECT_NAME"
     printf "  %-22s %s\n" "Mode:"        "$MODE"
@@ -295,7 +295,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:02_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L280-295
+# MRK:03_CMDWRAP — DRY-RUN COMMAND WRAPPER | cmdwrap,dry,run,command,wrapper | L280-295
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -312,7 +312,7 @@ run_cmd() {
 }
 
 # =============================================================================
-# MRK:02_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L297-311
+# MRK:03_STATE — PER-IP ACCUMULATORS | state,ip,accumulators,populated,analyze | L297-311
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -328,7 +328,7 @@ declare -A IP_ABUSEIPDB_SCORE  # ip -> AbuseIPDB confidence score (0-100) or "?"
 declare -A IP_VT_MALICIOUS     # ip -> VirusTotal malicious engine count or "?"
 
 # =============================================================================
-# MRK:02_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L313-713
+# MRK:03_ANALYZE — PER-IP ANALYSIS | analyze,ip,analysis,whois,ptr | L313-713
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -724,7 +724,7 @@ fi)
 $(ls -1 "${ipdir}/" 2>/dev/null | sed "s/^/- evidence\/_ip_analysis\/${safe}\//" || true)
 
 ---
-*02_ip_analysis.sh | TechGuard | ${PROJECT_NAME}*
+*03_ip_analysis.sh | TechGuard | ${PROJECT_NAME}*
 EOF
         } > "$summary_file" || true
         log_ok "  Per-IP summary: ${summary_file}"
@@ -732,7 +732,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:02_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L715-912
+# MRK:03_REPORT — CONSOLIDATED REPORT | report,consolidated,working,ip,range | L715-912
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -773,7 +773,7 @@ write_report() {
 | Project      | ${PROJECT_NAME} |
 | Date         | $(_now) |
 | Mode         | ${MODE} |
-| Script       | 02_ip_analysis.sh |
+| Script       | 03_ip_analysis.sh |
 | IP count     | ${#TARGETS[@]} |
 | Findings     | ${_FIND_CTR} (see JSONL: ${FINDINGS_FILE##*/}) |
 | Shodan       | $([ -n "$SHODAN_API_KEY" ] && echo "enabled" || echo "not configured") |
@@ -923,7 +923,7 @@ RECS
 
         echo ""
         echo "---"
-        echo "*02_ip_analysis.sh | TechGuard | ${PROJECT_NAME}*"
+        echo "*03_ip_analysis.sh | TechGuard | ${PROJECT_NAME}*"
 
     } > "$report_file" || true
 
@@ -931,7 +931,7 @@ RECS
 }
 
 # =============================================================================
-# MRK:02_EXPORTS — STRUCTURED EXPORT FOR DOWNSTREAM STEPS | exports,json,downstream | L914-955
+# MRK:03_EXPORTS — STRUCTURED EXPORT FOR DOWNSTREAM STEPS | exports,json,downstream | L914-955
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -970,7 +970,7 @@ write_exports() {
 }
 
 # =============================================================================
-# MRK:02_MAIN — MAIN entry point | main,entry,point | L957-1012
+# MRK:03_MAIN — MAIN entry point | main,entry,point | L957-1012
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -979,7 +979,7 @@ main() {
 
     echo -e "${GREEN}"
     echo "════════════════════════════════════════════════"
-    echo "  02_ip_analysis.sh"
+    echo "  03_ip_analysis.sh"
     echo "  TechGuard."
     echo "  Project: ${PROJECT_NAME}"
     echo "  Mode:    ${MODE}"

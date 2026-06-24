@@ -2,41 +2,41 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:05_NAV_TOC — Section index | nav,toc,index | L5-71
-# - MRK:05_ROOT — ROOT CHECK | root,check,euid | L72-81 | ⚠ no-insert-before
-# - MRK:05_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:05_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155 | ⚠ no-insert-before
-# - MRK:05_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183 | ⚠ no-insert-before
-# - MRK:05_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:05_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252 | ⚠ no-insert-before; propose-before-edit
-# - MRK:05_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280 | ⚠ no-insert-before; read-toc-first
-# - MRK:05_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327 | ⚠ no-insert-before; read-toc-first
-# - MRK:05_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368 | ⚠ no-insert-before
-# - MRK:05_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396 | ⚠ no-insert-before
-# - MRK:05_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468 | ⚠ read-toc-first
-# - MRK:05_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559 | ⚠ read-toc-first
-# - MRK:05_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620 | ⚠ read-toc-first
-# - MRK:05_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685 | ⚠ read-toc-first
-# - MRK:05_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757 | ⚠ read-toc-first
-# - MRK:05_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808 | ⚠ read-toc-first
-# - MRK:05_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900 | ⚠ read-toc-first
-# - MRK:05_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958 | ⚠ read-toc-first
-# - MRK:05_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024 | ⚠ read-toc-first
-# - MRK:05_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074 | ⚠ read-toc-first
-# - MRK:05_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141 | ⚠ read-toc-first
-# - MRK:05_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234 | ⚠ read-toc-first
-# - MRK:05_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275 | ⚠ read-toc-first
-# - MRK:05_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352 | ⚠ read-toc-first
-# - MRK:05_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430 | ⚠ read-toc-first
-# - MRK:05_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468 | ⚠ read-toc-first
-# - MRK:05_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516 | ⚠ read-toc-first
-# - MRK:05_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588 | ⚠ read-toc-first
-# - MRK:05_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654 | ⚠ no-insert-before; read-toc-first
-# - MRK:05_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765 | ⚠ no-insert-before; read-toc-first
+# MRK:06_NAV_TOC — Section index | nav,toc,index | L5-71
+# - MRK:06_ROOT — ROOT CHECK | root,check,euid | L72-81 | ⚠ no-insert-before
+# - MRK:06_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:06_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155 | ⚠ no-insert-before
+# - MRK:06_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183 | ⚠ no-insert-before
+# - MRK:06_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:06_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252 | ⚠ no-insert-before; propose-before-edit
+# - MRK:06_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280 | ⚠ no-insert-before; read-toc-first
+# - MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327 | ⚠ no-insert-before; read-toc-first
+# - MRK:06_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368 | ⚠ no-insert-before
+# - MRK:06_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396 | ⚠ no-insert-before
+# - MRK:06_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468 | ⚠ read-toc-first
+# - MRK:06_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559 | ⚠ read-toc-first
+# - MRK:06_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620 | ⚠ read-toc-first
+# - MRK:06_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685 | ⚠ read-toc-first
+# - MRK:06_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757 | ⚠ read-toc-first
+# - MRK:06_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808 | ⚠ read-toc-first
+# - MRK:06_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900 | ⚠ read-toc-first
+# - MRK:06_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958 | ⚠ read-toc-first
+# - MRK:06_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024 | ⚠ read-toc-first
+# - MRK:06_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074 | ⚠ read-toc-first
+# - MRK:06_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141 | ⚠ read-toc-first
+# - MRK:06_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234 | ⚠ read-toc-first
+# - MRK:06_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275 | ⚠ read-toc-first
+# - MRK:06_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352 | ⚠ read-toc-first
+# - MRK:06_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430 | ⚠ read-toc-first
+# - MRK:06_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468 | ⚠ read-toc-first
+# - MRK:06_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516 | ⚠ read-toc-first
+# - MRK:06_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588 | ⚠ read-toc-first
+# - MRK:06_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654 | ⚠ no-insert-before; read-toc-first
+# - MRK:06_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 30 entries | Integrity-hash: 9b32b1e69cccd051 | Last-indexed: 2026-06-16T08:30:52Z
 
 # =============================================================================
-# 05_web_enum.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
+# 06_web_enum.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
 # Web service enumeration — DB-driven, modular, advanced pentest coverage
 # Tests: headers/fingerprint, security headers/CSP, CORS, WAF detection,
 #   directory discovery, Nikto, JavaScript analysis, API endpoints,
@@ -49,7 +49,7 @@
 # Produces: per-host evidence files + JSONL findings + markdown summary
 # =============================================================================
 # USAGE:
-#   ./05_web_enum.sh [OPTIONS]
+#   ./06_web_enum.sh [OPTIONS]
 #
 # OPTIONS:
 #   --targets <file>          File with host:port entries (one per line)
@@ -69,7 +69,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:05_ROOT — ROOT CHECK | root,check,euid | L72-81
+# MRK:06_ROOT — ROOT CHECK | root,check,euid | L72-81
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -79,7 +79,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:05_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132
+# MRK:06_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -130,7 +130,7 @@ whatweb_aggression() { case "$1" in ghost|evasion) echo 1;; loud) echo 4;; *) ec
 TLS_PORTS="443 8443 4443 9443 10443"
 
 # =============================================================================
-# MRK:05_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155
+# MRK:06_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -154,7 +154,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:05_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183
+# MRK:06_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -182,7 +182,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:05_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235
+# MRK:06_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -234,7 +234,7 @@ _get_web_hosts_csv() {
 }
 
 # =============================================================================
-# MRK:05_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252
+# MRK:06_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -251,7 +251,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:05_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280
+# MRK:06_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -285,21 +285,21 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:05_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327
+# MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
 _FIND_CTR=0
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "05-webenum-findings" "jsonl")"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "06-webenum-findings" "jsonl")"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="$5"
     (( _FIND_CTR++ )) || true
     local ip_slug="${_CURRENT_IP//./_}"
-    local fid="f-05-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-05-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-06-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-06-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"05_web_enum","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"06_web_enum","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -315,7 +315,7 @@ write_web_exports() {
     [[ $# -eq 0 ]] && return 0
     local export_dir="${EVIDENCE_BASE}/_exports"
     mkdir -p "$export_dir"
-    local export_file="${export_dir}/$(ev_fname "05-web-export" "jsonl")"
+    local export_file="${export_dir}/$(ev_fname "06-web-export" "jsonl")"
     for row in "$@"; do
         IFS='|' read -r _ rip rport rfinds rcors rwaf rdirs rapi rcms <<< "$row"
         local scheme="http"
@@ -332,7 +332,7 @@ write_web_exports() {
 }
 
 # =============================================================================
-# MRK:05_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368
+# MRK:06_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -373,7 +373,7 @@ _detect_tls() {
 }
 
 # =============================================================================
-# MRK:05_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396
+# MRK:06_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -401,7 +401,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:05_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468
+# MRK:06_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -434,7 +434,7 @@ test_01_headers_fingerprint() {
             "Server/Technology Version Disclosure via HTTP Headers (${ip}:${port})" \
             "HTTP response headers reveal technology details: ${fingerprint}. Disclosed version information aids attackers in selecting targeted exploits." \
             "Suppress or genericize Server, X-Powered-By, X-Generator, X-AspNet-Version headers. Use ServerTokens Prod (Apache) or server_tokens off (Nginx)." \
-            "ev-05-${ip//./_}-t01-banner"
+            "ev-06-${ip//./_}-t01-banner"
     fi
 
     # WhatWeb fingerprint
@@ -465,7 +465,7 @@ test_01_headers_fingerprint() {
                     "robots.txt Exposes Sensitive Path Hints (${ip}:${port})" \
                     "robots.txt at ${base_url}${meta_path} lists Disallow entries that may reveal internal path structure: ${content:0:200}" \
                     "Review robots.txt for sensitive path disclosures. Do not rely on robots.txt as a security control — it is publicly readable." \
-                    "ev-05-${ip//./_}-t01-robots"
+                    "ev-06-${ip//./_}-t01-robots"
             fi
         fi
     done
@@ -473,7 +473,7 @@ test_01_headers_fingerprint() {
 }
 
 # =============================================================================
-# MRK:05_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559
+# MRK:06_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -515,7 +515,7 @@ test_02_security_headers() {
             "Missing Security Response Headers (${ip}:${port})" \
             "The following security headers are absent from ${base_url}: ${missing_list}. Each exposes XSS, clickjacking, MIME sniffing, or data leakage risks." \
             "Add all recommended headers in web server or application configuration. Reference: OWASP Secure Headers Project. Start with: Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, X-Frame-Options." \
-            "ev-05-${ip//./_}-t02-headers"
+            "ev-06-${ip//./_}-t02-headers"
         _SUMMARY_HEADERS="${#required[@]} missing: $(echo "$missing_list" | tr ';' '\n' | grep -c '.')"
     else
         log_ok "T02: All security headers present"
@@ -542,7 +542,7 @@ test_02_security_headers() {
                 "Weak Content Security Policy — Bypassable Directives (${ip}:${port})" \
                 "CSP is present but contains weak directives: ${csp_issues}. CSP: ${csp:0:200}" \
                 "Remove 'unsafe-inline' and 'unsafe-eval'. Use nonces or hashes for legitimate inline scripts. Use CSP Evaluator (csp-evaluator.withgoogle.com) to grade the policy. Add frame-ancestors 'none' or 'self'." \
-                "ev-05-${ip//./_}-t02-csp-weak"
+                "ev-06-${ip//./_}-t02-csp-weak"
         fi
     fi
 
@@ -556,7 +556,7 @@ test_02_security_headers() {
                 "HSTS max-age Too Short — ${max_age}s (${ip}:${port})" \
                 "HSTS max-age of ${max_age} seconds is below the recommended minimum of 31536000 (1 year). Short max-age allows downgrade attacks after expiry." \
                 "Set Strict-Transport-Security: max-age=31536000; includeSubDomains; preload" \
-                "ev-05-${ip//./_}-t02-hsts-short"
+                "ev-06-${ip//./_}-t02-hsts-short"
         fi
         echo "$hsts" | grep -qi "includeSubDomains" || log_info "T02: HSTS missing includeSubDomains"
         echo "$hsts" | grep -qi "preload"           || log_info "T02: HSTS missing preload"
@@ -564,7 +564,7 @@ test_02_security_headers() {
 }
 
 # =============================================================================
-# MRK:05_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620
+# MRK:06_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -594,7 +594,7 @@ test_03_cors() {
                 "CORS Misconfiguration — Arbitrary Origin Reflected${cred_flag} (${ip}:${port})" \
                 "Server reflects arbitrary origin '${origin}' in ACAO${cred_flag}. ACAO: '${acao}' ACAC: '${acac}'. Enables cross-origin data theft from authenticated sessions." \
                 "Maintain an explicit origin allowlist. Never dynamically reflect the Origin header. Combine CORS with CSRF protection for state-changing endpoints." \
-                "ev-05-${ip//./_}-t03-cors"
+                "ev-06-${ip//./_}-t03-cors"
         fi
         _tier_sleep
     done
@@ -618,14 +618,14 @@ test_03_cors() {
             "CORS Preflight Reflects Attacker Origin (${ip}:${port})" \
             "OPTIONS preflight returns ACAO: ${preflight_acao} for evil.com. Allows pre-authorized cross-origin POST with Authorization headers." \
             "Fix CORS origin validation to use a server-side allowlist for both simple and preflight requests." \
-            "ev-05-${ip//./_}-t03-cors-preflight"
+            "ev-06-${ip//./_}-t03-cors-preflight"
     fi
 
     [[ "${_SUMMARY_CORS:-0}" -eq 0 ]] && log_ok "T03: No CORS misconfiguration detected"
 }
 
 # =============================================================================
-# MRK:05_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685
+# MRK:06_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -647,7 +647,7 @@ test_04_waf_detection() {
                 "WAF Detected — ${waf_name:0:60} (${ip}:${port})" \
                 "A Web Application Firewall was detected: ${waf_out:0:200}. WAF presence affects exploitability of other findings but is not itself a vulnerability." \
                 "Verify WAF rules cover OWASP Top 10. Ensure WAF operates in blocking mode (not detection-only). Test WAF bypass techniques during authorized testing." \
-                "ev-05-${ip//./_}-t04-waf"
+                "ev-06-${ip//./_}-t04-waf"
         fi
     fi
 
@@ -685,12 +685,12 @@ test_04_waf_detection() {
             "Malicious Payload Probe Not Blocked — No WAF or WAF in Detection Mode (${ip}:${port})" \
             "A request containing XSS and SQLi payloads was not blocked (HTTP ${probe_resp}). This suggests the absence of a WAF or a WAF configured in detection-only mode." \
             "Deploy a WAF in blocking mode. Consider cloud WAF options (Cloudflare, AWS WAF, Akamai). Test WAF rules against OWASP Core Rule Set." \
-            "ev-05-${ip//./_}-t04-no-waf"
+            "ev-06-${ip//./_}-t04-no-waf"
     fi
 }
 
 # =============================================================================
-# MRK:05_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757
+# MRK:06_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -738,7 +738,7 @@ test_05_directory_discovery() {
                 "Sensitive Directories/Files Found via Brute Force (${ip}:${port})" \
                 "Directory enumeration revealed sensitive paths at ${base_url}: ${hot_paths:0:300}. These may expose admin interfaces, configuration files, or development artifacts." \
                 "Restrict access to administrative and development paths via authentication and IP allowlisting. Remove development artifacts from production deployments." \
-                "ev-05-${ip//./_}-t05-dirs"
+                "ev-06-${ip//./_}-t05-dirs"
         fi
     fi
 
@@ -762,7 +762,7 @@ test_05_directory_discovery() {
 }
 
 # =============================================================================
-# MRK:05_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808
+# MRK:06_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -808,12 +808,12 @@ test_06_nikto() {
             "Nikto Scanner Findings — ${nikto_vuln_count} Items (${ip}:${port})" \
             "Nikto identified ${nikto_vuln_count} notable items on ${base_url}. Summary: ${nikto_summary:0:250}. Full output: ${evfile}" \
             "Review each Nikto finding individually. Prioritize findings related to outdated software, dangerous HTTP methods, and configuration issues." \
-            "ev-05-${ip//./_}-t06-nikto"
+            "ev-06-${ip//./_}-t06-nikto"
     fi
 }
 
 # =============================================================================
-# MRK:05_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900
+# MRK:06_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -889,7 +889,7 @@ test_07_js_analysis() {
             "Credentials / API Keys Exposed in JavaScript Files (${ip}:${port})" \
             "Secrets or credentials found in client-side JavaScript: ${secrets_found:0:300}. These are readable by any user visiting the application." \
             "Never embed credentials, API keys, or tokens in client-side code. Use server-side proxying for API calls. Move sensitive configuration to environment variables that are never exposed to the browser. Implement secret scanning in CI/CD (GitLeaks, Truffelhog)." \
-            "ev-05-${ip//./_}-t07-js-secrets"
+            "ev-06-${ip//./_}-t07-js-secrets"
     fi
 
     if [[ -n "$api_endpoints" ]]; then
@@ -898,14 +898,14 @@ test_07_js_analysis() {
             "API Endpoints Discovered via JavaScript Analysis (${ip}:${port})" \
             "Client-side JavaScript reveals internal API endpoint paths: ${api_endpoints:0:250}. These endpoints should be assessed for authentication, authorization, and input validation." \
             "Review all discovered API endpoints for proper authentication and authorization controls. Add discovered paths to the 08_app_api_review scope." \
-            "ev-05-${ip//./_}-t07-js-endpoints"
+            "ev-06-${ip//./_}-t07-js-endpoints"
     fi
 
     [[ -z "${secrets_found}${api_endpoints}" ]] && log_ok "T07: No secrets or sensitive endpoints in JS"
 }
 
 # =============================================================================
-# MRK:05_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958
+# MRK:06_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -956,14 +956,14 @@ test_08_api_discovery() {
             "API / Admin Endpoints Publicly Accessible (${ip}:${port})" \
             "The following API or admin endpoints are publicly accessible on ${base_url}: ${exposed_apis}. These may expose sensitive functionality, data, or configuration." \
             "Gate all API discovery endpoints behind authentication. Remove actuator/debug endpoints from production. Restrict /actuator to localhost or internal networks only." \
-            "ev-05-${ip//./_}-t08-api"
+            "ev-06-${ip//./_}-t08-api"
     else
         log_ok "T08: No unauthenticated API endpoints found"
     fi
 }
 
 # =============================================================================
-# MRK:05_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024
+# MRK:06_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1020,7 +1020,7 @@ test_09_sensitive_files() {
                 "Sensitive File Exposed — ${path} (${ip}:${port})" \
                 "File ${path} is publicly accessible (HTTP ${code}). Content: ${body:0:100}" \
                 "Remove sensitive files from web root. Add deny rules in server config. Implement file-extension and path-based access controls." \
-                "ev-05-${ip//./_}-t09-file"
+                "ev-06-${ip//./_}-t09-file"
         fi
         _tier_sleep
     done
@@ -1029,7 +1029,7 @@ test_09_sensitive_files() {
 }
 
 # =============================================================================
-# MRK:05_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074
+# MRK:06_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1072,14 +1072,14 @@ test_10_vhost_discovery() {
             "Virtual Host Discovery — Hidden Subdomains Found (${ip}:${port})" \
             "Virtual host enumeration revealed hosts responding differently from baseline on ${ip}: ${found_vhosts}. These may expose staging, admin, or internal applications not linked from the main site." \
             "Audit all virtual hosts for proper authentication and hardening. Ensure staging/dev vhosts are not publicly accessible. Use separate TLS certificates rather than shared server blocks." \
-            "ev-05-${ip//./_}-t10-vhost"
+            "ev-06-${ip//./_}-t10-vhost"
     else
         log_ok "T10: No additional virtual hosts detected"
     fi
 }
 
 # =============================================================================
-# MRK:05_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141
+# MRK:06_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1138,7 +1138,7 @@ test_11_403_bypass() {
                     "403 Bypass Successful — ${test_name} on ${fpath} (${ip}:${port})" \
                     "Access control bypass: ${fpath} returns 403 normally but ${test_name} technique returned HTTP ${code}. The access restriction is implemented at the path-matching layer and is bypassable." \
                     "Implement access controls at the application layer (not just URL matching). Validate X-Original-URL and X-Rewrite-URL are not trusted from external clients. Use deny-by-default at the application/middleware level." \
-                    "ev-05-${ip//./_}-t11-403bypass"
+                    "ev-06-${ip//./_}-t11-403bypass"
             fi
             _tier_sleep
         done
@@ -1146,7 +1146,7 @@ test_11_403_bypass() {
 }
 
 # =============================================================================
-# MRK:05_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234
+# MRK:06_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1201,7 +1201,7 @@ test_12_cookie_security() {
                     "Cookie SameSite=None Without Secure Flag (${ip}:${port})" \
                     "Cookie '${cookie_name}' has SameSite=None but is missing the Secure flag. This combination is invalid and may expose the cookie over HTTP." \
                     "Add Secure flag to all SameSite=None cookies. SameSite=None requires Secure per RFC 6265bis." \
-                    "ev-05-${ip//./_}-t12-samesite-none"
+                    "ev-06-${ip//./_}-t12-samesite-none"
             fi
         fi
 
@@ -1217,29 +1217,29 @@ test_12_cookie_security() {
         "Session Cookie Missing Secure Flag (${ip}:${port})" \
         "Cookies missing Secure flag over HTTPS: ${missing_secure}. Cookies without Secure flag can be transmitted over HTTP." \
         "Add Secure flag to all session cookies. For HTTPS-only applications, all cookies should have Secure." \
-        "ev-05-${ip//./_}-t12-secure"
+        "ev-06-${ip//./_}-t12-secure"
 
     [[ -n "$missing_httponly" ]] && emit_finding "medium" \
         "Session Cookie Missing HttpOnly Flag (${ip}:${port})" \
         "Cookies missing HttpOnly flag: ${missing_httponly}. Cookies without HttpOnly are accessible via JavaScript, enabling theft via XSS." \
         "Add HttpOnly flag to all session cookies. Only cookies deliberately accessed via JavaScript should omit HttpOnly." \
-        "ev-05-${ip//./_}-t12-httponly"
+        "ev-06-${ip//./_}-t12-httponly"
 
     [[ -n "$missing_samesite" ]] && emit_finding "medium" \
         "Session Cookie Missing SameSite Attribute (${ip}:${port})" \
         "Cookies missing SameSite: ${missing_samesite}. Without SameSite, cookies are sent in cross-site requests, enabling CSRF attacks." \
         "Set SameSite=Lax (default recommended) or SameSite=Strict for all session cookies. Use SameSite=None only for intentionally cross-site cookies." \
-        "ev-05-${ip//./_}-t12-samesite"
+        "ev-06-${ip//./_}-t12-samesite"
 
     [[ -n "$no_prefix" ]] && emit_finding "low" \
         "Session Cookies Not Using __Host- or __Secure- Prefix (${ip}:${port})" \
         "Session cookies ${no_prefix} do not use the __Host- or __Secure- cookie prefix. These prefixes enforce Secure, Path=/, and no Domain attribute, preventing subdomain cookie injection." \
         "Rename session cookies to use __Host- prefix (strictest) or __Secure- prefix for better security boundaries." \
-        "ev-05-${ip//./_}-t12-cookie-prefix"
+        "ev-06-${ip//./_}-t12-cookie-prefix"
 }
 
 # =============================================================================
-# MRK:05_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275
+# MRK:06_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1269,7 +1269,7 @@ test_13_open_redirect() {
                     "Open Redirect via Parameter '${param}' (${ip}:${port})" \
                     "Parameter '${param}' with value '${target}' triggers redirect to: ${location}. Open redirects enable phishing by redirecting users from legitimate domains to attacker-controlled sites." \
                     "Validate redirect targets against an allowlist of permitted domains. Never use user-supplied URLs directly in Location headers. Prefer relative URLs or path-only redirects." \
-                    "ev-05-${ip//./_}-t13-redirect"
+                    "ev-06-${ip//./_}-t13-redirect"
                 break 2
             fi
             _tier_sleep
@@ -1280,7 +1280,7 @@ test_13_open_redirect() {
 }
 
 # =============================================================================
-# MRK:05_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352
+# MRK:06_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1324,7 +1324,7 @@ test_14_login_analysis() {
                 "Username Enumeration via Login Response Difference (${ip}:${port})" \
                 "Login endpoint returns different responses for valid (HTTP ${valid_code}) vs invalid (HTTP ${invalid_code}) usernames. Attackers can enumerate valid accounts." \
                 "Return identical responses for all authentication failures regardless of whether the username exists. Use the same error message, response code, and timing for all failures." \
-                "ev-05-${ip//./_}-t14-user-enum"
+                "ev-06-${ip//./_}-t14-user-enum"
         fi
 
         # Check for account lockout
@@ -1343,21 +1343,21 @@ test_14_login_analysis() {
                 "No Account Lockout on Login Page (${ip}:${port})" \
                 "Login endpoint ${base_url}/login did not trigger lockout or rate limiting after 6 consecutive failed attempts. This enables brute-force attacks." \
                 "Implement account lockout after N failed attempts (5-10 recommended). Add CAPTCHA after initial failures. Implement progressive delays. Log and alert on repeated failures from same IP." \
-                "ev-05-${ip//./_}-t14-lockout"
+                "ev-06-${ip//./_}-t14-lockout"
         fi
 
         emit_finding "info" \
             "Login Page Detected (${ip}:${port})" \
             "Login/admin pages found at ${base_url}: ${found_login}. These should be assessed for credential strength, MFA enforcement, and brute-force protections." \
             "Require MFA for all privileged accounts. Implement account lockout and CAPTCHA. Restrict admin login to internal networks or VPN where possible." \
-            "ev-05-${ip//./_}-t14-login-found"
+            "ev-06-${ip//./_}-t14-login-found"
     else
         log_ok "T14: No login pages found at standard paths"
     fi
 }
 
 # =============================================================================
-# MRK:05_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430
+# MRK:06_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1384,7 +1384,7 @@ test_15_cms_detection() {
                 "WordPress User Enumeration via REST API (${ip}:${port})" \
                 "WordPress REST API at ${base_url}/wp-json/wp/v2/users returns user list: ${users_body:0:150}. Usernames can be used for brute-force attacks." \
                 "Disable user enumeration via REST API: add 'remove_filter' for wp/v2/users endpoint, or use a security plugin (Wordfence). Rename the default 'admin' account." \
-                "ev-05-${ip//./_}-t15-wp-users"
+                "ev-06-${ip//./_}-t15-wp-users"
         fi
         # Version detection
         local wp_ver; wp_ver=$(_curl "${base_url}/readme.html" | grep -oE "Version [0-9.]+" | head -1 || true)
@@ -1392,7 +1392,7 @@ test_15_cms_detection() {
             "WordPress CMS Detected ${wp_ver:-(version unknown)} (${ip}:${port})" \
             "WordPress installation detected at ${base_url}. ${wp_ver:+Version: $wp_ver.} WordPress sites require regular core, plugin, and theme updates." \
             "Keep WordPress core, plugins, and themes updated. Use WPScan (06_wpscan.sh) for full WordPress security assessment." \
-            "ev-05-${ip//./_}-t15-wordpress"
+            "ev-06-${ip//./_}-t15-wordpress"
     fi
 
     # Drupal fingerprinting
@@ -1404,7 +1404,7 @@ test_15_cms_detection() {
             "Drupal CMS Detected (${ip}:${port})" \
             "Drupal installation detected at ${base_url}. Check for Drupalgeddon (CVE-2018-7600, CVE-2019-6340) and SA advisories." \
             "Update Drupal core to latest stable. Run Drupal security advisories scan. Restrict /user/login to internal if possible." \
-            "ev-05-${ip//./_}-t15-drupal"
+            "ev-06-${ip//./_}-t15-drupal"
     fi
 
     # Joomla fingerprinting
@@ -1415,7 +1415,7 @@ test_15_cms_detection() {
             "Joomla CMS Detected (${ip}:${port})" \
             "Joomla admin panel detected at ${base_url}/administrator/index.php." \
             "Restrict Joomla admin path to internal networks. Enable Joomla two-factor authentication. Check Joomla security advisories." \
-            "ev-05-${ip//./_}-t15-joomla"
+            "ev-06-${ip//./_}-t15-joomla"
     fi
 
     # Generic CMS via generator meta tag
@@ -1426,7 +1426,7 @@ test_15_cms_detection() {
                 "CMS/Framework Detected via Generator Meta — ${detected_cms} (${ip}:${port})" \
                 "Generator meta tag reveals: ${gen_meta}. Technology disclosure aids targeted exploitation." \
                 "Remove or genericize the generator meta tag in production." \
-                "ev-05-${ip//./_}-t15-generator"; }
+                "ev-06-${ip//./_}-t15-generator"; }
     fi
 
     [[ -n "$detected_cms" ]] && log_info "T15: CMS detected: ${detected_cms}"
@@ -1435,7 +1435,7 @@ test_15_cms_detection() {
 }
 
 # =============================================================================
-# MRK:05_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468
+# MRK:06_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1464,7 +1464,7 @@ test_16_graphql() {
                 "GraphQL Introspection Enabled — Full Schema Exposed (${ip}:${port})" \
                 "GraphQL introspection is enabled at ${base_url}${path}. Attackers can enumerate all types, queries, mutations, and field names." \
                 "Disable introspection in production: Apollo Server introspection:false, or graphql-disable-introspection middleware. Implement field-level authorization." \
-                "ev-05-${ip//./_}-t16-graphql"
+                "ev-06-${ip//./_}-t16-graphql"
         fi
         _tier_sleep
     done
@@ -1473,7 +1473,7 @@ test_16_graphql() {
 }
 
 # =============================================================================
-# MRK:05_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516
+# MRK:06_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1506,7 +1506,7 @@ test_17_oauth_oidc() {
                 "OAuth2/OIDC Endpoint Discovered — ${path} (${ip}:${port})" \
                 "OAuth2/OIDC metadata endpoint accessible at ${base_url}${path}: ${body:0:200}. This reveals authorization endpoints, JWKS URLs, supported flows, and token endpoints." \
                 "Verify OIDC configuration: enforce PKCE for authorization code flow, validate state parameter, restrict redirect_uri to allowlisted values, use short-lived tokens, rotate signing keys regularly." \
-                "ev-05-${ip//./_}-t17-oidc"
+                "ev-06-${ip//./_}-t17-oidc"
 
             # Check JWKS exposure
             local jwks_url; jwks_url=$(echo "$body" | grep -o '"jwks_uri":"[^"]*"' | cut -d'"' -f4 || true)
@@ -1521,7 +1521,7 @@ test_17_oauth_oidc() {
 }
 
 # =============================================================================
-# MRK:05_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588
+# MRK:06_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1542,7 +1542,7 @@ test_18_client_side_security() {
             "External Scripts Without Subresource Integrity (SRI) (${ip}:${port})" \
             "Scripts loaded from external CDNs lack SRI integrity attributes: ${ext_scripts_no_sri:0:200}. Supply chain compromise of the CDN could inject malicious code." \
             "Add integrity and crossorigin attributes to all external script/link tags. Use sri-gen or webpack-subresource-integrity to automate SRI generation." \
-            "ev-05-${ip//./_}-t18-sri"
+            "ev-06-${ip//./_}-t18-sri"
     fi
 
     # Mixed content detection (HTTP resources on HTTPS page)
@@ -1556,7 +1556,7 @@ test_18_client_side_security() {
                 "Mixed Content — HTTP Resources on HTTPS Page (${ip}:${port})" \
                 "HTTPS page at ${base_url} loads HTTP resources: ${mixed_content:0:200}. Mixed content bypasses HTTPS protection and may expose user data." \
                 "Update all resource URLs to HTTPS. Use protocol-relative URLs (//) or HTTPS-only URLs. Enable upgrade-insecure-requests in CSP." \
-                "ev-05-${ip//./_}-t18-mixed-content"
+                "ev-06-${ip//./_}-t18-mixed-content"
         fi
     fi
 
@@ -1568,7 +1568,7 @@ test_18_client_side_security() {
             "Inline Event Handlers Detected — CSP Bypass Risk (${ip}:${port})" \
             "Inline JavaScript event handlers found: ${inline_events:0:200}. These indicate 'unsafe-inline' is required in CSP, weakening XSS protections." \
             "Refactor inline event handlers to addEventListener() calls in external JS files. This enables a strict CSP without 'unsafe-inline'." \
-            "ev-05-${ip//./_}-t18-inline-events"
+            "ev-06-${ip//./_}-t18-inline-events"
     fi
 
     # postMessage usage detection (DOM XSS risk)
@@ -1588,12 +1588,12 @@ test_18_client_side_security() {
             "Clickjacking Protection Missing — No X-Frame-Options or CSP frame-ancestors (${ip}:${port})" \
             "Neither X-Frame-Options nor CSP frame-ancestors is set at ${base_url}. The page can be framed by any domain, enabling clickjacking attacks." \
             "Add Content-Security-Policy: frame-ancestors 'self'; (preferred) or X-Frame-Options: SAMEORIGIN. CSP frame-ancestors takes precedence over X-Frame-Options in modern browsers." \
-            "ev-05-${ip//./_}-t18-clickjacking"
+            "ev-06-${ip//./_}-t18-clickjacking"
     fi
 }
 
 # =============================================================================
-# MRK:05_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654
+# MRK:06_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1659,12 +1659,12 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:05_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765
+# MRK:06_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
 main() {
-    log "PT-Orc 05_web_enum.sh v2.0 — Advanced Web Enumeration"
+    log "PT-Orc 06_web_enum.sh v2.0 — Advanced Web Enumeration"
     log "Session: ${SESSION_TS} | Profile: ${PROFILE} | Tier: ${TIER}"
     [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && log_info "Intercept proxy: ${CURL_PROXY_ARGS[*]}"
     log_info "Wordlist: ${WORDLIST}"
@@ -1693,7 +1693,7 @@ main() {
     write_web_exports "${summary_rows[@]+"${summary_rows[@]}"}"
 
     # ── Markdown summary ─────────────────────────────────────────────────────
-    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "05-webenum-summary" "md")"
+    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "06-webenum-summary" "md")"
     {
         echo "# Web Enumeration Summary — ${PROJECT_NAME:-unknown}"
         echo ""
@@ -1752,7 +1752,7 @@ main() {
         echo "\`${EVIDENCE_BASE}\`"
         echo ""
         echo "---"
-        echo "*Generated by PT-Orc 05_web_enum.sh v2.0 — TechGuard Labs*"
+        echo "*Generated by PT-Orc 06_web_enum.sh v2.0 — TechGuard Labs*"
     } > "$summary_md"
 
     log_ok "Summary: ${summary_md}"

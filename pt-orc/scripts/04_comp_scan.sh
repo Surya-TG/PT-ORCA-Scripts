@@ -2,37 +2,37 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:03_NAV_TOC — Section index | nav,toc,index | L5-69
-# - MRK:03_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-79 | ⚠ no-insert-before
-# - MRK:03_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L81-167 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:03_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L169-317 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L319-363 | ⚠ no-insert-before
-# - MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L365-405 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L407-429 | ⚠ no-insert-before
-# - MRK:03_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L431-489 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:03_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L491-731 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L733-788 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L790-864 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_SCOPE — TIER RESOLUTION | scope,tier,resolution | L866-960 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L962-982 | ⚠ no-insert-before
-# - MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L984-1016 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:03_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L1018-1050 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1052-1138 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1140-1442 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1444-1476 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1478-1824 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1826-2058 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2060-2193 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2195-2289 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2291-2295 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2297-2666 | ⚠ insert-here
-# - MRK:03_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2668-2858 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2860-2933 | ⚠ no-insert-before; read-toc-first
-# - MRK:03_MAIN — MAIN | main,03 | L2935-3041 | ⚠ no-insert-before; read-toc-first
+# MRK:04_NAV_TOC — Section index | nav,toc,index | L5-69
+# - MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-79 | ⚠ no-insert-before
+# - MRK:04_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L81-167 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:04_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L169-317 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L319-363 | ⚠ no-insert-before
+# - MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L365-405 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L407-429 | ⚠ no-insert-before
+# - MRK:04_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L431-489 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L491-731 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L733-788 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L790-864 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_SCOPE — TIER RESOLUTION | scope,tier,resolution | L866-960 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L962-982 | ⚠ no-insert-before
+# - MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L984-1016 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:04_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L1018-1050 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1052-1138 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1140-1442 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1444-1476 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1478-1824 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1826-2058 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2060-2193 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2195-2289 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2291-2295 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2297-2666 | ⚠ insert-here
+# - MRK:04_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2668-2858 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2860-2933 | ⚠ no-insert-before; read-toc-first
+# - MRK:04_MAIN — MAIN | main,03 | L2935-3041 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 27 entries | Integrity-hash: 6952bf4ec76dec41 | Last-indexed: 2026-06-16T07:56:03Z
 
 # =============================================================================
-# 03_comp_scan.sh — Phase-aware, DB-driven, stealth-tiered network scanner. PTI + PTE.
+# 04_comp_scan.sh — Phase-aware, DB-driven, stealth-tiered network scanner. PTI + PTE.
 # TechGuard. | Version: 0.8 [VAPT-enhanced]
 # VAPT additions: phase_sweep_nse_vapt_cve() — dedicated CVE NSE pass running
 #   after the standard NSE sweep. Scripts: smb-vuln-ms17-010 (EternalBlue),
@@ -42,7 +42,7 @@
 #   Port-gated: each script group fires only when relevant ports are in scope.
 # =============================================================================
 # USAGE:
-#   sudo ./03_comp_scan.sh [OPTIONS]
+#   sudo ./04_comp_scan.sh [OPTIONS]
 #
 # OPTIONS:
 #   --mode <pti|pte>      Engagement mode (default: from config)
@@ -68,7 +68,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:03_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-79
+# MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L71-79
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -78,7 +78,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:03_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L81-167
+# MRK:04_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L81-167
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -166,7 +166,7 @@ E4L_TIMEOUT=120
 # =============================================================================
 
 # =============================================================================
-# MRK:03_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L169-317
+# MRK:04_TIER — STEALTH TIER PARAMETERS | tier,stealth,parameters | L169-317
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # ghost    T2, max-rate 100, min-hostgroup 4.  PTI default. OT/fragile-device safe.
@@ -316,7 +316,7 @@ db_nmap_fast_flags() {
 }
 
 # =============================================================================
-# MRK:03_LOG — COLOURS AND LOGGING | log,colours,logging | L319-363
+# MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L319-363
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -350,7 +350,7 @@ find_latest_ev() {
 SESSION_TS="$(_ts)"
 EV_TS="$(_ev_ts)"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/scan_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "03-compscan-findings" "jsonl")"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "04-compscan-findings" "jsonl")"
 
 log()      { local m="[$(_now)] $1";       echo -e "${BLUE}${m}${NC}"        >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_ok()   { local m="[$(_now)] [OK] $1";  echo -e "${GREEN}${m}${NC}"       >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -364,10 +364,10 @@ _FIND_CTR=0
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4"
     (( _FIND_CTR++ )) || true
-    local fid="f-03-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-03-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-04-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-04-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"03_comp_scan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"04_comp_scan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -379,7 +379,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:03_ARGS — ARGUMENT PARSING | args,argument,parsing | L365-405
+# MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L365-405
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -421,7 +421,7 @@ if [[ "$MODE" == "pte" ]]; then
 fi
 
 # =============================================================================
-# MRK:03_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L407-429
+# MRK:04_DIRS — DIRECTORY STRUCTURE SETUP | dirs,directory,structure,setup | L407-429
 # NAV-RULE: no-insert-before
 # =============================================================================
 # evidence/
@@ -445,7 +445,7 @@ ip_dir() { local ip="$1"; mkdir -p "${EVIDENCE_BASE}/${ip}"; echo "${EVIDENCE_BA
 
 
 # =============================================================================
-# MRK:03_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L431-489
+# MRK:04_DB — MSF / POSTGRES DB HELPERS | db,msf,postgres,helpers | L431-489
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -505,7 +505,7 @@ db_query() {
 }
 
 # =============================================================================
-# MRK:03_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L491-731
+# MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L491-731
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # All db_nmap calls use msfconsole resource scripts (.rc files):
@@ -747,7 +747,7 @@ any_port_open() {
 }
 
 # =============================================================================
-# MRK:03_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L733-788
+# MRK:04_CSV — CSV FALLBACK HELPERS | csv,fallback,helpers | L733-788
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Used when DB_DIRECT_AVAILABLE=0 or workspace_id() returns empty.
@@ -804,7 +804,7 @@ port_open_csv() {
 }
 
 # =============================================================================
-# MRK:03_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L790-864
+# MRK:04_GNMAP — GNMAP FALLBACK | gnmap,fallback,parse,tcp,sweep | L790-864
 # NAV-RULE: no-insert-before; read-toc-first
 # both empty (e.g. fresh run where MSF DB connection was unavailable).
 # Uses tcp_deep_*.gnmap and nse_common_*.gnmap  richest port/service data.
@@ -880,7 +880,7 @@ export_db() {
 
 
 # =============================================================================
-# MRK:03_SCOPE — TIER RESOLUTION | scope,tier,resolution | L866-960
+# MRK:04_SCOPE — TIER RESOLUTION | scope,tier,resolution | L866-960
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Two levels  highest priority first:
@@ -976,7 +976,7 @@ nmap_tier_flags() {
 }
 
 # =============================================================================
-# MRK:03_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L962-982
+# MRK:04_SRCIP — SOURCE IP VERIFICATION (PTE) | srcip,source,ip,verification,pte | L962-982
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -998,7 +998,7 @@ verify_source_ip() {
 }
 
 # =============================================================================
-# MRK:03_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L984-1016
+# MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L984-1016
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -1008,7 +1008,7 @@ scope_confirm() {
     local target_count; target_count=$(echo "$all_targets" | wc -w | tr -d ' ')
     echo ""
     echo -e "\033[1m\033[1;33m\033[0m"
-    echo -e "\033[1m  SCOPE CONFIRMATION  03_comp_scan.sh v0.8\033[0m"
+    echo -e "\033[1m  SCOPE CONFIRMATION  04_comp_scan.sh v0.8\033[0m"
     echo -e "\033[1m\033[1;33m\033[0m"
     printf "  %-20s %s\n" "Project:"     "$PROJECT_NAME"
     printf "  %-20s %s\n" "Mode:"        "$MODE"
@@ -1032,7 +1032,7 @@ scope_confirm() {
 
 
 # =============================================================================
-# MRK:03_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L1018-1050
+# MRK:04_RATE — RATE SELF-TEST (PTE / evasion mode) | rate,self,test,pte,evasion | L1018-1050
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 rate_self_test() {
@@ -1066,7 +1066,7 @@ rate_self_test() {
 }
 
 # =============================================================================
-# MRK:03_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1052-1138
+# MRK:04_WS — MSF WORKSPACE SETUP | ws,msf,workspace,setup | L1052-1138
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1154,7 +1154,7 @@ ensure_workspace() {
 }
 
 # =============================================================================
-# MRK:03_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1140-1442
+# MRK:04_EXCL — TESTER EXCLUSION | excl,tester,exclusion | L1140-1442
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # All local IPv4 addresses are auto-detected at startup (covers multiple NICs
@@ -1458,7 +1458,7 @@ list_target_ips_in_subnet() {
 }
 
 # =============================================================================
-# MRK:03_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1444-1476
+# MRK:04_P1 — PHASE 1: DISCOVERY | p1,phase,discovery | L1444-1476
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1492,7 +1492,7 @@ phase_discovery() {
 }
 
 # =============================================================================
-# MRK:03_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1478-1824
+# MRK:04_P2 — PHASE 2: TCP FULL SCAN | p2,phase,tcp,full,scan | L1478-1824
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Two-pass approach:
@@ -1843,7 +1843,7 @@ phase_tcp() {
 }
 
 # =============================================================================
-# MRK:03_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1826-2058
+# MRK:04_NSE — PHASE 2b: COMMON-PORT NSE SWEEP | nse,phase,2b,common,port | L1826-2058
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Target set: confirmed live hosts from DB/CSV/gnmap; falls back to full scope
@@ -2085,7 +2085,7 @@ phase_sweep_nse_vapt_cve() {
 }
 
 # =============================================================================
-# MRK:03_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2060-2193
+# MRK:04_OS — PHASE 2c: OS FINGERPRINTING | os,phase,2c,fingerprinting | L2060-2193
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Runs against confirmed live hosts (DB-driven) after TCP Pass 2 and NSE sweep
@@ -2220,7 +2220,7 @@ phase_os_detect() {
 }
 
 # =============================================================================
-# MRK:03_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2195-2289
+# MRK:04_P3 — PHASE 3: UDP CORRELATION SCAN | p3,phase,udp,correlation,scan | L2195-2289
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Derives UDP targets per host from TCP findings in DB.
@@ -2316,13 +2316,13 @@ phase_udp() {
 }
 
 # =============================================================================
-# MRK:03_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2291-2295
+# MRK:04_P4 — PHASE 4: SERVICE ENUMERATION | p4,phase,service,enumeration | L2291-2295
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Per-host, per-port. Runs only scripts relevant to confirmed open services.
 # Reads from DB  no subnet-wide script runs.
 
-# MRK:03_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2297-2666
+# MRK:04_PROBES — Active service probes | probes,active,service,mongodb,vuln | L2297-2666
 # NAV-RULE: insert-here
 
 # IP context from step 02 — populated by load_ip_context(); ip → cloud detail string or ""
@@ -2387,7 +2387,7 @@ add_followup() {
 init_followup() {
     cat > "$FOLLOWUP_FILE" << 'EOF'
 # Manual Follow-up Required
-# Generated by 03_comp_scan.sh
+# Generated by 04_comp_scan.sh
 # Paste this section into chat for state snapshot integration
 
 ## Items Requiring Manual Investigation
@@ -2708,7 +2708,7 @@ phase_enum() {
 
 
 # =============================================================================
-# MRK:03_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2668-2858
+# MRK:04_P4B — PHASE 4b: PTE SERVICE ENUMERATION | p4b,phase,4b,pte,service | L2668-2858
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # PTE focus: web, TLS, auth, API, SSH, VPN, mail
@@ -2908,13 +2908,13 @@ phase_enum_pte() {
 }
 
 # =============================================================================
-# MRK:03_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2860-2933
+# MRK:04_P5 — PHASE 5: REPORT / SUMMARY | p5,phase,report,summary | L2860-2933
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
 phase_report() {
     log "=== PHASE 5: SCAN SUMMARY ==="
-    local report="${SCRIPT_DIR}/working/$(ev_fname "03-scan-summary" "md")"
+    local report="${SCRIPT_DIR}/working/$(ev_fname "04-scan-summary" "md")"
     local host_count; host_count=$(get_scan_hosts | wc -l | tr -d ' ')
 
     cat > "$report" << EOF
@@ -2962,7 +2962,7 @@ See: \`${FOLLOWUP_FILE}\`
 5. Generate state snapshot
 
 ---
-*03_comp_scan.sh v0.8 | TechGuard.*
+*04_comp_scan.sh v0.8 | TechGuard.*
 EOF
 
     log_ok "Summary report: ${report}"
@@ -2982,14 +2982,14 @@ EOF
 }
 
 # =============================================================================
-# MRK:03_MAIN — MAIN | main,03 | L2935-3041
+# MRK:04_MAIN — MAIN | main,03 | L2935-3041
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
 main() {
     echo -e "${GREEN}"
     echo ""
-    echo "  03_comp_scan.sh v0.8"
+    echo "  04_comp_scan.sh v0.8"
     echo "  TechGuard."
     echo "  Project: ${PROJECT_NAME}"
     echo "  Mode:    ${MODE} | Tier: $(effective_tier_label)"

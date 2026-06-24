@@ -2,48 +2,48 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:08_NAV_TOC — Section index | nav,toc,index | L5-79
-# - MRK:08_ROOT — ROOT CHECK | root,check,euid | L80-89 | ⚠ no-insert-before
-# - MRK:08_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:08_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168 | ⚠ no-insert-before
-# - MRK:08_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198 | ⚠ no-insert-before
-# - MRK:08_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:08_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273 | ⚠ no-insert-before; propose-before-edit
-# - MRK:08_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306 | ⚠ no-insert-before; read-toc-first
-# - MRK:08_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332 | ⚠ no-insert-before; read-toc-first
-# - MRK:08_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397 | ⚠ no-insert-before
-# - MRK:08_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437 | ⚠ no-insert-before
-# - MRK:08_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502 | ⚠ read-toc-first
-# - MRK:08_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554 | ⚠ read-toc-first
-# - MRK:08_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633 | ⚠ read-toc-first
-# - MRK:08_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683 | ⚠ read-toc-first
-# - MRK:08_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737 | ⚠ read-toc-first
-# - MRK:08_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782 | ⚠ read-toc-first
-# - MRK:08_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836 | ⚠ read-toc-first
-# - MRK:08_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904 | ⚠ read-toc-first
-# - MRK:08_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004 | ⚠ read-toc-first
-# - MRK:08_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077 | ⚠ read-toc-first
-# - MRK:08_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160 | ⚠ read-toc-first
-# - MRK:08_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214 | ⚠ read-toc-first
-# - MRK:08_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269 | ⚠ read-toc-first
-# - MRK:08_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322 | ⚠ read-toc-first; deep-only
-# - MRK:08_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372 | ⚠ read-toc-first
-# - MRK:08_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413 | ⚠ read-toc-first
-# - MRK:08_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474 | ⚠ read-toc-first
-# - MRK:08_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527 | ⚠ read-toc-first
-# - MRK:08_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562 | ⚠ read-toc-first
-# - MRK:08_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633 | ⚠ read-toc-first
-# - MRK:08_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
-# - MRK:08_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX | ⚠ read-toc-first
-# - MRK:08_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX | ⚠ read-toc-first
-# - MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
-# - MRK:08_MAIN — MAIN ENTRY POINT | main,entry,point,summary | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
+# MRK:09_NAV_TOC — Section index | nav,toc,index | L5-79
+# - MRK:09_ROOT — ROOT CHECK | root,check,euid | L80-89 | ⚠ no-insert-before
+# - MRK:09_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:09_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168 | ⚠ no-insert-before
+# - MRK:09_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198 | ⚠ no-insert-before
+# - MRK:09_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:09_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273 | ⚠ no-insert-before; propose-before-edit
+# - MRK:09_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306 | ⚠ no-insert-before; read-toc-first
+# - MRK:09_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332 | ⚠ no-insert-before; read-toc-first
+# - MRK:09_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397 | ⚠ no-insert-before
+# - MRK:09_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437 | ⚠ no-insert-before
+# - MRK:09_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502 | ⚠ read-toc-first
+# - MRK:09_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554 | ⚠ read-toc-first
+# - MRK:09_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633 | ⚠ read-toc-first
+# - MRK:09_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683 | ⚠ read-toc-first
+# - MRK:09_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737 | ⚠ read-toc-first
+# - MRK:09_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782 | ⚠ read-toc-first
+# - MRK:09_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836 | ⚠ read-toc-first
+# - MRK:09_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904 | ⚠ read-toc-first
+# - MRK:09_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004 | ⚠ read-toc-first
+# - MRK:09_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077 | ⚠ read-toc-first
+# - MRK:09_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160 | ⚠ read-toc-first
+# - MRK:09_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214 | ⚠ read-toc-first
+# - MRK:09_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269 | ⚠ read-toc-first
+# - MRK:09_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322 | ⚠ read-toc-first; deep-only
+# - MRK:09_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372 | ⚠ read-toc-first
+# - MRK:09_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413 | ⚠ read-toc-first
+# - MRK:09_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474 | ⚠ read-toc-first
+# - MRK:09_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527 | ⚠ read-toc-first
+# - MRK:09_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562 | ⚠ read-toc-first
+# - MRK:09_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633 | ⚠ read-toc-first
+# - MRK:09_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
+# - MRK:09_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX | ⚠ read-toc-first
+# - MRK:09_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX | ⚠ read-toc-first
+# - MRK:09_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
+# - MRK:09_MAIN — MAIN ENTRY POINT | main,entry,point,summary | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 35 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-24
 # <!-- NAV-NEEDS-REINDEX: 2026-06-24 — T22 deserialization + T23 file upload bypass added -->
 # <!-- NAV-NEEDS-REINDEX: 2026-06-23 — T21 added; line ranges shifted -->
 
 # =============================================================================
-# 08_app_api_review.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
+# 09_app_api_review.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
 # Application / API security review — OWASP API Top 10 (2023) + Advanced Attacks
 # Coverage: HTTP methods, schema discovery, auth bypass, rate limiting, CORS,
 #   BOLA/IDOR, mass assignment, security headers, JWT attacks, GraphQL, SSRF,
@@ -56,7 +56,7 @@
 # Produces: per-host evidence files + JSONL findings + markdown summary
 # =============================================================================
 # USAGE:
-#   ./08_app_api_review.sh [OPTIONS]
+#   ./09_app_api_review.sh [OPTIONS]
 #
 # OPTIONS:
 #   --targets <file>          File with host:port entries (one per line)
@@ -83,7 +83,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:08_ROOT — ROOT CHECK | root,check,euid | L80-89
+# MRK:09_ROOT — ROOT CHECK | root,check,euid | L80-89
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -93,7 +93,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:08_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145
+# MRK:09_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -150,7 +150,7 @@ tier_delay() { case "$1" in ghost) echo 2;; evasion) echo 3;; normal) echo 0;; l
 TLS_PORTS="443 8443 4443 9443 10443"
 
 # =============================================================================
-# MRK:08_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168
+# MRK:09_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -165,7 +165,7 @@ EV_TS="$(_ev_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/app_api_review_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "08-appapi-findings" "jsonl")"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "09-appapi-findings" "jsonl")"
 : > "$FINDINGS_FILE"
 
 log()     { local m="[$(_now)] $1";   echo -e "${BLUE}${m}${NC}" >&2;    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -176,7 +176,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:08_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198
+# MRK:09_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -206,7 +206,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:08_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254
+# MRK:09_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -262,7 +262,7 @@ _get_web_hosts_csv() {
 }
 
 # =============================================================================
-# MRK:08_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273
+# MRK:09_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -281,7 +281,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:08_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306
+# MRK:09_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -314,7 +314,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:08_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332
+# MRK:09_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -324,10 +324,10 @@ emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="$5"
     (( _FIND_CTR++ )) || true
     local ip_slug="${_CURRENT_IP//./_}"
-    local fid="f-08-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-08-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"08_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"09_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -344,10 +344,10 @@ emit_package_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" pkg_name="$5" ecosystem="$6" ev_tag="${7:-}"
     (( _FIND_CTR++ )) || true
     local ip_slug="${_CURRENT_IP//./_}"
-    local fid="f-08-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-08-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"08_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","package_name":"%s","ecosystem":"%s"}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"09_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","package_name":"%s","ecosystem":"%s"}' \
         "$fid" \
         "$(echo "$title"     | sed 's/"/\\"/g')" \
         "$sev" \
@@ -361,7 +361,7 @@ emit_package_finding() {
 }
 
 # =============================================================================
-# MRK:08_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397
+# MRK:09_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -426,7 +426,7 @@ _test_skip() {
 }
 
 # =============================================================================
-# MRK:08_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437
+# MRK:09_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -466,7 +466,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:08_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502
+# MRK:09_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -511,7 +511,7 @@ test_01_http_methods() {
             "HTTP TRACE Method Enabled — XST Risk (${ip}:${port})" \
             "The TRACE HTTP method is enabled on ${base_url}. This can facilitate Cross-Site Tracing (XST) attacks allowing session cookie theft." \
             "Disable TRACE method in web server configuration. Apache: TraceEnable off; Nginx: if (\$request_method = TRACE) { return 405; }" \
-            "ev-08-${ip//./_}-t01-trace"
+            "ev-09-${ip//./_}-t01-trace"
     fi
 
     if [[ -n "$found_dangerous" ]]; then
@@ -519,7 +519,7 @@ test_01_http_methods() {
             "Dangerous HTTP Methods Enabled (${ip}:${port})" \
             "Dangerous HTTP methods are accepted: ${found_dangerous}. This may allow unauthorized file manipulation or data exposure on ${base_url}." \
             "Restrict HTTP methods to GET, POST, HEAD via server configuration or WAF rules." \
-            "ev-08-${ip//./_}-t01-methods"
+            "ev-09-${ip//./_}-t01-methods"
     fi
 
     if [[ -n "$allow_header" ]]; then
@@ -531,7 +531,7 @@ test_01_http_methods() {
 }
 
 # =============================================================================
-# MRK:08_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554
+# MRK:09_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -575,7 +575,7 @@ test_02_schema_discovery() {
             "API Schema/Documentation Publicly Exposed (${ip}:${port})" \
             "API schema or documentation endpoints are publicly accessible: ${exposed_schemas}. This exposes full API surface, endpoint parameters, and authentication mechanisms to attackers." \
             "Restrict schema endpoints behind authentication. Remove swagger/openapi files from production or gate behind IP allowlisting." \
-            "ev-08-${ip//./_}-t02-schema"
+            "ev-09-${ip//./_}-t02-schema"
         log_warn "T02: Schema exposed — ${exposed_schemas}"
     else
         log_ok "T02: No schema endpoints exposed"
@@ -583,7 +583,7 @@ test_02_schema_discovery() {
 }
 
 # =============================================================================
-# MRK:08_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633
+# MRK:09_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -610,7 +610,7 @@ test_03_authentication() {
                 "Authentication Bypass — Unauthenticated Access to Protected Endpoint (${ip}:${port})" \
                 "Protected endpoint ${path} returns HTTP ${code} without any authentication credentials. This represents a critical authentication failure (OWASP API2)." \
                 "Enforce authentication on all API endpoints. Implement middleware that validates tokens/sessions before any business logic executes." \
-                "ev-08-${ip//./_}-t03-bypass"
+                "ev-09-${ip//./_}-t03-bypass"
         fi
         _tier_sleep
     done
@@ -623,7 +623,7 @@ test_03_authentication() {
         emit_finding "high" "Authentication Bypass via Empty Bearer Token (${ip}:${port})" \
             "Sending an empty Bearer token to ${api_ep}/users returns HTTP ${null_code}. The server is not validating token presence." \
             "Validate token presence and format before processing requests. Reject empty or malformed Authorization headers with HTTP 401." \
-            "ev-08-${ip//./_}-t03-empty-bearer"
+            "ev-09-${ip//./_}-t03-empty-bearer"
     }
 
     # HTTP Basic with common default creds
@@ -638,7 +638,7 @@ test_03_authentication() {
                 "Default Credentials Accepted — ${cred} (${ip}:${port})" \
                 "Default credentials '${cred}' were accepted at ${base_url}/admin (HTTP ${code}). This represents a critical configuration failure." \
                 "Change all default credentials immediately. Implement account lockout after failed attempts. Enforce strong password policy." \
-                "ev-08-${ip//./_}-t03-default-creds"
+                "ev-09-${ip//./_}-t03-default-creds"
         fi
         _tier_sleep
     done
@@ -654,7 +654,7 @@ test_03_authentication() {
             "JWT None Algorithm Accepted (${ip}:${port})" \
             "The server accepts JWT tokens with alg=none, bypassing signature verification at ${api_ep}/admin. An attacker can forge arbitrary tokens." \
             "Reject JWTs with alg=none. Use a strict algorithm allowlist (e.g., RS256 only). Validate alg field against server-side configuration." \
-            "ev-08-${ip//./_}-t03-jwt-none"
+            "ev-09-${ip//./_}-t03-jwt-none"
     fi
     _tier_sleep
 
@@ -662,7 +662,7 @@ test_03_authentication() {
 }
 
 # =============================================================================
-# MRK:08_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683
+# MRK:09_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -703,7 +703,7 @@ test_04_rate_limiting() {
                 "Missing Rate Limiting on Login/Auth Endpoint (${ip}:${port})" \
                 "No rate limiting or throttling detected at ${ep}. 10 rapid authentication requests were accepted without restriction. This enables brute-force attacks (OWASP API4)." \
                 "Implement rate limiting (e.g., 5 req/min per IP on auth endpoints). Add CAPTCHA after failed attempts. Deploy account lockout after N failures. Use token bucket or sliding window algorithms." \
-                "ev-08-${ip//./_}-t04-rate"
+                "ev-09-${ip//./_}-t04-rate"
         fi
         _tier_sleep
     done
@@ -712,7 +712,7 @@ test_04_rate_limiting() {
 }
 
 # =============================================================================
-# MRK:08_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737
+# MRK:09_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -743,7 +743,7 @@ test_05_cors() {
                 "CORS Misconfiguration — Arbitrary Origin Reflected${cred_flag} (${ip}:${port})" \
                 "The server reflects arbitrary origins in Access-Control-Allow-Origin for Origin: ${origin}. ACAO: '${acao}' ACAC: '${acac}'. An attacker can make cross-origin requests from any domain${cred_flag}, exposing authenticated API responses." \
                 "Maintain an explicit allowlist of trusted origins. Never reflect the request Origin value dynamically. Set Access-Control-Allow-Credentials: true only for strictly necessary origins." \
-                "ev-08-${ip//./_}-t05-cors"
+                "ev-09-${ip//./_}-t05-cors"
         fi
         _tier_sleep
     done
@@ -759,14 +759,14 @@ test_05_cors() {
             "CORS Misconfiguration — Null Origin Trusted (${ip}:${port})" \
             "The server trusts the 'null' origin (ACAO: ${null_acao}). Sandboxed iframes and redirects can use the null origin to bypass CORS protections." \
             "Remove 'null' from the trusted origin allowlist. Explicitly enumerate all trusted origins." \
-            "ev-08-${ip//./_}-t05-cors-null"
+            "ev-09-${ip//./_}-t05-cors-null"
     fi
 
     [[ "${_SUMMARY_CORS:-0}" -eq 0 ]] && log_ok "T05: No CORS misconfig detected"
 }
 
 # =============================================================================
-# MRK:08_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782
+# MRK:09_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -800,7 +800,7 @@ test_06_bola_idor() {
                     "BOLA/IDOR — Direct Object Reference Exposure (${ip}:${port} — ${resource}/${id})" \
                     "The endpoint ${ep} returns HTTP ${code} with data. Verify this resource belongs to the authenticated user. Sequential/predictable IDs indicate BOLA (OWASP API1): ${body:0:150}" \
                     "Implement object-level authorization checks. Use non-sequential, cryptographically random UUIDs for resource identifiers. Verify ownership on every object access." \
-                    "ev-08-${ip//./_}-t06-bola"
+                    "ev-09-${ip//./_}-t06-bola"
                 break 2
             fi
             _tier_sleep
@@ -811,7 +811,7 @@ test_06_bola_idor() {
 }
 
 # =============================================================================
-# MRK:08_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836
+# MRK:09_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -856,7 +856,7 @@ test_07_mass_assignment() {
                     "Mass Assignment / Property Injection Risk (${ip}:${port})" \
                     "Endpoint ${ep} accepted a PUT with sensitive properties: ${payload:0:80}. If the server binds request body directly to model, privilege escalation is possible (OWASP API3)." \
                     "Use explicit property allowlisting (DTO pattern). Never bind raw request body to domain models. Audit all writable properties per user role." \
-                    "ev-08-${ip//./_}-t07-mass"
+                    "ev-09-${ip//./_}-t07-mass"
                 break
             fi
             _tier_sleep
@@ -865,7 +865,7 @@ test_07_mass_assignment() {
 }
 
 # =============================================================================
-# MRK:08_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904
+# MRK:09_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -907,7 +907,7 @@ test_08_security_headers() {
             "Server Version Disclosure in Response Headers (${ip}:${port})" \
             "The Server response header reveals software version: ${srv}. This aids attackers in identifying vulnerable versions." \
             "Configure web server to suppress or genericize the Server header (ServerTokens Prod for Apache; server_tokens off for Nginx)." \
-            "ev-08-${ip//./_}-t08-server-banner"
+            "ev-09-${ip//./_}-t08-server-banner"
     fi
 
     if echo "$headers_resp" | grep -qi "^X-Powered-By:"; then
@@ -917,7 +917,7 @@ test_08_security_headers() {
             "Technology Disclosure via X-Powered-By Header (${ip}:${port})" \
             "X-Powered-By header reveals backend technology: ${powered}." \
             "Remove X-Powered-By header in server/framework configuration." \
-            "ev-08-${ip//./_}-t08-xpb"
+            "ev-09-${ip//./_}-t08-xpb"
     fi
 
     if [[ -n "$missing_headers" ]]; then
@@ -925,7 +925,7 @@ test_08_security_headers() {
             "Missing Security Response Headers (${ip}:${port})" \
             "The following security headers are absent from ${base_url}: ${missing_headers}. Each missing header increases attack surface for XSS, clickjacking, MIME sniffing, and information disclosure." \
             "Implement all recommended security headers. Use a Content Security Policy builder to create strict CSP. Enable HSTS with includeSubDomains and preload. Refer to OWASP Secure Headers Project." \
-            "ev-08-${ip//./_}-t08-headers"
+            "ev-09-${ip//./_}-t08-headers"
         log_warn "T08: Missing — ${missing_headers}"
     else
         log_ok "T08: All security headers present"
@@ -933,7 +933,7 @@ test_08_security_headers() {
 }
 
 # =============================================================================
-# MRK:08_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004
+# MRK:09_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -958,7 +958,7 @@ test_09_jwt_attacks() {
         emit_finding "critical" "JWT Algorithm Confusion — alg=none Accepted (${ip}:${port})" \
             "Server accepts unsigned JWTs (alg=none) at ${api_ep}/users returning HTTP ${code}." \
             "Reject any JWT with alg=none. Maintain a server-side algorithm allowlist." \
-            "ev-08-${ip//./_}-t09-jwt-none"; }
+            "ev-09-${ip//./_}-t09-jwt-none"; }
     _tier_sleep
 
     # Test 2: RS256→HS256 confusion (use server cert public key as HMAC secret — cannot compute here but probe header acceptance)
@@ -977,7 +977,7 @@ test_09_jwt_attacks() {
             "JWT kid Parameter Path Traversal Risk (${ip}:${port})" \
             "JWT with kid=../../../../etc/passwd returns HTTP ${code} at ${api_ep}/users. The server may be loading signing keys from user-controlled filesystem paths." \
             "Validate kid parameter against an allowlist of known key IDs. Never use kid as a direct file path. Store keys in a dedicated key store." \
-            "ev-08-${ip//./_}-t09-kid-traversal"
+            "ev-09-${ip//./_}-t09-kid-traversal"
     fi
     _tier_sleep
 
@@ -991,7 +991,7 @@ test_09_jwt_attacks() {
             "JWT kid Parameter SQL Injection (${ip}:${port})" \
             "JWT with SQL-injected kid returns HTTP ${code}. The server may be querying a database with unsanitized kid values, enabling authentication bypass and data exfiltration." \
             "Parameterize all database queries involving JWT claims. Validate kid against a strict format (UUID/alphanumeric only)." \
-            "ev-08-${ip//./_}-t09-kid-sqli"
+            "ev-09-${ip//./_}-t09-kid-sqli"
     fi
     _tier_sleep
 
@@ -1005,7 +1005,7 @@ test_09_jwt_attacks() {
             "JWT jku Header Injection — Server Fetches Attacker JWKS (${ip}:${port})" \
             "JWT with jku pointing to 127.0.0.1 returns HTTP ${code}. The server fetches JWKS from the jku URL, allowing an attacker to host malicious signing keys." \
             "Never trust jku/x5u headers in JWTs. Use a hardcoded JWKS endpoint configured server-side. Validate that jku matches a pre-approved URL allowlist." \
-            "ev-08-${ip//./_}-t09-jku"
+            "ev-09-${ip//./_}-t09-jku"
     fi
     _tier_sleep
 
@@ -1023,7 +1023,7 @@ test_09_jwt_attacks() {
                     "JWT Uses HMAC Algorithm — Weak Secret Risk (${ip}:${port})" \
                     "The provided JWT uses HMAC signature (${alg_field}). HMAC JWTs are vulnerable to offline brute force if the secret is weak. Detected algorithm: ${alg_field}." \
                     "Switch to asymmetric algorithms (RS256/ES256). If HS256 is required, use cryptographically random secrets of at least 256 bits." \
-                    "ev-08-${ip//./_}-t09-hmac"
+                    "ev-09-${ip//./_}-t09-hmac"
                 break
             fi
         done
@@ -1033,7 +1033,7 @@ test_09_jwt_attacks() {
 }
 
 # =============================================================================
-# MRK:08_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077
+# MRK:09_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1065,7 +1065,7 @@ test_10_graphql() {
                 "GraphQL Introspection Enabled — Full Schema Exposed (${ip}:${port})" \
                 "GraphQL introspection is enabled at ${ep}. Attackers can enumerate the complete API schema, all types, queries, mutations, and field names." \
                 "Disable introspection in production. Use Apollo Server's introspection:false or graphql-disable-introspection middleware. Implement field-level authorization." \
-                "ev-08-${ip//./_}-t10-introspection"
+                "ev-09-${ip//./_}-t10-introspection"
         fi
 
         # Batch query attack (alias batching)
@@ -1078,7 +1078,7 @@ test_10_graphql() {
                 "GraphQL Batch Query Attack — No Rate Limiting on Batch Operations (${ip}:${port})" \
                 "GraphQL endpoint ${ep} accepts batch queries without restriction. Attackers can batch thousands of operations in a single HTTP request, bypassing rate limits." \
                 "Implement query depth limiting (max 5-10 levels), query complexity analysis, and disable or restrict batch operations. Use persisted queries in production." \
-                "ev-08-${ip//./_}-t10-batch"
+                "ev-09-${ip//./_}-t10-batch"
         fi
 
         # Deep nesting attack
@@ -1097,7 +1097,7 @@ test_10_graphql() {
                 "GraphQL Field Suggestion Information Leakage (${ip}:${port})" \
                 "GraphQL endpoint ${ep} returns field name suggestions in error messages. This leaks schema information even when introspection is disabled." \
                 "Configure GraphQL to suppress field suggestions in production. Use a custom error formatter that strips type/field hints from error messages." \
-                "ev-08-${ip//./_}-t10-suggestions"
+                "ev-09-${ip//./_}-t10-suggestions"
         fi
         _tier_sleep
     done
@@ -1106,7 +1106,7 @@ test_10_graphql() {
 }
 
 # =============================================================================
-# MRK:08_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160
+# MRK:09_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1156,7 +1156,7 @@ test_11_ssrf() {
                     "Server-Side Request Forgery (SSRF) — IMDS Response Returned (${ip}:${port})" \
                     "SSRF via parameter '${param}' targeting ${ssrf_target} returned IMDS/internal content at ${ep}. An attacker can exfiltrate cloud credentials, IAM roles, and internal service responses (OWASP API7)." \
                     "Implement a strict URL allowlist for any server-side fetch operations. Block RFC 1918, link-local, and loopback ranges at the network layer. Disable IMDSv1 (use IMDSv2 with session tokens on AWS)." \
-                    "ev-08-${ip//./_}-t11-ssrf"
+                    "ev-09-${ip//./_}-t11-ssrf"
             fi
             _tier_sleep
         done
@@ -1180,7 +1180,7 @@ test_11_ssrf() {
                 "SSRF via API Endpoint — Internal Service Response (${ip}:${port})" \
                 "SSRF payload targeting 169.254.169.254 (AWS IMDS) via POST to ${ep} returned IMDS content. Cloud credentials are at risk." \
                 "Block all outbound requests to IMDS ranges. Validate and allowlist all server-side URL fetches. Use instance profile scoping." \
-                "ev-08-${ip//./_}-t11-ssrf-post"
+                "ev-09-${ip//./_}-t11-ssrf-post"
         fi
         _tier_sleep
     done
@@ -1189,7 +1189,7 @@ test_11_ssrf() {
 }
 
 # =============================================================================
-# MRK:08_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214
+# MRK:09_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1234,7 +1234,7 @@ test_12_xxe() {
                     "XXE Injection — Successful File/SSRF Read (${ip}:${port})" \
                     "XML External Entity injection at ${ep} returned internal content: ${resp:0:150}. An attacker can read local files, enumerate internal services, and exfiltrate data." \
                     "Disable external entity processing in all XML parsers. Use document builder factory with setFeature DISALLOW_DOCTYPE_DECL=true. Prefer JSON APIs over XML." \
-                    "ev-08-${ip//./_}-t12-xxe"
+                    "ev-09-${ip//./_}-t12-xxe"
                 break
             fi
             _tier_sleep
@@ -1243,7 +1243,7 @@ test_12_xxe() {
 }
 
 # =============================================================================
-# MRK:08_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269
+# MRK:09_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1287,7 +1287,7 @@ test_13_ssti() {
                     "Server-Side Template Injection (SSTI) Detected (${ip}:${port})" \
                     "Template expression '${probe}' evaluated to expected value in parameter '${param}' at ${base_url}. SSTI allows arbitrary code execution on the server." \
                     "Avoid rendering user-supplied input as templates. Use sandboxed template environments with strict variable escaping. Prefer logic-less templates (Mustache). Upgrade affected template engines and apply security patches." \
-                    "ev-08-${ip//./_}-t13-ssti"
+                    "ev-09-${ip//./_}-t13-ssti"
                 return
             fi
             _tier_sleep
@@ -1298,7 +1298,7 @@ test_13_ssti() {
 }
 
 # =============================================================================
-# MRK:08_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322
+# MRK:09_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
@@ -1345,13 +1345,13 @@ test_14_smuggling() {
             "Potential HTTP Request Smuggling Indicator (${ip}:${port})" \
             "HTTP request smuggling probes (CL.TE and TE.CL) produced unusual responses at ${base_url}. Manual validation with Burp Suite's HTTP Request Smuggler extension required to confirm exploitability." \
             "Ensure consistent TE/CL header handling across all proxies and backends. Configure frontend proxies to reject ambiguous requests. Use HTTP/2 throughout where possible." \
-            "ev-08-${ip//./_}-t14-smuggling"
+            "ev-09-${ip//./_}-t14-smuggling"
     fi
     log_warn "T14: Manual validation with Burp Suite HTTP Request Smuggler recommended"
 }
 
 # =============================================================================
-# MRK:08_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372
+# MRK:09_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1373,7 +1373,7 @@ test_15_host_header() {
                 "Host Header Injection — Redirect Hijacking (${ip}:${port})" \
                 "The response to Host: ${evil} contains a Location header reflecting the injected host. This enables redirect hijacking, password reset poisoning, and cache poisoning attacks." \
                 "Never use the Host header to construct URLs for redirects or emails. Use a hardcoded base URL from server configuration. Validate Host against an explicit allowlist." \
-                "ev-08-${ip//./_}-t15-host-redirect"
+                "ev-09-${ip//./_}-t15-host-redirect"
         fi
 
         # Check if host is reflected in response body (cache poisoning)
@@ -1382,7 +1382,7 @@ test_15_host_header() {
                 "Host Header Value Reflected in Response Body (${ip}:${port})" \
                 "Injected Host: ${evil} is reflected in the HTTP response body. Combined with caching, this enables web cache poisoning and targeted phishing." \
                 "Sanitize Host header before using in templates or responses. Configure explicit server_name/ServerName rather than relying on Host header." \
-                "ev-08-${ip//./_}-t15-host-reflect"
+                "ev-09-${ip//./_}-t15-host-reflect"
         fi
 
         # X-Forwarded-Host override
@@ -1394,14 +1394,14 @@ test_15_host_header() {
                 "X-Forwarded-Host Header Injection (${ip}:${port})" \
                 "X-Forwarded-Host: ${evil} is reflected in the response. Applications trusting this header are vulnerable to cache poisoning and SSRF via header manipulation." \
                 "Only trust X-Forwarded-Host from known reverse proxies. Validate against an allowlist of legitimate hostnames." \
-                "ev-08-${ip//./_}-t15-xfh"
+                "ev-09-${ip//./_}-t15-xfh"
         fi
         _tier_sleep
     done
 }
 
 # =============================================================================
-# MRK:08_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413
+# MRK:09_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1435,14 +1435,14 @@ test_16_versioning() {
             "Shadow/Undocumented API Versions Exposed (${ip}:${port})" \
             "Legacy or undocumented API versions are accessible: ${shadow_apis}. Shadow APIs often lack current security controls, authentication requirements, and input validation (OWASP API9)." \
             "Maintain a complete API inventory. Decommission all legacy API versions. Enforce the same security controls across all API versions. Use API gateways to centralize version management." \
-            "ev-08-${ip//./_}-t16-shadow-api"
+            "ev-09-${ip//./_}-t16-shadow-api"
     else
         log_ok "T16: No shadow API versions detected"
     fi
 }
 
 # =============================================================================
-# MRK:08_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474
+# MRK:09_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1485,7 +1485,7 @@ test_17_sensitive_data() {
                 "Sensitive File Exposure — ${path} (${ip}:${port})" \
                 "Sensitive file ${path} is publicly accessible (HTTP ${code}). Content snippet: ${body:0:150}" \
                 "Remove all sensitive files from web root. Add appropriate deny rules in web server configuration. Implement file-type restrictions and path-based access controls." \
-                "ev-08-${ip//./_}-t17-sensitive"
+                "ev-09-${ip//./_}-t17-sensitive"
         fi
         _tier_sleep
     done
@@ -1498,12 +1498,12 @@ test_17_sensitive_data() {
             "PII/Sensitive Data Exposure in API Response (${ip}:${port})" \
             "API response from ${base_url}${API_BASE}/${API_VERSION}/users contains PII or sensitive fields (email, password hash, SSN, or financial data). Snippet: ${api_resp:0:200}" \
             "Apply field-level authorization — return only fields the requester is authorized to see. Mask sensitive fields (e.g., return last 4 digits of card). Audit all API responses for excessive data exposure (OWASP API3)." \
-            "ev-08-${ip//./_}-t17-pii"
+            "ev-09-${ip//./_}-t17-pii"
     fi
 }
 
 # =============================================================================
-# MRK:08_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527
+# MRK:09_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1531,7 +1531,7 @@ test_18_business_logic() {
                 "Broken Function Level Authorization (BFLA) — Admin Endpoint Accessible (${ip}:${port})" \
                 "Admin/privileged endpoint ${ep} is accessible with current authorization level (HTTP ${code}). This indicates missing function-level access control (OWASP API5)." \
                 "Implement role-based access control (RBAC) at the function level. Deny-by-default: require explicit authorization grants for privileged operations. Separate admin APIs from user-facing APIs." \
-                "ev-08-${ip//./_}-t18-bfla"
+                "ev-09-${ip//./_}-t18-bfla"
         fi
         _tier_sleep
     done
@@ -1550,13 +1550,13 @@ test_18_business_logic() {
                 "Business Logic Flaw — Negative Price/Quantity Accepted (${ip}:${port})" \
                 "Cart endpoint ${cart_ep} accepted negative quantity/price values. Business logic flaws can allow items to be purchased for free or credits to be generated." \
                 "Validate all numeric inputs server-side: enforce positive values, range limits, and integer constraints. Never rely on client-side validation for business-critical values." \
-                "ev-08-${ip//./_}-t18-neg-price"
+                "ev-09-${ip//./_}-t18-neg-price"
         fi
     fi
 }
 
 # =============================================================================
-# MRK:08_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562
+# MRK:09_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1583,7 +1583,7 @@ test_19_websocket() {
                 "WebSocket Endpoint Detected — Manual Testing Required (${ip}:${port})" \
                 "WebSocket endpoint found at ${base_url}${path}. WebSocket connections bypass some HTTP security controls. Manual testing required for: authentication enforcement, origin validation, message injection, DoS via large messages." \
                 "Enforce WebSocket authentication. Validate Origin header against an allowlist. Implement message rate limiting and size limits. Use WSS (TLS) exclusively." \
-                "ev-08-${ip//./_}-t19-websocket"
+                "ev-09-${ip//./_}-t19-websocket"
             log_info "T19: WebSocket detected at ${path}"
         fi
         _tier_sleep
@@ -1591,7 +1591,7 @@ test_19_websocket() {
 }
 
 # =============================================================================
-# MRK:08_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633
+# MRK:09_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1612,7 +1612,7 @@ test_20_tls_transport() {
                 "No HTTP to HTTPS Redirect (${ip}:${port})" \
                 "Port ${port} does not redirect HTTP traffic to HTTPS. Clients may transmit sensitive data over unencrypted connections." \
                 "Configure permanent (301) redirect from HTTP to HTTPS. Enable HSTS to prevent HTTP access." \
-                "ev-08-${ip//./_}-t20-http-redirect"
+                "ev-09-${ip//./_}-t20-http-redirect"
         fi
         return
     fi
@@ -1636,12 +1636,12 @@ test_20_tls_transport() {
             emit_finding "critical" "TLS Certificate Expired (${ip}:${port})" \
                 "TLS certificate expired ${days_left#-} days ago. All connections are insecure." \
                 "Renew certificate immediately. Configure automated renewal (Let's Encrypt certbot, ACM)." \
-                "ev-08-${ip//./_}-t20-cert-expired"
+                "ev-09-${ip//./_}-t20-cert-expired"
         elif [[ "$days_left" -lt 30 ]]; then
             emit_finding "medium" "TLS Certificate Expiring Soon — ${days_left} Days (${ip}:${port})" \
                 "TLS certificate expires in ${days_left} days. Service disruption imminent." \
                 "Renew certificate and configure automated renewal monitoring." \
-                "ev-08-${ip//./_}-t20-cert-expiry"
+                "ev-09-${ip//./_}-t20-cert-expiry"
         fi
     fi
 
@@ -1656,13 +1656,13 @@ test_20_tls_transport() {
                 "Weak TLS Protocol Accepted — ${proto_name} (${ip}:${port})" \
                 "Server accepts deprecated protocol ${proto_name} which is vulnerable to POODLE, BEAST, and related downgrade attacks." \
                 "Disable all protocols below TLS 1.2. Configure: ssl_protocols TLSv1.2 TLSv1.3 (Nginx) or SSLProtocol TLSv1.2 TLSv1.3 (Apache)." \
-                "ev-08-${ip//./_}-t20-${weak_proto}"
+                "ev-09-${ip//./_}-t20-${weak_proto}"
         fi
     done
 }
 
 # =============================================================================
-# MRK:08_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
+# MRK:09_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # Probes for exposed package manifests (package.json, requirements.txt, etc.)
 # Emits:
@@ -1720,7 +1720,7 @@ test_21_package_manifests() {
             "Package Manifest Exposed — /${mfile} (${ip}:${port})" \
             "The file /${mfile} is publicly accessible at ${url}. Package manifests expose exact dependency versions, aiding targeted CVE identification and exploitation. Ecosystem: ${eco}." \
             "Deny access to manifest files in your web server config. Add location blocks (Nginx) or Deny directives (.htaccess/Apache) for: package.json, requirements.txt, go.mod, pom.xml, Gemfile.lock, composer.json, Pipfile." \
-            "ev-08-${ip//./_}-t21-${mfile//./_}"
+            "ev-09-${ip//./_}-t21-${mfile//./_}"
 
         # Extract package names (max 10 per manifest)
         local -a pkgs=()
@@ -1789,7 +1789,7 @@ test_21_package_manifests() {
                 "Package '${pkg}' (ecosystem: ${eco}) identified from exposed /${mfile} at ${ip}:${port}. Step 14 (Vuln Corpus) will query OSV.dev for known vulnerabilities in this package." \
                 "Keep ${pkg} up to date. Review https://osv.dev/list?ecosystem=${eco}&q=${pkg} for advisories. Remove manifest exposure (see related low finding)." \
                 "$pkg" "$eco" \
-                "ev-08-${ip//./_}-t21-${mfile//./_}"
+                "ev-09-${ip//./_}-t21-${mfile//./_}"
             (( pkg_count++ )) || true
         done
 
@@ -1800,7 +1800,7 @@ test_21_package_manifests() {
 }
 
 # =============================================================================
-# MRK:08_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX
+# MRK:09_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX
 # ⚠ read-toc-first
 # =============================================================================
 
@@ -1833,7 +1833,7 @@ test_22_deserialization() {
                 "Potential Java Deserialization Endpoint — Verify with ysoserial (${ip}:${port})" \
                 "Endpoint ${ep} accepted Java serialized object Content-Type with HTTP ${code} (not 415 Unsupported). Manual testing with ysoserial gadget chains (CommonsCollections, Spring, etc.) is required to confirm exploitability." \
                 "Implement JVM deserialization filters (ObjectInputFilter, SerialKiller). If not required, disable Java serialization. Replace with JSON/XML for inter-service communication." \
-                "ev-08-${ip//./_}-t22-java-deserial"
+                "ev-09-${ip//./_}-t22-java-deserial"
             java_hit=1
             break
         fi
@@ -1851,7 +1851,7 @@ test_22_deserialization() {
                 "Java Deserialization Error Signature in Response (${ip}:${port})" \
                 "Response from ${base_url}/api/import contains Java deserialization error keywords, confirming an active ObjectInputStream pipeline is network-reachable." \
                 "Implement JVM deserialization filters (ObjectInputFilter). Replace native Java serialization with JSON. Apply CommonsCollections/Spring gadget-chain mitigations." \
-                "ev-08-${ip//./_}-t22-java-error"
+                "ev-09-${ip//./_}-t22-java-error"
         fi
         _tier_sleep
     fi
@@ -1872,7 +1872,7 @@ test_22_deserialization() {
             "PHP Deserialization Sink — unserialize() Reachable (${ip}:${port})" \
             "PHP deserialization error keywords appeared in response to a serialized object probe at ${base_url}/api/data. PHP gadget chains via __wakeup/__destruct magic methods can lead to RCE." \
             "Never pass user-controlled data to unserialize(). Use json_decode() instead. If required, restrict unserialize() with the allowed_classes parameter." \
-            "ev-08-${ip//./_}-t22-php-deserial"
+            "ev-09-${ip//./_}-t22-php-deserial"
     fi
     _tier_sleep
 
@@ -1888,13 +1888,13 @@ test_22_deserialization() {
                 ".NET ViewState — Suspiciously Short ViewState Detected (${ip}:${port})" \
                 "ViewState at ${base_url}/ is unusually short (${#vs_value} chars), suggesting MAC protection may be disabled (enableViewStateMac=false). If confirmed, ysoserial.net gadget chains can achieve RCE via a crafted ViewState." \
                 "Ensure enableViewStateMac=true and ViewStateEncryptionMode=Always in web.config. Use a strong, unique MachineKey. Verify with Blacklist3r to rule out known MachineKey exposure." \
-                "ev-08-${ip//./_}-t22-viewstate"
+                "ev-09-${ip//./_}-t22-viewstate"
         else
             emit_finding "info" \
                 ".NET ViewState Present — MAC Enforcement Verification Recommended (${ip}:${port})" \
                 "ASP.NET ViewState found on ${base_url}. Manual verification with Blacklist3r/ysoserial.net is recommended to confirm MAC enforcement and rule out known MachineKey leaks." \
                 "Verify enableViewStateMac=true in web.config. Ensure MachineKey is unique and not derived from known defaults." \
-                "ev-08-${ip//./_}-t22-viewstate-info"
+                "ev-09-${ip//./_}-t22-viewstate-info"
         fi
     fi
 
@@ -1902,7 +1902,7 @@ test_22_deserialization() {
 }
 
 # =============================================================================
-# MRK:08_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX
+# MRK:09_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX
 # ⚠ read-toc-first
 # =============================================================================
 
@@ -1939,7 +1939,7 @@ test_23_file_upload_bypass() {
     fi
 
     log_info "T23: Found ${#upload_endpoints[@]} upload endpoint(s)"
-    local ev_tag_base="ev-08-${ip//./_}-t23"
+    local ev_tag_base="ev-09-${ip//./_}-t23"
 
     for ep in "${upload_endpoints[@]}"; do
         # Test 1: Magic bytes bypass — GIF89a header + PHP payload
@@ -2007,7 +2007,7 @@ test_23_file_upload_bypass() {
 }
 
 # =============================================================================
-# MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX
+# MRK:09_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -2083,12 +2083,12 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:08_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1707-1819
+# MRK:09_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1707-1819
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
 main() {
-    log "PT-Orc 08_app_api_review.sh v2.0 — OWASP API Top 10 + Advanced Attacks"
+    log "PT-Orc 09_app_api_review.sh v2.0 — OWASP API Top 10 + Advanced Attacks"
     log "Session: ${SESSION_TS} | Profile: ${PROFILE} | Tier: ${TIER}"
     [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && log_info "Intercept proxy: ${CURL_PROXY_ARGS[*]}"
 
@@ -2116,7 +2116,7 @@ main() {
     done
 
     # ── Markdown summary ─────────────────────────────────────────────────────
-    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "08-appapi-summary" "md")"
+    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "09-appapi-summary" "md")"
     {
         echo "# App/API Review Summary — ${PROJECT_NAME:-unknown}"
         echo ""
@@ -2179,7 +2179,7 @@ main() {
         echo "\`${EVIDENCE_BASE}\`"
         echo ""
         echo "---"
-        echo "*Generated by PT-Orc 08_app_api_review.sh v2.1 — TechGuard Labs*"
+        echo "*Generated by PT-Orc 09_app_api_review.sh v2.1 — TechGuard Labs*"
         echo "*Profile: ${PROFILE} | OWASP API Top 10 (2023) + JWT/GraphQL/SSRF/XXE/SSTI/Smuggling/Deserial/UploadBypass*"
     } > "$summary_md"
 
@@ -2188,7 +2188,7 @@ main() {
     log_ok "Evidence: ${EVIDENCE_BASE}"
 
     if command -v trail_phase_end &>/dev/null; then
-        trail_phase_end "08_app_api" "${_FIND_CTR} findings" "$summary_md"
+        trail_phase_end "09_app_api" "${_FIND_CTR} findings" "$summary_md"
     fi
 
     # Print summary to stdout for pipeline consumption

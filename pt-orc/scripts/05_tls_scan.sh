@@ -2,22 +2,22 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:04_NAV_TOC — Section index | nav,toc,index | L5-48
-# MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-58 | ⚠ no-insert-before
-# MRK:04_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L60-87 | ⚠ no-insert-before; propose-before-edit
-# MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L89-134 | ⚠ no-insert-before
-# MRK:04_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L136-156 | ⚠ no-insert-before; propose-before-edit
-# MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L158-175 | ⚠ no-insert-before
-# MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L177-244 | ⚠ no-insert-before; read-toc-first
-# MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L246-270 | ⚠ no-insert-before; propose-before-edit
-# MRK:04_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L272-328 | ⚠ no-insert-before; read-toc-first
-# MRK:04_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L330-788 | ⚠ no-insert-before; read-toc-first
-# MRK:04_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L790-808 | ⚠ no-insert-before
-# MRK:04_MAIN — MAIN entry point | main,entry,point | L810-884 | ⚠ no-insert-before; read-toc-first
+# MRK:05_NAV_TOC — Section index | nav,toc,index | L5-48
+# MRK:05_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-58 | ⚠ no-insert-before
+# MRK:05_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L60-87 | ⚠ no-insert-before; propose-before-edit
+# MRK:05_LOG — COLOURS AND LOGGING | log,colours,logging | L89-134 | ⚠ no-insert-before
+# MRK:05_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L136-156 | ⚠ no-insert-before; propose-before-edit
+# MRK:05_ARGS — ARGUMENT PARSING | args,argument,parsing | L158-175 | ⚠ no-insert-before
+# MRK:05_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L177-244 | ⚠ no-insert-before; read-toc-first
+# MRK:05_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L246-270 | ⚠ no-insert-before; propose-before-edit
+# MRK:05_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L272-328 | ⚠ no-insert-before; read-toc-first
+# MRK:05_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L330-788 | ⚠ no-insert-before; read-toc-first
+# MRK:05_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L790-808 | ⚠ no-insert-before
+# MRK:05_MAIN — MAIN entry point | main,entry,point | L810-884 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 12 entries | Integrity-hash: 04bf07ede641cb6e | Last-indexed: 2026-06-16T08:16:14Z
 
 # =============================================================================
-# 04_tls_scan.sh — TechGuard. [VAPT-enhanced]
+# 05_tls_scan.sh — TechGuard. [VAPT-enhanced]
 # TLS/Certificate assessment — separate from main scan
 # VAPT additions: CT log lookup (crt.sh), certificate key size & SAN check,
 #   ALPACA attack hint, ROBOT attack check (RSA key exchange), HSTS preload
@@ -27,7 +27,7 @@
 # Or:       --targets <file>  or  --host <IP:PORT>
 # =============================================================================
 # USAGE:
-#   ./04_tls_scan.sh [OPTIONS]
+#   ./05_tls_scan.sh [OPTIONS]
 #
 # OPTIONS:
 #   --targets <file>    File with host:port entries (default: working/tls_targets.txt)
@@ -47,7 +47,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:04_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-58
+# MRK:05_ROOT — ROOT CHECK | root,check,db,nmap,requires | L50-58
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -57,7 +57,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:04_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L60-87
+# MRK:05_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L60-87
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -86,7 +86,7 @@ EXTRA_HOSTS=()
 AUTO_YES=0
 
 # =============================================================================
-# MRK:04_LOG — COLOURS AND LOGGING | log,colours,logging | L89-134
+# MRK:05_LOG — COLOURS AND LOGGING | log,colours,logging | L89-134
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -118,10 +118,10 @@ _FIND_CTR=0
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4"
     (( _FIND_CTR++ )) || true
-    local fid="f-04-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-04-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-05-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-05-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"04_tls_scan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"05_tls_scan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -135,7 +135,7 @@ emit_finding() {
 # Ownership helper removed per operator preference; leave ownership as-is
 
 # =============================================================================
-# MRK:04_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L136-156
+# MRK:05_DB — MSF DB CREDENTIALS | db,msf,credentials,tcp,peer | L136-156
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -157,7 +157,7 @@ parse_db_conf() {
 }
 
 # =============================================================================
-# MRK:04_ARGS — ARGUMENT PARSING | args,argument,parsing | L158-175
+# MRK:05_ARGS — ARGUMENT PARSING | args,argument,parsing | L158-175
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -176,7 +176,7 @@ done
 
 
 # =============================================================================
-# MRK:04_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L177-244
+# MRK:05_SCAN — SCAN EXECUTION MODEL | scan,execution,model,rc,spool | L177-244
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -245,7 +245,7 @@ export_db() {
 }
 
 # =============================================================================
-# MRK:04_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L246-270
+# MRK:05_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L246-270
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -254,7 +254,7 @@ scope_confirm() {
     [[ "${AUTO_YES:-0}" -eq 1 ]] && return 0
     echo ""
     echo -e "\033[1m\033[1;33m════════════════════════════════════════════════\033[0m"
-    echo -e "\033[1m  SCOPE CONFIRMATION — 04_tls_scan.sh\033[0m"
+    echo -e "\033[1m  SCOPE CONFIRMATION — 05_tls_scan.sh\033[0m"
     echo -e "\033[1m\033[1;33m════════════════════════════════════════════════\033[0m"
     printf "  %-22s %s\n" "Project:"    "${PROJECT_NAME}"
     printf "  %-22s %s\n" "Targets:"    "${target_count}"
@@ -271,7 +271,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:04_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L272-328
+# MRK:05_TARGETS — TARGET LIST ASSEMBLY | targets,target,list,assembly,host | L272-328
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -329,7 +329,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:04_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L330-788
+# MRK:05_ASSESS — PER-HOST TLS ASSESSMENT | assess,host,tls,assessment,cert | L330-788
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -791,7 +791,7 @@ print('\n'.join(sorted(names)))" 2>/dev/null || true)
 }
 
 # =============================================================================
-# MRK:04_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L790-808
+# MRK:05_SCREENS — SCREENSHOT CAPTURE | screens,screenshot,capture,external,grabscores | L790-808
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -811,14 +811,14 @@ run_grab_scores() {
 }
 
 # =============================================================================
-# MRK:04_MAIN — MAIN entry point | main,entry,point | L810-884
+# MRK:05_MAIN — MAIN entry point | main,entry,point | L810-884
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
 main() {
     echo -e "${GREEN}"
     echo "════════════════════════════════════════════════"
-    echo "  04_tls_scan.sh"
+    echo "  05_tls_scan.sh"
     echo "  TechGuard."
     echo "  Project: ${PROJECT_NAME}"
     echo "  Mode:    $([ "$FAST_MODE" -eq 1 ] && echo "fast" || echo "full (testssl)")"
@@ -868,7 +868,7 @@ EOF
     echo "- **Count:** ${_FIND_CTR}" >> "$TLS_SUMMARY_FILE"
     echo "- **File:** \`${FINDINGS_FILE}\`" >> "$TLS_SUMMARY_FILE"
     echo "" >> "$TLS_SUMMARY_FILE"
-    echo "*04_tls_scan.sh | TechGuard. | Findings: ${_FIND_CTR}*" \
+    echo "*05_tls_scan.sh | TechGuard. | Findings: ${_FIND_CTR}*" \
         >> "$TLS_SUMMARY_FILE"
 
     export_db "tls"

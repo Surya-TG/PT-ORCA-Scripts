@@ -2,25 +2,25 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:06_NAV_TOC — Section index | nav,toc,index | L5-45
-# - MRK:06_LOG — COLOURS AND LOGGING | log,colours,logging | L46-63 | ⚠ no-insert-before
-# - MRK:06_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L64-111 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:06_USAGE — USAGE | usage,06 | L112-142 | ⚠ no-insert-before
-# - MRK:06_ARGS — ARGUMENT PARSING | args,argument,parsing | L143-165 | ⚠ no-insert-before
-# - MRK:06_DEPS — DEPENDENCY CHECK | deps,dependency,check | L166-197 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_DETECT — PHASE 1 WP DETECTION SWEEP | detect,phase,wp,detection,sweep | L198-306 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_LOAD — PHASE 2 TARGET LOADING | load,phase,target,loading,read | L307-336 | ⚠ no-insert-before
-# - MRK:06_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L337-370 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:06_HELP — HELPERS | help,helpers,sanitize,label,url | L371-388 | ⚠ no-insert-before
-# - MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L389-417 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L418-433 | ⚠ no-insert-before
-# - MRK:06_ASSESS — PER-TARGET ASSESSMENT | assess,target,assessment,step,basic | L434-984 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_REPORT — CONSOLIDATED REPORT | report,consolidated,working,wpscan,ts | L985-1152 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_MAIN — MAIN entry point | main,entry,point | L1153-1238 | ⚠ no-insert-before; read-toc-first
+# MRK:07_NAV_TOC — Section index | nav,toc,index | L5-45
+# - MRK:07_LOG — COLOURS AND LOGGING | log,colours,logging | L46-63 | ⚠ no-insert-before
+# - MRK:07_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L64-111 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:07_USAGE — USAGE | usage,06 | L112-142 | ⚠ no-insert-before
+# - MRK:07_ARGS — ARGUMENT PARSING | args,argument,parsing | L143-165 | ⚠ no-insert-before
+# - MRK:07_DEPS — DEPENDENCY CHECK | deps,dependency,check | L166-197 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_DETECT — PHASE 1 WP DETECTION SWEEP | detect,phase,wp,detection,sweep | L198-306 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_LOAD — PHASE 2 TARGET LOADING | load,phase,target,loading,read | L307-336 | ⚠ no-insert-before
+# - MRK:07_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L337-370 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:07_HELP — HELPERS | help,helpers,sanitize,label,url | L371-388 | ⚠ no-insert-before
+# - MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L389-417 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L418-433 | ⚠ no-insert-before
+# - MRK:07_ASSESS — PER-TARGET ASSESSMENT | assess,target,assessment,step,basic | L434-984 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_REPORT — CONSOLIDATED REPORT | report,consolidated,working,wpscan,ts | L985-1152 | ⚠ no-insert-before; read-toc-first
+# - MRK:07_MAIN — MAIN entry point | main,entry,point | L1153-1238 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 14 entries | Integrity-hash: aa11caa05f43cfa5 | Last-indexed: 2026-06-16T15:36:37Z
 
 # =============================================================================
-# 06_wpscan.sh — WordPress Detection & Security Assessment — TechGuard.
+# 07_wpscan.sh — WordPress Detection & Security Assessment — TechGuard.
 # =============================================================================
 # Purpose:
 #   Two-phase WordPress assessment:
@@ -43,7 +43,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:06_LOG — COLOURS AND LOGGING | log,colours,logging | L46-63
+# MRK:07_LOG — COLOURS AND LOGGING | log,colours,logging | L46-63
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -61,7 +61,7 @@ log_err()  { echo -e "${RED}[$(_now)] ✗${NC} $*" >&2; }
 log_info() { echo -e "${CYAN}[$(_now)]   ${NC}$*"; }
 
 # =============================================================================
-# MRK:06_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L64-111
+# MRK:07_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L64-111
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -110,7 +110,7 @@ DO_DETECT=0
 DETECT_ONLY=0
 
 # =============================================================================
-# MRK:06_USAGE — USAGE | usage,06 | L112-142
+# MRK:07_USAGE — USAGE | usage,06 | L112-142
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -141,7 +141,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:06_ARGS — ARGUMENT PARSING | args,argument,parsing | L143-165
+# MRK:07_ARGS — ARGUMENT PARSING | args,argument,parsing | L143-165
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -164,7 +164,7 @@ parse_args() {
 }
 
 # =============================================================================
-# MRK:06_DEPS — DEPENDENCY CHECK | deps,dependency,check | L166-197
+# MRK:07_DEPS — DEPENDENCY CHECK | deps,dependency,check | L166-197
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -196,7 +196,7 @@ check_deps() {
 }
 
 # =============================================================================
-# MRK:06_DETECT — PHASE 1 WP DETECTION SWEEP | detect,phase,wp,detection,sweep | L198-306
+# MRK:07_DETECT — PHASE 1 WP DETECTION SWEEP | detect,phase,wp,detection,sweep | L198-306
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -308,7 +308,7 @@ detect_wordpress() {
 }
 
 # =============================================================================
-# MRK:06_LOAD — PHASE 2 TARGET LOADING | load,phase,target,loading,read | L307-336
+# MRK:07_LOAD — PHASE 2 TARGET LOADING | load,phase,target,loading,read | L307-336
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -338,7 +338,7 @@ load_wp_targets() {
 }
 
 # =============================================================================
-# MRK:06_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L337-370
+# MRK:07_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L337-370
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -348,7 +348,7 @@ scope_confirm() {
 
     echo ""
     echo -e "${BOLD}${YELLOW}════════════════════════════════════════════════${NC}"
-    echo -e "${BOLD}  SCOPE CONFIRMATION — 06_wpscan.sh${NC}"
+    echo -e "${BOLD}  SCOPE CONFIRMATION — 07_wpscan.sh${NC}"
     echo -e "${BOLD}${YELLOW}════════════════════════════════════════════════${NC}"
     printf "  %-24s %s\n" "Project:"       "$PROJECT_NAME"
     printf "  %-24s %s\n" "Mode:"          "$MODE"
@@ -372,7 +372,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:06_HELP — HELPERS | help,helpers,sanitize,label,url | L371-388
+# MRK:07_HELP — HELPERS | help,helpers,sanitize,label,url | L371-388
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -390,7 +390,7 @@ sanitize_label() {
 }
 
 # =============================================================================
-# MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L389-417
+# MRK:07_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L389-417
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -403,11 +403,11 @@ emit_finding() {
     (( _FIND_CTR++ )) || true
     local tgt_slug
     tgt_slug=$(sanitize_label "${_CURRENT_TARGET:-unknown}")
-    local fid="f-06-${tgt_slug}-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-06-${tgt_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-07-${tgt_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-07-${tgt_slug}-$(printf '%03d' "${_FIND_CTR}")"
     [[ -n "$FINDINGS_FILE" ]] || return 0
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"06_wpscan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"07_wpscan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -419,7 +419,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:06_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L418-433
+# MRK:07_STATE — PER-TARGET ACCUMULATORS | state,target,accumulators,indexed,url | L418-433
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -435,7 +435,7 @@ declare -A WP_SEC_HEADERS
 declare -A WP_API_USED
 
 # =============================================================================
-# MRK:06_ASSESS — PER-TARGET ASSESSMENT | assess,target,assessment,step,basic | L434-984
+# MRK:07_ASSESS — PER-TARGET ASSESSMENT | assess,target,assessment,step,basic | L434-984
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -975,7 +975,7 @@ assess_wordpress() {
 $(ls -1 "${outdir}/" 2>/dev/null | sed "s|^|  - evidence/_wpscan/${label}/|" || true)
 
 ---
-*06_wpscan.sh | TechGuard | ${PROJECT_NAME}*
+*07_wpscan.sh | TechGuard | ${PROJECT_NAME}*
 EOF
         } > "$summary_file" || true
         log_ok "  Per-target summary: ${summary_file}"
@@ -986,7 +986,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:06_REPORT — CONSOLIDATED REPORT | report,consolidated,working,wpscan,ts | L985-1152
+# MRK:07_REPORT — CONSOLIDATED REPORT | report,consolidated,working,wpscan,ts | L985-1152
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1022,7 +1022,7 @@ write_report() {
 | Date         | $(_now) |
 | Mode         | ${MODE} |
 | Tier         | ${TIER} |
-| Script       | 06_wpscan.sh |
+| Script       | 07_wpscan.sh |
 | Targets      | ${#WP_TARGETS[@]} |
 | API Token    | $([ -n "$WPSCAN_API_TOKEN" ] && echo "configured" || echo "not set") |
 
@@ -1146,7 +1146,7 @@ RECS
 
         echo ""
         echo "---"
-        echo "*06_wpscan.sh | TechGuard | ${PROJECT_NAME}*"
+        echo "*07_wpscan.sh | TechGuard | ${PROJECT_NAME}*"
 
     } > "$report_file" || true
 
@@ -1154,7 +1154,7 @@ RECS
 }
 
 # =============================================================================
-# MRK:06_MAIN — MAIN entry point | main,entry,point | L1153-1238
+# MRK:07_MAIN — MAIN entry point | main,entry,point | L1153-1238
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1170,7 +1170,7 @@ main() {
 
     echo -e "${GREEN}"
     echo "════════════════════════════════════════════════"
-    echo "  06_wpscan.sh"
+    echo "  07_wpscan.sh"
     echo "  TechGuard."
     echo "  Project: ${PROJECT_NAME}"
     echo "  Mode:    ${MODE} | Tier: ${TIER}"
@@ -1198,7 +1198,7 @@ main() {
 
         mkdir -p "${EVIDENCE_BASE}/_wpscan"
         mkdir -p "${SCRIPT_DIR}/working"
-        FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "06-wpscan-findings" "jsonl")"
+        FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "07-wpscan-findings" "jsonl")"
         : > "$FINDINGS_FILE"
 
         local total="${#WP_TARGETS[@]}"

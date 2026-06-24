@@ -2,66 +2,66 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:11_NAV_TOC — Section index | nav,toc,index | L5-32
-# - MRK:11_T01 — T01 DC DISCOVERY & PORT MAP | t01,dc,discovery,port,map | L33-33
-# - MRK:11_T02 — T02 LDAP ENUMERATION (NULL + AUTH) | t02,ldap,enumeration,null,auth | L34-34
-# - MRK:11_T03 — T03 NETBIOS / RPC ENUMERATION | t03,netbios,rpc,enumeration | L35-35
-# - MRK:11_T04 — T04 SMB NULL SESSION & SHARE ENUM | t04,smb,null,session,share | L36-36
-# - MRK:11_T05 — T05 KERBEROASTING (GetUserSPNs) | t05,kerberoasting,getuserspns | L37-37
-# - MRK:11_T06 — T06 AS-REP ROASTING | t06,rep,roasting | L38-38
-# - MRK:11_T07 — T07 PASSWORD POLICY ENUMERATION | t07,password,policy,enumeration | L39-39
-# - MRK:11_T08 — T08 PRIVILEGED GROUP ENUMERATION | t08,privileged,group,enumeration | L40-40
-# - MRK:11_T09 — T09 LLMNR / NBT-NS POISONING DETECTION | t09,llmnr,nbt,ns,poisoning | L41-41
-# - MRK:11_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8) | t10,adcs,template,enumeration,esc1 | L42-42
-# - MRK:11_T11 — T11 BLOODHOUND COLLECTION | t11,bloodhound,collection | L43-43
-# - MRK:11_T12 — T12 GPO ENUMERATION | t12,gpo,enumeration | L44-44
-# - MRK:11_T13 — T13 ACL / ADMINSD HOLDER REVIEW | t13,acl,adminsd,holder,review | L45-45
-# - MRK:11_T14 — T14 DELEGATION ENUMERATION | t14,delegation,enumeration | L46-46
-# - MRK:11_T15 — T15 DOMAIN TRUST MAPPING | t15,domain,trust,mapping | L47-47
-# - MRK:11_T16 — T16 PASSWORD SPRAYING (DEEP ONLY) | t16,password,spraying,deep | L48-48
-# - MRK:11_T17 — T17 DCSYNC RIGHTS CHECK | t17,dcsync,rights,check | L49-49
-# - MRK:11_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE | t18,kerberos,ticket,hash,attack | L50-1477
-# - MRK:11_T19 — T19 SHADOW CREDENTIALS (msDS-KeyCredentialLink) | t19,shadow,credentials,pkinit,keycredential | LXXXX-XXXX
-# - MRK:11_T20 — T20 RESOURCE-BASED CONSTRAINED DELEGATION (RBCD) | t20,rbcd,delegation,s4u | LXXXX-XXXX
-# - MRK:11_T21 — T21 ADCS ESC9–ESC13 | t21,adcs,esc9,esc10,esc11,esc13,certipy | LXXXX-XXXX
-# - MRK:11_T22 — T22 SCCM/MECM ATTACK SURFACE | t22,sccm,mecm,pxe,naa,configmgr | LXXXX-XXXX
+# MRK:12_NAV_TOC — Section index | nav,toc,index | L5-32
+# - MRK:12_T01 — T01 DC DISCOVERY & PORT MAP | t01,dc,discovery,port,map | L33-33
+# - MRK:12_T02 — T02 LDAP ENUMERATION (NULL + AUTH) | t02,ldap,enumeration,null,auth | L34-34
+# - MRK:12_T03 — T03 NETBIOS / RPC ENUMERATION | t03,netbios,rpc,enumeration | L35-35
+# - MRK:12_T04 — T04 SMB NULL SESSION & SHARE ENUM | t04,smb,null,session,share | L36-36
+# - MRK:12_T05 — T05 KERBEROASTING (GetUserSPNs) | t05,kerberoasting,getuserspns | L37-37
+# - MRK:12_T06 — T06 AS-REP ROASTING | t06,rep,roasting | L38-38
+# - MRK:12_T07 — T07 PASSWORD POLICY ENUMERATION | t07,password,policy,enumeration | L39-39
+# - MRK:12_T08 — T08 PRIVILEGED GROUP ENUMERATION | t08,privileged,group,enumeration | L40-40
+# - MRK:12_T09 — T09 LLMNR / NBT-NS POISONING DETECTION | t09,llmnr,nbt,ns,poisoning | L41-41
+# - MRK:12_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8) | t10,adcs,template,enumeration,esc1 | L42-42
+# - MRK:12_T11 — T11 BLOODHOUND COLLECTION | t11,bloodhound,collection | L43-43
+# - MRK:12_T12 — T12 GPO ENUMERATION | t12,gpo,enumeration | L44-44
+# - MRK:12_T13 — T13 ACL / ADMINSD HOLDER REVIEW | t13,acl,adminsd,holder,review | L45-45
+# - MRK:12_T14 — T14 DELEGATION ENUMERATION | t14,delegation,enumeration | L46-46
+# - MRK:12_T15 — T15 DOMAIN TRUST MAPPING | t15,domain,trust,mapping | L47-47
+# - MRK:12_T16 — T16 PASSWORD SPRAYING (DEEP ONLY) | t16,password,spraying,deep | L48-48
+# - MRK:12_T17 — T17 DCSYNC RIGHTS CHECK | t17,dcsync,rights,check | L49-49
+# - MRK:12_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE | t18,kerberos,ticket,hash,attack | L50-1477
+# - MRK:12_T19 — T19 SHADOW CREDENTIALS (msDS-KeyCredentialLink) | t19,shadow,credentials,pkinit,keycredential | LXXXX-XXXX
+# - MRK:12_T20 — T20 RESOURCE-BASED CONSTRAINED DELEGATION (RBCD) | t20,rbcd,delegation,s4u | LXXXX-XXXX
+# - MRK:12_T21 — T21 ADCS ESC9–ESC13 | t21,adcs,esc9,esc10,esc11,esc13,certipy | LXXXX-XXXX
+# - MRK:12_T22 — T22 SCCM/MECM ATTACK SURFACE | t22,sccm,mecm,pxe,naa,configmgr | LXXXX-XXXX
 # NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-24
 # <!-- NAV-NEEDS-REINDEX: 2026-06-24 — T19 Shadow Creds, T20 RBCD, T21 ESC9-13, T22 SCCM added -->
 
 # =============================================================================
-# 11_active_directory.sh — Active Directory / Windows Domain Security Testing
+# 12_active_directory.sh — Active Directory / Windows Domain Security Testing
 # TechGuard Labs | PT-Orc Suite v0.8
 # =============================================================================
-# NAV: MRK:11_TOC (this block) | MRK:11_ROOT | MRK:11_CONF | MRK:11_LOG
-#      MRK:11_ARGS | MRK:11_CONFIRM | MRK:11_TARGETS
-#      MRK:11_FIND | MRK:11_UTILS | MRK:11_PROF
-#      MRK:11_T01 — T01 DC DISCOVERY & PORT MAP | t01,dc,discovery,port,map | L33-33
-#      MRK:11_T02 — T02 LDAP ENUMERATION (NULL + AUTH) | t02,ldap,enumeration,null,auth | L34-34
-#      MRK:11_T03 — T03 NETBIOS / RPC ENUMERATION | t03,netbios,rpc,enumeration | L35-35
-#      MRK:11_T04 — T04 SMB NULL SESSION & SHARE ENUM | t04,smb,null,session,share | L36-36
-#      MRK:11_T05 — T05 KERBEROASTING (GetUserSPNs) | t05,kerberoasting,getuserspns | L37-37
-#      MRK:11_T06 — T06 AS-REP ROASTING | t06,rep,roasting | L38-38
-#      MRK:11_T07 — T07 PASSWORD POLICY ENUMERATION | t07,password,policy,enumeration | L39-39
-#      MRK:11_T08 — T08 PRIVILEGED GROUP ENUMERATION | t08,privileged,group,enumeration | L40-40
-#      MRK:11_T09 — T09 LLMNR / NBT-NS POISONING DETECTION | t09,llmnr,nbt,ns,poisoning | L41-41
-#      MRK:11_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8) | t10,adcs,template,enumeration,esc1 | L42-42
-#      MRK:11_T11 — T11 BLOODHOUND COLLECTION | t11,bloodhound,collection | L43-43
-#      MRK:11_T12 — T12 GPO ENUMERATION | t12,gpo,enumeration | L44-44
-#      MRK:11_T13 — T13 ACL / ADMINSD HOLDER REVIEW | t13,acl,adminsd,holder,review | L45-45
-#      MRK:11_T14 — T14 DELEGATION ENUMERATION | t14,delegation,enumeration | L46-46
-#      MRK:11_T15 — T15 DOMAIN TRUST MAPPING | t15,domain,trust,mapping | L47-47
-#      MRK:11_T16 — T16 PASSWORD SPRAYING (DEEP ONLY) | t16,password,spraying,deep | L48-48
-#      MRK:11_T17 — T17 DCSYNC RIGHTS CHECK | t17,dcsync,rights,check | L49-49
-#      MRK:11_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE | t18,kerberos,ticket,hash,attack | L50-1477
-#      MRK:11_TRUN | MRK:11_MAIN
+# NAV: MRK:12_TOC (this block) | MRK:12_ROOT | MRK:12_CONF | MRK:12_LOG
+#      MRK:12_ARGS | MRK:12_CONFIRM | MRK:12_TARGETS
+#      MRK:12_FIND | MRK:12_UTILS | MRK:12_PROF
+#      MRK:12_T01 — T01 DC DISCOVERY & PORT MAP | t01,dc,discovery,port,map | L33-33
+#      MRK:12_T02 — T02 LDAP ENUMERATION (NULL + AUTH) | t02,ldap,enumeration,null,auth | L34-34
+#      MRK:12_T03 — T03 NETBIOS / RPC ENUMERATION | t03,netbios,rpc,enumeration | L35-35
+#      MRK:12_T04 — T04 SMB NULL SESSION & SHARE ENUM | t04,smb,null,session,share | L36-36
+#      MRK:12_T05 — T05 KERBEROASTING (GetUserSPNs) | t05,kerberoasting,getuserspns | L37-37
+#      MRK:12_T06 — T06 AS-REP ROASTING | t06,rep,roasting | L38-38
+#      MRK:12_T07 — T07 PASSWORD POLICY ENUMERATION | t07,password,policy,enumeration | L39-39
+#      MRK:12_T08 — T08 PRIVILEGED GROUP ENUMERATION | t08,privileged,group,enumeration | L40-40
+#      MRK:12_T09 — T09 LLMNR / NBT-NS POISONING DETECTION | t09,llmnr,nbt,ns,poisoning | L41-41
+#      MRK:12_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8) | t10,adcs,template,enumeration,esc1 | L42-42
+#      MRK:12_T11 — T11 BLOODHOUND COLLECTION | t11,bloodhound,collection | L43-43
+#      MRK:12_T12 — T12 GPO ENUMERATION | t12,gpo,enumeration | L44-44
+#      MRK:12_T13 — T13 ACL / ADMINSD HOLDER REVIEW | t13,acl,adminsd,holder,review | L45-45
+#      MRK:12_T14 — T14 DELEGATION ENUMERATION | t14,delegation,enumeration | L46-46
+#      MRK:12_T15 — T15 DOMAIN TRUST MAPPING | t15,domain,trust,mapping | L47-47
+#      MRK:12_T16 — T16 PASSWORD SPRAYING (DEEP ONLY) | t16,password,spraying,deep | L48-48
+#      MRK:12_T17 — T17 DCSYNC RIGHTS CHECK | t17,dcsync,rights,check | L49-49
+#      MRK:12_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE | t18,kerberos,ticket,hash,attack | L50-1477
+#      MRK:12_TRUN | MRK:12_MAIN
 # =============================================================================
 
-# - MRK:11_ROOT
+# - MRK:12_ROOT
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# - MRK:11_CONF
+# - MRK:12_CONF
 CONF_FILE="${SCRIPT_DIR}/pt-orc.conf"
 [[ -f "$CONF_FILE" ]] || { echo "[FATAL] pt-orc.conf not found at ${CONF_FILE}"; exit 1; }
 # shellcheck source=pt-orc.conf
@@ -76,7 +76,7 @@ DRY_RUN=0
 SCAN_PROFILE="${SCAN_PROFILE:-standard}"
 AD_TIMEOUT=30
 
-# - MRK:11_LOG
+# - MRK:12_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
@@ -90,7 +90,7 @@ log_wrn() { printf "${_Y}[!]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_err() { printf "${_R}[-]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_dry() { printf "${_C}[DRY]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 
-# - MRK:11_ARGS
+# - MRK:12_ARGS
 _SKIP_CONFIRM=0
 _ONLY_TESTS=()
 _SKIP_TESTS=()
@@ -160,7 +160,7 @@ elif [[ -n "${AD_USERNAME:-}" && -n "${AD_NT_HASH:-}" ]]; then
     _HAS_CREDS=1
 fi
 
-# - MRK:11_CONFIRM
+# - MRK:12_CONFIRM
 _confirm() {
     [[ "$_SKIP_CONFIRM" -eq 1 ]] && return 0
     printf "\n${_Y}[CONFIRM]${_N} Active Directory testing. Profile: ${_W}%s${_N}\n" "$SCAN_PROFILE"
@@ -176,7 +176,7 @@ _confirm() {
     [[ "${_ans,,}" == "y" ]] || { log_err "Aborted by user."; exit 0; }
 }
 
-# - MRK:11_TARGETS
+# - MRK:12_TARGETS
 _validate_config() {
     local ok=1
     if [[ -z "${AD_DC_IP:-}" ]]; then
@@ -190,8 +190,8 @@ _validate_config() {
     [[ "$ok" -eq 1 ]]
 }
 
-# - MRK:11_FIND
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "11-ad-findings" "jsonl")"
+# - MRK:12_FIND
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "12-ad-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
 
@@ -199,10 +199,10 @@ emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
     (( _FIND_CTR++ )) || true
     local fid
-    fid="f-11-ad-$(printf '%04d' "$_FIND_CTR")"
+    fid="f-12-ad-$(printf '%04d' "$_FIND_CTR")"
     local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"11_ad","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"12_ad","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -213,7 +213,7 @@ emit_finding() {
     log_wrn "FINDING [${sev^^}] ${title}"
 }
 
-# - MRK:11_UTILS
+# - MRK:12_UTILS
 _check_tool() {
     local tool="$1"
     command -v "$tool" &>/dev/null
@@ -251,7 +251,7 @@ _apply_cli_filters() {
     done
 }
 
-# - MRK:11_PROF
+# - MRK:12_PROF
 setup_profile() {
     local prof="${1:-standard}"
     for n in T01 T02 T03 T04 T05 T06 T07 T08 T09 T10 T11 T12 T13 T14 T15 T16 T17 T18 T19 T20 T21 T22; do
@@ -280,7 +280,7 @@ setup_profile() {
 # TESTS
 # =============================================================================
 
-# - MRK:11_T01 — T01 DC DISCOVERY & PORT MAP
+# - MRK:12_T01 — T01 DC DISCOVERY & PORT MAP
 test_T01_dc_discovery() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "dc_discovery")"
@@ -327,7 +327,7 @@ test_T01_dc_discovery() {
     log_ok "  DC port scan complete — see ${ev_f}"
 }
 
-# - MRK:11_T02 — T02 LDAP ENUMERATION (NULL + AUTH)
+# - MRK:12_T02 — T02 LDAP ENUMERATION (NULL + AUTH)
 test_T02_ldap_enum() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "ldap_enum")"
@@ -386,7 +386,7 @@ test_T02_ldap_enum() {
     fi
 }
 
-# - MRK:11_T03 — T03 NETBIOS / RPC ENUMERATION
+# - MRK:12_T03 — T03 NETBIOS / RPC ENUMERATION
 test_T03_netbios_rpc() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "netbios_rpc")"
@@ -437,7 +437,7 @@ test_T03_netbios_rpc() {
     fi
 }
 
-# - MRK:11_T04 — T04 SMB NULL SESSION & SHARE ENUMERATION
+# - MRK:12_T04 — T04 SMB NULL SESSION & SHARE ENUMERATION
 test_T04_smb_shares() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "smb_shares")"
@@ -505,7 +505,7 @@ test_T04_smb_shares() {
     fi
 }
 
-# - MRK:11_T05 — T05 KERBEROASTING (GetUserSPNs)
+# - MRK:12_T05 — T05 KERBEROASTING (GetUserSPNs)
 test_T05_kerberoasting() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "kerberoasting")"
@@ -563,7 +563,7 @@ test_T05_kerberoasting() {
     fi
 }
 
-# - MRK:11_T06 — T06 AS-REP ROASTING
+# - MRK:12_T06 — T06 AS-REP ROASTING
 test_T06_asrep_roasting() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "asrep_roasting")"
@@ -628,7 +628,7 @@ test_T06_asrep_roasting() {
     fi
 }
 
-# - MRK:11_T07 — T07 PASSWORD POLICY ENUMERATION
+# - MRK:12_T07 — T07 PASSWORD POLICY ENUMERATION
 test_T07_password_policy() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "password_policy")"
@@ -698,7 +698,7 @@ test_T07_password_policy() {
     log_ok "  Password policy enumeration complete"
 }
 
-# - MRK:11_T08 — T08 PRIVILEGED GROUP ENUMERATION
+# - MRK:12_T08 — T08 PRIVILEGED GROUP ENUMERATION
 test_T08_priv_groups() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "priv_groups")"
@@ -762,7 +762,7 @@ test_T08_priv_groups() {
     log_ok "  Privileged group enumeration complete"
 }
 
-# - MRK:11_T09 — T09 LLMNR / NBT-NS POISONING DETECTION
+# - MRK:12_T09 — T09 LLMNR / NBT-NS POISONING DETECTION
 test_T09_llmnr_detection() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "llmnr_detection")"
@@ -822,7 +822,7 @@ test_T09_llmnr_detection() {
     fi
 }
 
-# - MRK:11_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8)
+# - MRK:12_T10 — T10 ADCS TEMPLATE ENUMERATION (ESC1-ESC8)
 test_T10_adcs_enum() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "adcs_enum")"
@@ -889,7 +889,7 @@ test_T10_adcs_enum() {
     fi
 }
 
-# - MRK:11_T11 — T11 BLOODHOUND COLLECTION
+# - MRK:12_T11 — T11 BLOODHOUND COLLECTION
 test_T11_bloodhound() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "bloodhound")"
@@ -948,7 +948,7 @@ test_T11_bloodhound() {
     fi
 }
 
-# - MRK:11_T12 — T12 GPO ENUMERATION
+# - MRK:12_T12 — T12 GPO ENUMERATION
 test_T12_gpo_enum() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "gpo_enum")"
@@ -1002,7 +1002,7 @@ test_T12_gpo_enum() {
     fi
 }
 
-# - MRK:11_T13 — T13 ACL / ADMINSD HOLDER REVIEW
+# - MRK:12_T13 — T13 ACL / ADMINSD HOLDER REVIEW
 test_T13_acl_review() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "acl_review")"
@@ -1049,7 +1049,7 @@ test_T13_acl_review() {
     log_inf "  Domain object ACL captured — BloodHound DCSync path analysis recommended"
 }
 
-# - MRK:11_T14 — T14 DELEGATION ENUMERATION
+# - MRK:12_T14 — T14 DELEGATION ENUMERATION
 test_T14_delegation() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "delegation")"
@@ -1116,7 +1116,7 @@ test_T14_delegation() {
     fi
 }
 
-# - MRK:11_T15 — T15 DOMAIN TRUST MAPPING
+# - MRK:12_T15 — T15 DOMAIN TRUST MAPPING
 test_T15_trust_mapping() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "trust_mapping")"
@@ -1173,7 +1173,7 @@ test_T15_trust_mapping() {
     fi
 }
 
-# - MRK:11_T16 — T16 PASSWORD SPRAYING (DEEP ONLY)
+# - MRK:12_T16 — T16 PASSWORD SPRAYING (DEEP ONLY)
 test_T16_password_spray() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "password_spray")"
@@ -1272,7 +1272,7 @@ test_T16_password_spray() {
     fi
 }
 
-# - MRK:11_T17 — T17 DCSYNC RIGHTS CHECK
+# - MRK:12_T17 — T17 DCSYNC RIGHTS CHECK
 test_T17_dcsync_check() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "dcsync_check")"
@@ -1335,7 +1335,7 @@ test_T17_dcsync_check() {
     fi
 }
 
-# - MRK:11_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE
+# - MRK:12_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE
 test_T18_kerberos_surface() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "kerberos_surface")"
@@ -1396,7 +1396,7 @@ test_T18_kerberos_surface() {
 }
 
 # =============================================================================
-# - MRK:11_T19 — T19 SHADOW CREDENTIALS (msDS-KeyCredentialLink)
+# - MRK:12_T19 — T19 SHADOW CREDENTIALS (msDS-KeyCredentialLink)
 # =============================================================================
 test_T19_shadow_credentials() {
     local dc="${AD_DC_IP}"
@@ -1465,7 +1465,7 @@ test_T19_shadow_credentials() {
 }
 
 # =============================================================================
-# - MRK:11_T20 — T20 RESOURCE-BASED CONSTRAINED DELEGATION (RBCD)
+# - MRK:12_T20 — T20 RESOURCE-BASED CONSTRAINED DELEGATION (RBCD)
 # =============================================================================
 test_T20_rbcd_enum() {
     local dc="${AD_DC_IP}"
@@ -1522,7 +1522,7 @@ test_T20_rbcd_enum() {
 }
 
 # =============================================================================
-# - MRK:11_T21 — T21 ADCS ESC9–ESC13
+# - MRK:12_T21 — T21 ADCS ESC9–ESC13
 # =============================================================================
 test_T21_adcs_esc9_esc13() {
     local dc="${AD_DC_IP}"
@@ -1623,7 +1623,7 @@ test_T21_adcs_esc9_esc13() {
 }
 
 # =============================================================================
-# - MRK:11_T22 — T22 SCCM/MECM ATTACK SURFACE
+# - MRK:12_T22 — T22 SCCM/MECM ATTACK SURFACE
 # =============================================================================
 test_T22_sccm_mecm() {
     local dc="${AD_DC_IP}"
@@ -1722,7 +1722,7 @@ test_T22_sccm_mecm() {
 }
 
 # =============================================================================
-# - MRK:11_TRUN
+# - MRK:12_TRUN
 # =============================================================================
 test_dc() {
     local dc="${AD_DC_IP}"
@@ -1758,7 +1758,7 @@ test_dc() {
 }
 
 # =============================================================================
-# - MRK:11_MAIN
+# - MRK:12_MAIN
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"
@@ -1777,17 +1777,17 @@ main() {
     setup_profile "$SCAN_PROFILE"
     _confirm
 
-    command -v trail_phase_start &>/dev/null && trail_phase_start "11_ad_testing"
+    command -v trail_phase_start &>/dev/null && trail_phase_start "12_ad_testing"
 
     local row
     row=$(test_dc)
     local total_findings
     total_findings=$(echo "$row" | grep -oE 'findings=[0-9]+' | grep -oE '[0-9]+' || echo 0)
 
-    command -v trail_phase_end &>/dev/null && trail_phase_end "11_ad_testing"
+    command -v trail_phase_end &>/dev/null && trail_phase_end "12_ad_testing"
 
     # Summary report
-    local report_f="${SCRIPT_DIR}/working/$(ev_fname "11-ad-summary" "md")"
+    local report_f="${SCRIPT_DIR}/working/$(ev_fname "12-ad-summary" "md")"
     {
         printf "# Active Directory Testing Summary — %s\n\n" "$PROJECT_NAME"
         printf "| DC | Domain | Findings |\n|----|--------|----------|\n"

@@ -2,23 +2,23 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:16_NAV_TOC — Section index | nav,toc,index | L5-30
-# - MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement | L31-80
-# - MRK:16_LOG — COLOURS AND LOGGING | log,colours | L81-110
-# - MRK:16_ARGS — ARGUMENT PARSING | args | L111-155
-# - MRK:16_FIND — FINDING WRITER | find,finding,jsonl | L156-185
-# - MRK:16_UTILS — SHARED UTILITIES | utils,shared,tier,sleep | L186-210
-# - MRK:16_PROF — PROFILE SETUP | prof,profile,setup | L211-240
-# - MRK:16_T01 — T01 SOURCE CODE LEAK SCAN | t01,github,gitlab,trufflehog,gitleaks | LXXXX-XXXX
-# - MRK:16_T02 — T02 EMPLOYEE & EMAIL EXPOSURE | t02,harvester,linkedin,email | LXXXX-XXXX
-# - MRK:16_T03 — T03 BREACH & PASTE DATA | t03,hibp,haveibeenpwned,dehashed | LXXXX-XXXX
-# - MRK:16_T04 — T04 DOCUMENT METADATA EXTRACTION | t04,exiftool,pdf,docx,metadata | LXXXX-XXXX
-# - MRK:16_TRUN — PER-DOMAIN DISPATCHER | trun,domain,dispatcher | LXXXX-XXXX
-# - MRK:16_MAIN — MAIN ENTRY POINT | main,entry,summary | LXXXX-XXXX
+# MRK:02_NAV_TOC — Section index | nav,toc,index | L5-30
+# - MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement | L31-80
+# - MRK:02_LOG — COLOURS AND LOGGING | log,colours | L81-110
+# - MRK:02_ARGS — ARGUMENT PARSING | args | L111-155
+# - MRK:02_FIND — FINDING WRITER | find,finding,jsonl | L156-185
+# - MRK:02_UTILS — SHARED UTILITIES | utils,shared,tier,sleep | L186-210
+# - MRK:02_PROF — PROFILE SETUP | prof,profile,setup | L211-240
+# - MRK:02_T01 — T01 SOURCE CODE LEAK SCAN | t01,github,gitlab,trufflehog,gitleaks | LXXXX-XXXX
+# - MRK:02_T02 — T02 EMPLOYEE & EMAIL EXPOSURE | t02,harvester,linkedin,email | LXXXX-XXXX
+# - MRK:02_T03 — T03 BREACH & PASTE DATA | t03,hibp,haveibeenpwned,dehashed | LXXXX-XXXX
+# - MRK:02_T04 — T04 DOCUMENT METADATA EXTRACTION | t04,exiftool,pdf,docx,metadata | LXXXX-XXXX
+# - MRK:02_TRUN — PER-DOMAIN DISPATCHER | trun,domain,dispatcher | LXXXX-XXXX
+# - MRK:02_MAIN — MAIN ENTRY POINT | main,entry,summary | LXXXX-XXXX
 # NAV-LEN: 13 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-24
 
 # =============================================================================
-# 16_osint.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-24]
+# 02_osint.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-24]
 # Open Source Intelligence (OSINT) Recon — pre/post-engagement passive collection
 # Coverage: source code leaks (GitHub/GitLab), employee exposure (theHarvester),
 #   breach/paste data (HaveIBeenPwned, Dehashed), document metadata (exiftool)
@@ -29,7 +29,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement | L31-80
+# MRK:02_CONF — ENGAGEMENT CONFIGURATION | conf,engagement | L31-80
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -64,7 +64,7 @@ OSINT_HARVESTER_SOURCES="${OSINT_HARVESTER_SOURCES:-google,bing,duckduckgo,githu
 OSINT_MAX_DOCS="${OSINT_MAX_DOCS:-20}"
 
 # =============================================================================
-# MRK:16_LOG — COLOURS AND LOGGING | log,colours | L81-110
+# MRK:02_LOG — COLOURS AND LOGGING | log,colours | L81-110
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -79,7 +79,7 @@ EV_TS="$(_ev_ts 2>/dev/null || date +'%Y%m%d_%H%M%S')"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/osint_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "16-osint-findings" "jsonl" 2>/dev/null || echo "16-osint-findings_${EV_TS}.jsonl")"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "02-osint-findings" "jsonl" 2>/dev/null || echo "02-osint-findings_${EV_TS}.jsonl")"
 : > "$FINDINGS_FILE"
 
 log()     { local m="[$(_now)] $1";   echo -e "${BLUE}${m}${NC}" >&2;    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -90,7 +90,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:16_ARGS — ARGUMENT PARSING | args | L111-155
+# MRK:02_ARGS — ARGUMENT PARSING | args | L111-155
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -151,7 +151,7 @@ if [[ "${#DOMAINS[@]}" -eq 0 ]]; then
 fi
 
 # =============================================================================
-# MRK:16_FIND — FINDING WRITER | find,finding,jsonl | L156-185
+# MRK:02_FIND — FINDING WRITER | find,finding,jsonl | L156-185
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -162,10 +162,10 @@ emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="$5"
     (( _FIND_CTR++ )) || true
     local dom_slug="${_CURRENT_DOMAIN//[^A-Za-z0-9._-]/_}"
-    local fid="f-16-${dom_slug}-$(printf '%03d' "${_FIND_CTR}")"
-    local ev_id="ev-16-${dom_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local fid="f-02-${dom_slug}-$(printf '%03d' "${_FIND_CTR}")"
+    local ev_id="ev-02-${dom_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"16_osint","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"02_osint","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -177,7 +177,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:16_UTILS — SHARED UTILITIES | utils,shared,tier,sleep | L186-210
+# MRK:02_UTILS — SHARED UTILITIES | utils,shared,tier,sleep | L186-210
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -222,7 +222,7 @@ _ev_file() {
 }
 
 # =============================================================================
-# MRK:16_PROF — PROFILE SETUP | prof,profile,setup | L211-240
+# MRK:02_PROF — PROFILE SETUP | prof,profile,setup | L211-240
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -252,7 +252,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:16_T01 — T01 SOURCE CODE LEAK SCAN | t01,github,gitlab,trufflehog,gitleaks
+# MRK:02_T01 — T01 SOURCE CODE LEAK SCAN | t01,github,gitlab,trufflehog,gitleaks
 # =============================================================================
 
 test_T01_source_code_leaks() {
@@ -290,7 +290,7 @@ test_T01_source_code_leaks() {
                 "GitHub Code Exposure — ${gh_total} Result(s) for ${domain}" \
                 "GitHub code search found ${gh_total} file(s) referencing '${domain}'. This may include configuration files, API keys, connection strings, or internal URLs committed to public repositories. Sample URLs: ${gh_repos:-see evidence file}." \
                 "Audit all public repositories mentioning the domain. Rotate any exposed credentials immediately. Use git-secrets or pre-commit hooks to prevent future leaks. Consider GitHub secret scanning alerts." \
-                "ev-16-${domain//[^A-Za-z0-9]/}_t01-github-code"
+                "ev-02-${domain//[^A-Za-z0-9]/}_t01-github-code"
         else
             log_info "T01: GitHub code search — no results for ${domain}"
         fi
@@ -316,7 +316,7 @@ test_T01_source_code_leaks() {
                 "GitHub Organisation Found — ${org_name} (Public Repos Enumerated)" \
                 "GitHub organisation '${org_name}' has public repositories. Repos: ${repo_names:-see evidence}. Review these for exposed secrets, internal API endpoints, infrastructure details, or credential leaks." \
                 "Run trufflehog/gitleaks against all public repositories. Audit commit history for secrets. Enable GitHub secret scanning and push protection on all org repos." \
-                "ev-16-${domain//[^A-Za-z0-9]/}_t01-github-org"
+                "ev-02-${domain//[^A-Za-z0-9]/}_t01-github-org"
         fi
         _tier_sleep
     fi
@@ -342,13 +342,13 @@ test_T01_source_code_leaks() {
                     "Verified Secrets Leaked on GitHub — ${th_verified} Finding(s) for ${org_name}" \
                     "trufflehog found ${th_verified} VERIFIED secret(s) in GitHub repositories under org '${org_name}'. Verified secrets are confirmed active credentials. Immediate revocation is required." \
                     "Rotate all exposed credentials immediately. Remove secrets from git history (git filter-repo). Enable GitHub secret scanning + push protection. Audit IAM permissions for affected secrets." \
-                    "ev-16-${domain//[^A-Za-z0-9]/}_t01-trufflehog-verified"
+                    "ev-02-${domain//[^A-Za-z0-9]/}_t01-trufflehog-verified"
             elif [[ "${th_unverified:-0}" -gt 0 ]]; then
                 emit_finding "medium" \
                     "Unverified Secrets Pattern Matched on GitHub — ${th_unverified} Finding(s) for ${org_name}" \
                     "trufflehog found ${th_unverified} unverified secret pattern(s) in GitHub repositories under org '${org_name}'. These may be inactive or test credentials but require manual review." \
                     "Manually review each matched secret. Rotate if any are active. Scrub git history. Enable GitHub secret scanning." \
-                    "ev-16-${domain//[^A-Za-z0-9]/}_t01-trufflehog-unverified"
+                    "ev-02-${domain//[^A-Za-z0-9]/}_t01-trufflehog-unverified"
             else
                 log_ok "T01: trufflehog — no secrets found for org ${org_name}"
             fi
@@ -367,7 +367,7 @@ test_T01_source_code_leaks() {
 }
 
 # =============================================================================
-# MRK:16_T02 — T02 EMPLOYEE & EMAIL EXPOSURE | t02,harvester,linkedin,email
+# MRK:02_T02 — T02 EMPLOYEE & EMAIL EXPOSURE | t02,harvester,linkedin,email
 # =============================================================================
 
 test_T02_employee_exposure() {
@@ -384,7 +384,7 @@ test_T02_employee_exposure() {
             "OSINT Tool Missing — theHarvester Not Installed (${domain})" \
             "theHarvester is required for employee/email enumeration but is not installed. Email exposure, LinkedIn employee enumeration, and DNS hostname discovery via OSINT sources were not performed." \
             "Install theHarvester: pip install theHarvester. Rerun step 16 after installation." \
-            "ev-16-${domain//[^A-Za-z0-9]/}_t02-no-tool"
+            "ev-02-${domain//[^A-Za-z0-9]/}_t02-no-tool"
         return
     fi
 
@@ -422,7 +422,7 @@ test_T02_employee_exposure() {
                 "Employee Email Addresses Exposed via OSINT — ${email_list_count} Address(es) for ${domain}" \
                 "theHarvester discovered ${email_list_count} employee email address(es) for ${domain} via public OSINT sources (${OSINT_HARVESTER_SOURCES}). Exposed emails enable targeted phishing, password spray, and credential stuffing attacks. Sample addresses: $(echo "$emails_found" | head -5 | tr '\n' ' ')." \
                 "Implement email gateway filtering (SPF, DKIM, DMARC). Conduct security awareness training to reduce phishing susceptibility. Consider monitoring exposed emails in breach databases (HIBP). Limit email address publication on public websites." \
-                "ev-16-${domain//[^A-Za-z0-9]/}_t02-emails"
+                "ev-02-${domain//[^A-Za-z0-9]/}_t02-emails"
         fi
 
         local linkedin_hits
@@ -432,7 +432,7 @@ test_T02_employee_exposure() {
                 "LinkedIn/Employee Data Found via OSINT — ${domain}" \
                 "theHarvester found LinkedIn employee references for ${domain}. Employee names and job titles enable targeted social engineering and spear-phishing campaigns. Review evidence file for details." \
                 "Conduct phishing simulation training. Restrict employee LinkedIn profiles where company policy allows. Monitor for social engineering attempts." \
-                "ev-16-${domain//[^A-Za-z0-9]/}_t02-linkedin"
+                "ev-02-${domain//[^A-Za-z0-9]/}_t02-linkedin"
         fi
 
         if [[ "${email_list_count:-0}" -eq 0 && "${linkedin_hits:-0}" -eq 0 ]]; then
@@ -445,7 +445,7 @@ test_T02_employee_exposure() {
 }
 
 # =============================================================================
-# MRK:16_T03 — T03 BREACH & PASTE DATA | t03,hibp,haveibeenpwned,dehashed
+# MRK:02_T03 — T03 BREACH & PASTE DATA | t03,hibp,haveibeenpwned,dehashed
 # =============================================================================
 
 test_T03_breach_data() {
@@ -477,7 +477,7 @@ test_T03_breach_data() {
                     "Domain Breached — ${breach_count} Breach(es) Found for ${domain} (HIBP)" \
                     "HaveIBeenPwned reports ${breach_count} data breach(es) involving @${domain} email addresses: ${breach_names:-see evidence}. Breached employees are at elevated risk of credential stuffing and account takeover." \
                     "Enforce password resets for affected accounts. Enable MFA on all accounts. Monitor for credential stuffing (unusual auth failures). Brief affected users on phishing/social engineering risk. Consider breach monitoring services." \
-                    "ev-16-${domain//[^A-Za-z0-9]/}_t03-hibp-breach"
+                    "ev-02-${domain//[^A-Za-z0-9]/}_t03-hibp-breach"
             elif echo "$hibp_resp" | grep -q '"statusCode":401\|Unauthorized\|unauthorised'; then
                 log_warn "T03: HIBP API — Unauthorized (domain breach search requires paid API tier)"
                 echo "[T03] HIBP 401 — domain breach search requires paid API key" >> "$ev_f"
@@ -515,7 +515,7 @@ test_T03_breach_data() {
                     "Dehashed — ${dehashed_total} Credential Leak(s) for @${domain}" \
                     "Dehashed reports ${dehashed_total} leaked credential record(s) associated with @${domain} email addresses. These may include plaintext or hashed passwords from historical breaches, enabling credential stuffing attacks against corporate services." \
                     "Enforce password resets for affected users. Enable MFA on all corporate accounts. Monitor authentication logs for credential stuffing (high volume failed logins). Consider continuous breach credential monitoring." \
-                    "ev-16-${domain//[^A-Za-z0-9]/}_t03-dehashed"
+                    "ev-02-${domain//[^A-Za-z0-9]/}_t03-dehashed"
             elif [[ "${dehashed_total:-0}" -eq 0 ]]; then
                 log_ok "T03: Dehashed — no credential leaks found for @${domain}"
                 echo "[T03] Dehashed: no results for @${domain}" >> "$ev_f"
@@ -531,7 +531,7 @@ test_T03_breach_data() {
 }
 
 # =============================================================================
-# MRK:16_T04 — T04 DOCUMENT METADATA EXTRACTION | t04,exiftool,pdf,docx,metadata
+# MRK:02_T04 — T04 DOCUMENT METADATA EXTRACTION | t04,exiftool,pdf,docx,metadata
 # =============================================================================
 
 test_T04_document_metadata() {
@@ -641,7 +641,7 @@ test_T04_document_metadata() {
                 "Document Metadata Exposes Internal User/Company Data — ${downloaded} Document(s) (${domain})" \
                 "exiftool extracted internal metadata from ${downloaded} document(s) published on ${domain}. Author names: ${authors:-none}. Company: ${companies:-none}. Software: ${software_list:-none}. This data aids targeted spear-phishing, username enumeration, and software fingerprinting." \
                 "Strip document metadata before publication using tools like MAT2 (Metadata Anonymisation Toolkit) or PDF optimization tools. Establish a document publishing policy requiring metadata removal. Consider DLP controls for outbound document sharing." \
-                "ev-16-${domain//[^A-Za-z0-9]/}_t04-doc-metadata"
+                "ev-02-${domain//[^A-Za-z0-9]/}_t04-doc-metadata"
             has_findings=1
         fi
         if [[ -n "$emails_found" ]]; then
@@ -649,7 +649,7 @@ test_T04_document_metadata() {
                 "Email Addresses Embedded in Document Metadata — ${domain}" \
                 "Internal email addresses found in document metadata: ${emails_found}. These enable direct targeting for phishing campaigns and bypass public-facing email obfuscation." \
                 "Strip metadata from all publicly accessible documents. Use MAT2 or pdfopt before publication. Review document management workflow for metadata removal requirements." \
-                "ev-16-${domain//[^A-Za-z0-9]/}_t04-doc-emails"
+                "ev-02-${domain//[^A-Za-z0-9]/}_t04-doc-emails"
             has_findings=1
         fi
         if [[ "$has_findings" -eq 0 ]]; then
@@ -662,7 +662,7 @@ test_T04_document_metadata() {
 }
 
 # =============================================================================
-# MRK:16_TRUN — PER-DOMAIN DISPATCHER | trun,domain,dispatcher
+# MRK:02_TRUN — PER-DOMAIN DISPATCHER | trun,domain,dispatcher
 # =============================================================================
 
 run_domain() {
@@ -688,11 +688,11 @@ run_domain() {
 }
 
 # =============================================================================
-# MRK:16_MAIN — MAIN ENTRY POINT | main,entry,summary
+# MRK:02_MAIN — MAIN ENTRY POINT | main,entry,summary
 # =============================================================================
 
 main() {
-    log "PT-Orc 16_osint.sh v1.0 — OSINT Recon"
+    log "PT-Orc 02_osint.sh v1.0 — OSINT Recon"
     log "Session: ${SESSION_TS} | Profile: ${PROFILE} | Domains: ${DOMAINS[*]}"
 
     setup_profile
@@ -709,7 +709,7 @@ main() {
         [[ "${_ans,,}" == "y" ]] || { log_err "Aborted by user."; exit 0; }
     fi
 
-    command -v trail_phase_start &>/dev/null && trail_phase_start "16_osint"
+    command -v trail_phase_start &>/dev/null && trail_phase_start "02_osint"
 
     local -a summary_rows=()
     for domain in "${DOMAINS[@]}"; do
@@ -722,10 +722,10 @@ main() {
         [[ -n "$srow" ]] && summary_rows+=("$srow")
     done
 
-    command -v trail_phase_end &>/dev/null && trail_phase_end "16_osint" "${_FIND_CTR} findings"
+    command -v trail_phase_end &>/dev/null && trail_phase_end "02_osint" "${_FIND_CTR} findings"
 
     # Markdown summary
-    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "16-osint-summary" "md" 2>/dev/null || echo "16-osint-summary_${EV_TS}.md")"
+    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "02-osint-summary" "md" 2>/dev/null || echo "02-osint-summary_${EV_TS}.md")"
     {
         echo "# OSINT Recon Summary — ${PROJECT_NAME:-unknown}"
         echo ""
@@ -760,7 +760,7 @@ main() {
         echo "\`${EVIDENCE_BASE}\`"
         echo ""
         echo "---"
-        echo "*Generated by PT-Orc 16_osint.sh v1.0 — TechGuard Labs*"
+        echo "*Generated by PT-Orc 02_osint.sh v1.0 — TechGuard Labs*"
         echo "*Profile: ${PROFILE} | GitHub leaks / employee exposure / breach data / document metadata*"
     } > "$summary_md"
 

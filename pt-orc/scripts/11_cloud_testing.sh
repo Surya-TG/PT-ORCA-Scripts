@@ -2,55 +2,55 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:10_NAV_TOC — Section index | nav,toc,index | L5-29
-# - MRK:10_T01 — T01 CLOUD PROVIDER DETECTION | t01,cloud,provider,detection | L30-30
-# - MRK:10_T02 — T02 IMDS SSRF PROBE | t02,imds,ssrf,probe | L31-31
-# - MRK:10_T03 — T03 STORAGE BUCKET DISCOVERY | t03,storage,bucket,discovery | L32-32
-# - MRK:10_T04 — T04 IAM ROLE / CREDENTIAL METADATA | t04,iam,role,credential,metadata | L33-33
-# - MRK:10_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS | t05,serverless,function,endpoints | L34-34
-# - MRK:10_T06 — T06 CONTAINER REGISTRY DETECTION | t06,container,registry,detection | L35-35
-# - MRK:10_T07 — T07 KUBERNETES API EXPOSURE | t07,kubernetes,api,exposure | L36-36
-# - MRK:10_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC) | t08,security,headers,cloud,specific | L37-37
-# - MRK:10_T09 — T09 CORS POLICY CHECK | t09,cors,policy,check | L38-38
-# - MRK:10_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE | t10,cloud,management,console,exposure | L39-39
-# - MRK:10_T11 — T11 CDN / ORIGIN IP DISCLOSURE | t11,cdn,origin,ip,disclosure | L40-40
-# - MRK:10_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES) | t12,subdomain,takeover,cloud,services | L41-41
-# - MRK:10_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE | t13,cloud,token,api,key | L42-42
-# - MRK:10_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING | t14,object,storage,acl,public | L43-43
-# - MRK:10_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING | t15,waf,detection,bypass,fingerprinting | L44-1207
+# MRK:11_NAV_TOC — Section index | nav,toc,index | L5-29
+# - MRK:11_T01 — T01 CLOUD PROVIDER DETECTION | t01,cloud,provider,detection | L30-30
+# - MRK:11_T02 — T02 IMDS SSRF PROBE | t02,imds,ssrf,probe | L31-31
+# - MRK:11_T03 — T03 STORAGE BUCKET DISCOVERY | t03,storage,bucket,discovery | L32-32
+# - MRK:11_T04 — T04 IAM ROLE / CREDENTIAL METADATA | t04,iam,role,credential,metadata | L33-33
+# - MRK:11_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS | t05,serverless,function,endpoints | L34-34
+# - MRK:11_T06 — T06 CONTAINER REGISTRY DETECTION | t06,container,registry,detection | L35-35
+# - MRK:11_T07 — T07 KUBERNETES API EXPOSURE | t07,kubernetes,api,exposure | L36-36
+# - MRK:11_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC) | t08,security,headers,cloud,specific | L37-37
+# - MRK:11_T09 — T09 CORS POLICY CHECK | t09,cors,policy,check | L38-38
+# - MRK:11_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE | t10,cloud,management,console,exposure | L39-39
+# - MRK:11_T11 — T11 CDN / ORIGIN IP DISCLOSURE | t11,cdn,origin,ip,disclosure | L40-40
+# - MRK:11_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES) | t12,subdomain,takeover,cloud,services | L41-41
+# - MRK:11_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE | t13,cloud,token,api,key | L42-42
+# - MRK:11_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING | t14,object,storage,acl,public | L43-43
+# - MRK:11_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING | t15,waf,detection,bypass,fingerprinting | L44-1207
 # NAV-LEN: 15 entries | Integrity-hash: 03840855921e18f5 | Last-indexed: 2026-06-16T13:41:02Z
 
 # =============================================================================
-# 10_cloud_testing.sh — Cloud Infrastructure Security Testing
+# 11_cloud_testing.sh — Cloud Infrastructure Security Testing
 # TechGuard Labs | PT-Orc Suite v0.8
 # =============================================================================
-# NAV: MRK:10_TOC (this block) | MRK:10_ROOT | MRK:10_CONF | MRK:10_LOG
-#      MRK:10_ARGS | MRK:10_DB | MRK:10_CONFIRM | MRK:10_TARGETS
-#      MRK:10_FIND | MRK:10_UTILS | MRK:10_PROF
-#      MRK:10_T01 — T01 CLOUD PROVIDER DETECTION | t01,cloud,provider,detection | L30-30
-#      MRK:10_T02 — T02 IMDS SSRF PROBE | t02,imds,ssrf,probe | L31-31
-#      MRK:10_T03 — T03 STORAGE BUCKET DISCOVERY | t03,storage,bucket,discovery | L32-32
-#      MRK:10_T04 — T04 IAM ROLE / CREDENTIAL METADATA | t04,iam,role,credential,metadata | L33-33
-#      MRK:10_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS | t05,serverless,function,endpoints | L34-34
-#      MRK:10_T06 — T06 CONTAINER REGISTRY DETECTION | t06,container,registry,detection | L35-35
-#      MRK:10_T07 — T07 KUBERNETES API EXPOSURE | t07,kubernetes,api,exposure | L36-36
-#      MRK:10_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC) | t08,security,headers,cloud,specific | L37-37
-#      MRK:10_T09 — T09 CORS POLICY CHECK | t09,cors,policy,check | L38-38
-#      MRK:10_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE | t10,cloud,management,console,exposure | L39-39
-#      MRK:10_T11 — T11 CDN / ORIGIN IP DISCLOSURE | t11,cdn,origin,ip,disclosure | L40-40
-#      MRK:10_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES) | t12,subdomain,takeover,cloud,services | L41-41
-#      MRK:10_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE | t13,cloud,token,api,key | L42-42
-#      MRK:10_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING | t14,object,storage,acl,public | L43-43
-#      MRK:10_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING | t15,waf,detection,bypass,fingerprinting | L44-1207
-#      MRK:10_TRUN | MRK:10_MAIN
+# NAV: MRK:11_TOC (this block) | MRK:11_ROOT | MRK:11_CONF | MRK:11_LOG
+#      MRK:11_ARGS | MRK:11_DB | MRK:11_CONFIRM | MRK:11_TARGETS
+#      MRK:11_FIND | MRK:11_UTILS | MRK:11_PROF
+#      MRK:11_T01 — T01 CLOUD PROVIDER DETECTION | t01,cloud,provider,detection | L30-30
+#      MRK:11_T02 — T02 IMDS SSRF PROBE | t02,imds,ssrf,probe | L31-31
+#      MRK:11_T03 — T03 STORAGE BUCKET DISCOVERY | t03,storage,bucket,discovery | L32-32
+#      MRK:11_T04 — T04 IAM ROLE / CREDENTIAL METADATA | t04,iam,role,credential,metadata | L33-33
+#      MRK:11_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS | t05,serverless,function,endpoints | L34-34
+#      MRK:11_T06 — T06 CONTAINER REGISTRY DETECTION | t06,container,registry,detection | L35-35
+#      MRK:11_T07 — T07 KUBERNETES API EXPOSURE | t07,kubernetes,api,exposure | L36-36
+#      MRK:11_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC) | t08,security,headers,cloud,specific | L37-37
+#      MRK:11_T09 — T09 CORS POLICY CHECK | t09,cors,policy,check | L38-38
+#      MRK:11_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE | t10,cloud,management,console,exposure | L39-39
+#      MRK:11_T11 — T11 CDN / ORIGIN IP DISCLOSURE | t11,cdn,origin,ip,disclosure | L40-40
+#      MRK:11_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES) | t12,subdomain,takeover,cloud,services | L41-41
+#      MRK:11_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE | t13,cloud,token,api,key | L42-42
+#      MRK:11_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING | t14,object,storage,acl,public | L43-43
+#      MRK:11_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING | t15,waf,detection,bypass,fingerprinting | L44-1207
+#      MRK:11_TRUN | MRK:11_MAIN
 # =============================================================================
 
-# - MRK:10_ROOT
+# - MRK:11_ROOT
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# - MRK:10_CONF
+# - MRK:11_CONF
 CONF_FILE="${SCRIPT_DIR}/pt-orc.conf"
 [[ -f "$CONF_FILE" ]] || { echo "[FATAL] pt-orc.conf not found at ${CONF_FILE}"; exit 1; }
 # shellcheck source=pt-orc.conf
@@ -65,7 +65,7 @@ CLOUD_TIMEOUT="${CLOUD_TIMEOUT:-10}"
 DRY_RUN=0
 SCAN_PROFILE="${SCAN_PROFILE:-standard}"
 
-# - MRK:10_LOG
+# - MRK:11_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(_ev_ts)"
@@ -79,7 +79,7 @@ log_wrn() { printf "${_Y}[!]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_err() { printf "${_R}[-]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_dry() { printf "${_C}[DRY]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 
-# - MRK:10_ARGS
+# - MRK:11_ARGS
 EXTRA_TARGETS=()
 _SKIP_CONFIRM=0
 _ONLY_TESTS=()
@@ -119,7 +119,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# - MRK:10_DB
+# - MRK:11_DB
 _web_hosts_from_db() {
     # Pull HTTPS+HTTP hosts from MSF DB — same pattern as 08/09
     local rows
@@ -134,7 +134,7 @@ _web_hosts_from_db() {
     echo "${rows:-}"
 }
 
-# - MRK:10_CONFIRM
+# - MRK:11_CONFIRM
 _confirm() {
     [[ "$_SKIP_CONFIRM" -eq 1 ]] && return 0
     printf "\n${_Y}[CONFIRM]${_N} Cloud testing on scope targets. Profile: ${_W}%s${_N}  Provider: ${_W}%s${_N}\n" \
@@ -146,7 +146,7 @@ _confirm() {
     [[ "${_ans,,}" == "y" ]] || { log_err "Aborted by user."; exit 0; }
 }
 
-# - MRK:10_TARGETS
+# - MRK:11_TARGETS
 assemble_targets() {
     local tf="${SCRIPT_DIR}/working/$(ev_fname "cloud-targets" "txt")"
     : > "$tf"
@@ -177,8 +177,8 @@ assemble_targets() {
     log_inf "Cloud targets assembled: $(wc -l < "$tf" | tr -d ' ') host:port pairs → ${tf}"
 }
 
-# - MRK:10_FIND
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "10-cloud-findings" "jsonl")"
+# - MRK:11_FIND
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "11-cloud-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
 
@@ -186,10 +186,10 @@ emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
     (( _FIND_CTR++ )) || true
     local fid
-    fid="f-10-cloud-$(printf '%04d' "$_FIND_CTR")"
+    fid="f-11-cloud-$(printf '%04d' "$_FIND_CTR")"
     local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"10_cloud","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"11_cloud","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -200,7 +200,7 @@ emit_finding() {
     log_wrn "FINDING [${sev^^}] ${title}"
 }
 
-# - MRK:10_UTILS
+# - MRK:11_UTILS
 _curl() {
     # Wrapper: timeout, silent, insecure (testing context), follow redirects
     curl -sk --max-time "${CLOUD_TIMEOUT}" -L "$@"
@@ -250,7 +250,7 @@ _apply_cli_filters() {
     done
 }
 
-# - MRK:10_PROF
+# - MRK:11_PROF
 setup_profile() {
     local prof="${1:-standard}"
     # Defaults — all enabled
@@ -277,7 +277,7 @@ setup_profile() {
 # TESTS
 # =============================================================================
 
-# - MRK:10_T01 — T01 CLOUD PROVIDER DETECTION
+# - MRK:11_T01 — T01 CLOUD PROVIDER DETECTION
 test_T01_cloud_provider() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -333,7 +333,7 @@ test_T01_cloud_provider() {
     echo "CLOUD_PROVIDER_DETECTED=${detected:-unknown}"
 }
 
-# - MRK:10_T02 — T02 IMDS SSRF PROBE
+# - MRK:11_T02 — T02 IMDS SSRF PROBE
 test_T02_imds_ssrf() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -383,7 +383,7 @@ test_T02_imds_ssrf() {
     [[ "$hit" -eq 0 ]] && log_ok "  IMDS SSRF: no leakage detected via common parameters"
 }
 
-# - MRK:10_T03 — T03 STORAGE BUCKET DISCOVERY
+# - MRK:11_T03 — T03 STORAGE BUCKET DISCOVERY
 test_T03_storage_buckets() {
     local tgt="$1"
     local ip="${tgt%%:*}"
@@ -461,7 +461,7 @@ test_T03_storage_buckets() {
     fi
 }
 
-# - MRK:10_T04 — T04 IAM ROLE / CREDENTIAL METADATA
+# - MRK:11_T04 — T04 IAM ROLE / CREDENTIAL METADATA
 test_T04_iam_creds() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -510,7 +510,7 @@ test_T04_iam_creds() {
     [[ "$hit" -eq 0 ]] && log_ok "  IAM credential paths: no direct exposure detected"
 }
 
-# - MRK:10_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS
+# - MRK:11_T05 — T05 SERVERLESS / FUNCTION ENDPOINTS
 test_T05_serverless() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -581,7 +581,7 @@ test_T05_serverless() {
     [[ "$found" -eq 0 ]] && log_ok "  No unauthenticated serverless endpoints detected"
 }
 
-# - MRK:10_T06 — T06 CONTAINER REGISTRY DETECTION
+# - MRK:11_T06 — T06 CONTAINER REGISTRY DETECTION
 test_T06_container_registry() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -629,7 +629,7 @@ test_T06_container_registry() {
     log_ok "  Container registry scan complete — see evidence for details"
 }
 
-# - MRK:10_T07 — T07 KUBERNETES API EXPOSURE
+# - MRK:11_T07 — T07 KUBERNETES API EXPOSURE
 test_T07_k8s_api() {
     local tgt="$1"
     local ip="${tgt%%:*}"
@@ -676,7 +676,7 @@ test_T07_k8s_api() {
     [[ "$exposed" -eq 0 ]] && log_ok "  No unauthenticated K8s API endpoints detected"
 }
 
-# - MRK:10_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC)
+# - MRK:11_T08 — T08 SECURITY HEADERS (CLOUD-SPECIFIC)
 test_T08_security_headers() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -735,7 +735,7 @@ test_T08_security_headers() {
     [[ "$missing_count" -eq 0 ]] && log_ok "  All required security headers present"
 }
 
-# - MRK:10_T09 — T09 CORS POLICY CHECK
+# - MRK:11_T09 — T09 CORS POLICY CHECK
 test_T09_cors() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -783,7 +783,7 @@ test_T09_cors() {
     log_ok "  CORS check complete — see evidence"
 }
 
-# - MRK:10_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE
+# - MRK:11_T10 — T10 CLOUD MANAGEMENT CONSOLE EXPOSURE
 test_T10_mgmt_console() {
     local tgt="$1"
     local ip="${tgt%%:*}"
@@ -831,7 +831,7 @@ test_T10_mgmt_console() {
     [[ "$exposed" -eq 0 ]] && log_ok "  No exposed management consoles detected"
 }
 
-# - MRK:10_T11 — T11 CDN / ORIGIN IP DISCLOSURE
+# - MRK:11_T11 — T11 CDN / ORIGIN IP DISCLOSURE
 test_T11_cdn_origin() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -880,7 +880,7 @@ test_T11_cdn_origin() {
     [[ -z "$leaked_ip" ]] && log_ok "  No origin IP disclosure detected"
 }
 
-# - MRK:10_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES)
+# - MRK:11_T12 — T12 SUBDOMAIN TAKEOVER (CLOUD SERVICES)
 test_T12_subdomain_takeover() {
     local tgt="$1"
     local ip="${tgt%%:*}"
@@ -946,7 +946,7 @@ test_T12_subdomain_takeover() {
     [[ "$takeover_found" -eq 0 ]] && log_ok "  No dangling subdomain CNAMEs detected"
 }
 
-# - MRK:10_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE
+# - MRK:11_T13 — T13 CLOUD TOKEN / API KEY EXPOSURE
 test_T13_token_exposure() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -989,7 +989,7 @@ test_T13_token_exposure() {
     [[ "$found" -eq 0 ]] && log_ok "  No cloud tokens/keys found in checked paths"
 }
 
-# - MRK:10_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING
+# - MRK:11_T14 — T14 OBJECT STORAGE ACL / PUBLIC LISTING
 test_T14_storage_acl() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -1038,7 +1038,7 @@ test_T14_storage_acl() {
     [[ "$vuln_count" -eq 0 ]] && log_ok "  No public storage listing or presigned URL exposure detected"
 }
 
-# - MRK:10_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING
+# - MRK:11_T15 — T15 WAF DETECTION & BYPASS FINGERPRINTING
 test_T15_waf_detection() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
@@ -1110,7 +1110,7 @@ test_T15_waf_detection() {
 }
 
 # =============================================================================
-# - MRK:10_TRUN
+# - MRK:11_TRUN
 # =============================================================================
 test_target() {
     local tgt="$1"
@@ -1139,7 +1139,7 @@ test_target() {
 }
 
 # =============================================================================
-# - MRK:10_MAIN
+# - MRK:11_MAIN
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"
@@ -1166,7 +1166,7 @@ main() {
     declare -i total_targets=0 total_findings=0
     declare -a summary_rows=()
 
-    command -v trail_phase_start &>/dev/null && trail_phase_start "10_cloud_testing"
+    command -v trail_phase_start &>/dev/null && trail_phase_start "11_cloud_testing"
 
     while IFS= read -r tgt; do
         [[ -z "$tgt" || "$tgt" == "#"* ]] && continue
@@ -1179,7 +1179,7 @@ main() {
         (( total_targets++ )) || true
     done < "$tf"
 
-    command -v trail_phase_end &>/dev/null && trail_phase_end "10_cloud_testing"
+    command -v trail_phase_end &>/dev/null && trail_phase_end "11_cloud_testing"
 
     # Summary report
     local report_f="${SCRIPT_DIR}/working/$(ev_fname "10-cloud-summary" "md")"

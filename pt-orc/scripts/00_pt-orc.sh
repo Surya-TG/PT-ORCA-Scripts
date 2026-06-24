@@ -386,21 +386,21 @@ print_summary() {
     local total="${1:-}"
     local -A names=(
         [1]="DNS Recon"
-        [2]="IP Analysis"
-        [3]="Comprehensive Scan"
-        [4]="TLS Scan"
-        [5]="Web Enumeration"
-        [6]="WPScan"
-        [7]="Service Verify"
-        [8]="App / API Review"
-        [9]="AI / LLM Review"
-        [10]="Cloud Testing"
-        [11]="AD Testing"
-        [12]="Report Pack"
+        [2]="OSINT Recon"
+        [3]="IP Analysis"
+        [4]="Comprehensive Scan"
+        [5]="TLS Scan"
+        [6]="Web Enumeration"
+        [7]="WPScan"
+        [8]="Service Verify"
+        [9]="App / API Review"
+        [10]="AI / LLM Review"
+        [11]="Cloud Testing"
+        [12]="AD Testing"
         [13]="Active Fuzz"
         [14]="Vuln Corpus"
         [15]="Attack Chain AI"
-        [16]="OSINT Recon"
+        [16]="Report Pack"
     )
     local line; line="$(printf '━%.0s' {1..60})"
 
@@ -416,7 +416,7 @@ print_summary() {
 
     local all_ok=1
     local n
-    for n in 1 16 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
+    for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
         local status="${STEP_STATUS[$n]:-—}"
         local dur="${STEP_DURATION[$n]:-—}"
         local scr="${STEP_SCRIPT[$n]:-—}"
@@ -442,7 +442,7 @@ print_summary() {
         echo "=== PT-Orc Suite Summary ==="
         echo "Project: ${PROJECT_NAME:-[project]}"
         [[ -n "$total" ]] && echo "Total elapsed: ${total}"
-        for n in 1 16 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
+        for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
             printf "  Step %-2s  %-22s  %-14s  %s\n" \
                 "$n" "${names[$n]}" "${STEP_STATUS[$n]:-—}" "${STEP_DURATION[$n]:-—}"
         done
@@ -532,7 +532,7 @@ main() {
     local suite_start; suite_start=$(date +%s)
     local n
 
-    for n in 1 16 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
+    for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
         if ! should_run "$n"; then
             STEP_STATUS[$n]="SKIP"
             STEP_DURATION[$n]="—"
@@ -549,48 +549,65 @@ main() {
                 [[ "$OPT_SKIP_ACTIVE" -eq 1 ]] && flags+=("--skip-active")
                 ;;
             2)
-                flags+=("--mode" "$MODE")
+                # OSINT Recon (02_osint.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
+                [[ -n "${OSINT_GITHUB_TOKEN:-}" ]] && flags+=("--github-token" "$OSINT_GITHUB_TOKEN")
+                [[ -n "${HIBP_API_KEY:-}" ]]        && flags+=("--hibp-key" "$HIBP_API_KEY")
                 ;;
             3)
+                # IP Analysis (03_ip_analysis.sh)
+                flags+=("--mode" "$MODE")
+                ;;
+            4)
+                # Comprehensive Scan (04_comp_scan.sh)
                 flags+=("--mode" "$MODE" "--tier" "$GLOBAL_TIER")
                 [[ -n "${OPT_PHASE:-}"       ]] && flags+=("--phase" "$OPT_PHASE")
                 [[ "${OPT_MASSCAN_ONLY:-0}" -eq 1 ]] && flags+=("--masscan-only")
                 [[ "${OPT_REUSE_WORKSPACE:-0}" -eq 1 ]] && flags+=("--reuse-workspace")
                 [[ "${OPT_PHASE_CONTINUE:-0}"  -eq 1 ]] && flags+=("--continue")
                 ;;
-            4)
+            5)
+                # TLS Scan (05_tls_scan.sh)
                 [[ "$OPT_FAST" -eq 1 ]] && flags+=("--fast")
                 ;;
-            5)
+            6)
+                # Web Enumeration (06_web_enum.sh)
                 flags+=("--tier" "$GLOBAL_TIER")
                 [[ "$OPT_SKIP_GOBUSTER" -eq 1 ]] && flags+=("--skip-gobuster")
                 [[ "$OPT_SKIP_NIKTO"    -eq 1 ]] && flags+=("--skip-nikto")
                 [[ "$OPT_FAST"          -eq 1 ]] && flags+=("--fast")
                 ;;
-            6)
+            7)
+                # WPScan (07_wpscan.sh)
                 flags+=("--mode" "$MODE" "--tier" "$GLOBAL_TIER")
                 [[ "$OPT_NO_WP_DETECT" -eq 0 ]] && flags+=("--detect")
                 ;;
-            7)
+            8)
+                # Service Verify (08_service_verify.sh)
                 flags+=("--mode" "$MODE")
                 [[ "$OPT_AGGRESSIVE" -eq 1 ]] && flags+=("--aggressive")
                 [[ "$OPT_NUCLEI"     -eq 1 ]] && flags+=("--nuclei")
                 ;;
-            8)
+            9)
+                # App / API Review (09_app_api_review.sh)
                 flags+=("--tier" "$GLOBAL_TIER")
                 [[ "$OPT_FAST" -eq 1 ]] && flags+=("--fast")
                 ;;
-            9)
+            10)
+                # AI / LLM Review (10_ai_llm_review.sh)
                 flags+=("--tier" "$GLOBAL_TIER")
                 [[ -n "$OPT_API_KEY" ]] && flags+=("--api-key" "$OPT_API_KEY")
                 ;;
-            10)
+            11)
+                # Cloud Testing (11_cloud_testing.sh)
                 flags+=("--profile" "$TESTING_DEPTH")
                 [[ -n "${CLOUD_PROVIDER:-}" ]] && flags+=("--provider" "$CLOUD_PROVIDER")
                 [[ -n "${CLOUD_BUCKET_PREFIX:-}" ]] && flags+=("--bucket-prefix" "$CLOUD_BUCKET_PREFIX")
                 [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
-            11)
+            12)
+                # Active Directory Testing (12_active_directory.sh)
                 flags+=("--profile" "$TESTING_DEPTH")
                 [[ -n "${AD_DOMAIN:-}"    ]] && flags+=("--domain"  "$AD_DOMAIN")
                 [[ -n "${AD_DC_IP:-}"     ]] && flags+=("--dc"      "$AD_DC_IP")
@@ -599,29 +616,27 @@ main() {
                 [[ -n "${AD_NT_HASH:-}"   ]] && flags+=("--hash"    "$AD_NT_HASH")
                 ;;
             13)
+                # Active Fuzz (13_active_fuzz.sh)
                 flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
                 [[ -n "$OPT_BURP_KEY" ]] && flags+=("--burp-key" "$OPT_BURP_KEY")
                 ;;
             14)
+                # Vuln Corpus (14_vuln_corpus.sh)
                 flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
                 [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
             15)
+                # Attack Chain AI (15_attack_chain.sh)
                 [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
             16)
-                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
-                [[ -n "${OSINT_GITHUB_TOKEN:-}" ]] && flags+=("--github-token" "$OSINT_GITHUB_TOKEN")
-                [[ -n "${HIBP_API_KEY:-}" ]]        && flags+=("--hibp-key" "$HIBP_API_KEY")
-                ;;
-            12)
+                # Report Pack (16_report_pack.sh)
                 [[ -n "$OPT_PROJECT_ID" ]] && flags+=("--project-id" "$OPT_PROJECT_ID")
                 [[ "$OPT_RETEST" -eq 1  ]] && flags+=("--retest")
                 ;;
         esac
 
-        local step_names=([1]="DNS Recon" [2]="IP Analysis" [3]="Comprehensive Scan" [4]="TLS Scan" [5]="Web Enumeration" [6]="WPScan" [7]="Service Verify" [8]="App / API Review" [9]="AI / LLM Review" [10]="Cloud Testing" [11]="AD Testing" [12]="Report Pack" [13]="Active Fuzz" [14]="Vuln Corpus" [15]="Attack Chain AI" [16]="OSINT Recon")
+        local step_names=([1]="DNS Recon" [2]="OSINT Recon" [3]="IP Analysis" [4]="Comprehensive Scan" [5]="TLS Scan" [6]="Web Enumeration" [7]="WPScan" [8]="Service Verify" [9]="App / API Review" [10]="AI / LLM Review" [11]="Cloud Testing" [12]="AD Testing" [13]="Active Fuzz" [14]="Vuln Corpus" [15]="Attack Chain AI" [16]="Report Pack")
 
         if ! run_step "$n" "${step_names[$n]}" "${flags[@]+"${flags[@]}"}"; then
             if [[ "$CONTINUE_ON_ERROR" -eq 1 ]]; then

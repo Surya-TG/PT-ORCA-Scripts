@@ -2,22 +2,22 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:12_NAV_TOC — Section index | nav,toc,index | L5-44
-# - MRK:12_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:12_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111 | ⚠ no-insert-before
-# - MRK:12_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145 | ⚠ no-insert-before
-# - MRK:12_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174 | ⚠ no-insert-before
-# - MRK:12_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255 | ⚠ no-insert-before; read-toc-first
-# - MRK:12_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354 | ⚠ no-insert-before; read-toc-first
-# - MRK:12_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620 | ⚠ no-insert-before; read-toc-first
-# - MRK:12_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679 | ⚠ no-insert-before; read-toc-first
-# - MRK:12_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744 | ⚠ no-insert-before; read-toc-first
-# - MRK:12_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703 | ⚠ no-insert-before; read-toc-first
-# - MRK:12_MAIN — MAIN entry point | main,entry,point | L1704-1779 | ⚠ no-insert-before; read-toc-first
+# MRK:16_NAV_TOC — Section index | nav,toc,index | L5-44
+# - MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:16_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111 | ⚠ no-insert-before
+# - MRK:16_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145 | ⚠ no-insert-before
+# - MRK:16_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174 | ⚠ no-insert-before
+# - MRK:16_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_MAIN — MAIN entry point | main,entry,point | L1704-1779 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 11 entries | Integrity-hash: 8a1b9c0b90a405f7 | Last-indexed: 2026-06-16T15:34:52Z
 
 # =============================================================================
-# 12_report_pack.sh — TechGuard. [VAPT-Enhanced v1.0 — 2026-06-06]
+# 16_report_pack.sh — TechGuard. [VAPT-Enhanced v1.0 — 2026-06-06]
 # Report Pack — reads all scan evidence and produces 4 files for TG Audit Orchestrator
 #
 # Output files (strict Pydantic validation on import):
@@ -27,7 +27,7 @@
 #   report_bundle.json    — counts, residual risk, metadata
 # =============================================================================
 # USAGE:
-#   ./12_report_pack.sh [OPTIONS]
+#   ./16_report_pack.sh [OPTIONS]
 #
 # OPTIONS:
 #   --project-id <uuid>   Override ORCHESTRATOR_PROJECT_ID from conf (required if not in conf)
@@ -42,7 +42,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:12_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88
+# MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -87,7 +87,7 @@ BASELINE_RUN_DIR=""     # set via --baseline <prior_run_dir>; enables retest dif
 RUN_DIR_ACTUAL=""       # set by write_output; consumed by generate_ai_report
 
 # =============================================================================
-# MRK:12_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111
+# MRK:16_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -110,7 +110,7 @@ log_info() { local m="[$(_now)]   $1";          echo -e "${CYAN}${m}${NC}" >&2; 
 log_find() { local m="[$(_now)] FINDING: $1";   echo -e "${BOLD}${RED}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:12_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145
+# MRK:16_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -147,7 +147,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:12_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174
+# MRK:16_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -160,7 +160,7 @@ if [[ -z "$ORCHESTRATOR_PROJECT_ID" ]]; then
     echo "    2. Pass as argument:      --project-id <uuid>"
     echo ""
     echo "  The UUID is assigned when you create the project in the TG Audit Orchestrator."
-    echo "  Example: ./12_report_pack.sh --project-id a1b2c3d4-1234-5678-abcd-ef0123456789"
+    echo "  Example: ./16_report_pack.sh --project-id a1b2c3d4-1234-5678-abcd-ef0123456789"
     echo ""
     exit 1
 fi
@@ -170,13 +170,13 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
-log "12_report_pack.sh — TechGuard. | Project: ${ORCHESTRATOR_PROJECT_ID}"
+log "16_report_pack.sh — TechGuard. | Project: ${ORCHESTRATOR_PROJECT_ID}"
 log "Evidence base: ${EVIDENCE_BASE}"
 log "Output dir:    ${OUTPUT_DIR}"
 [[ "$DRY_RUN" -eq 1 ]] && log_warn "DRY-RUN mode — no output files will be written"
 
 # =============================================================================
-# MRK:12_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255
+# MRK:16_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -257,11 +257,11 @@ build_scope_json() {
 }
 
 # =============================================================================
-# MRK:12_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354
+# MRK:16_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
-# Global maps used by MRK:12_FINDINGS to link files to ev-NNN ids
+# Global maps used by MRK:16_FINDINGS to link files to ev-NNN ids
 declare -A EV_ID_BY_PATH    # absolute_path -> ev-NNN
 declare -A EV_ID_BY_BASE    # basename -> ev-NNN (last writer wins; sufficient for matching)
 
@@ -288,29 +288,29 @@ build_evidence_manifest() {
         [[ ! -s "$fpath" ]] && continue
 
         # Phase detection from path components
-        local phase="05_web"   # catchall default
+        local phase="06_web"   # catchall default
         if [[ "$fdir" == *_dns* || "$fname" == *_dns_* ]]; then
             phase="01_dns"
         elif [[ "$fname" == ip_analysis* ]]; then
-            phase="02_ip"
+            phase="03_ip"
         elif [[ "$fname" == nmap_* || ( "$fdir" == *_sweep* && "$fname" == *comp_scan* ) ]]; then
-            phase="03_network"
+            phase="04_network"
         elif [[ "$fname" == tls_* || "$fname" == testssl_* || "$fname" == cert_* ]]; then
-            phase="04_tls"
+            phase="05_tls"
         elif [[ "$fname" == headers_* || "$fname" == sec_headers_* || \
                 "$fname" == gobuster_* || "$fname" == nikto_* || \
                 "$fname" == whatweb_* || "$fname" == sensitive_* || \
                 "$fname" == cors_*    || "$fname" == graphql_* || \
                 "$fname" == api_endpoints_* ]]; then
-            phase="05_web"
+            phase="06_web"
         elif [[ "$fname" == wp_* ]]; then
-            phase="06_wordpress"
+            phase="07_wordpress"
         elif [[ "$fname" == service_* ]]; then
-            phase="07_service"
+            phase="08_service"
         elif [[ "$fname" == app_* ]]; then
-            phase="08_app_api"
+            phase="09_app_api"
         elif [[ "$fname" == llm_* || "$fname" == ai_* ]]; then
-            phase="09_ai_llm"
+            phase="10_ai_llm"
         fi
 
         # Compute sha256
@@ -356,7 +356,7 @@ build_evidence_manifest() {
 }
 
 # =============================================================================
-# MRK:12_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620
+# MRK:16_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -476,7 +476,7 @@ collect_findings() {
                 local fid; fid="f-$(printf '%03d' "$f_count")"
                 local rec="Disable TLS 1.0 and TLS 1.1; enforce TLS 1.2+."
                 local desc="Legacy TLS protocol versions (TLSv1.0 and/or TLSv1.1) are active on the target. These versions are deprecated and vulnerable to known attacks (POODLE, BEAST). Evidence: ${fname}"
-                FINDINGS_LINES+=("$(_make_finding "$fid" "TLS 1.0/1.1 still active" "medium" "04_tls" "$ev_ids" "$desc" "$rec")")
+                FINDINGS_LINES+=("$(_make_finding "$fid" "TLS 1.0/1.1 still active" "medium" "05_tls" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("medium")
                 log_find "medium [04_tls] TLS 1.0/1.1 still active — ${fname}"
             fi
@@ -497,7 +497,7 @@ collect_findings() {
                     local fid; fid="f-$(printf '%03d' "$f_count")"
                     local desc="testssl.sh reported a ${tsev} severity finding: ${ttext}"
                     local rec="Remediate per testssl recommendation."
-                    FINDINGS_LINES+=("$(_make_finding "$fid" "testssl: ${ttext:0:80}" "$normalized_sev" "04_tls" "$ev_ids" "$desc" "$rec")")
+                    FINDINGS_LINES+=("$(_make_finding "$fid" "testssl: ${ttext:0:80}" "$normalized_sev" "05_tls" "$ev_ids" "$desc" "$rec")")
                     FINDING_SEVERITIES+=("$normalized_sev")
                     log_find "${normalized_sev} [04_tls] testssl: ${ttext:0:60}"
                 done <<< "$testssl_results"
@@ -514,7 +514,7 @@ collect_findings() {
                 local fid; fid="f-$(printf '%03d' "$f_count")"
                 local desc="Security header analysis identified ${missing_count} missing HTTP security headers on the target. Missing headers increase exposure to clickjacking, MIME sniffing, and XSS attacks. Evidence: ${fname}"
                 local rec="Add X-Content-Type-Options, X-Frame-Options, CSP, HSTS, X-XSS-Protection headers."
-                FINDINGS_LINES+=("$(_make_finding "$fid" "Multiple security headers missing" "medium" "05_web" "$ev_ids" "$desc" "$rec")")
+                FINDINGS_LINES+=("$(_make_finding "$fid" "Multiple security headers missing" "medium" "06_web" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("medium")
                 log_find "medium [05_web] Multiple security headers missing (${missing_count}) — ${fname}"
             fi
@@ -528,7 +528,7 @@ collect_findings() {
                 local hits; hits=$(grep -cE "HTTP/1\.[01] 200|HTTP/2 200" "$fpath" 2>/dev/null || echo 1)
                 local desc="Sensitive file or directory probing returned HTTP 200 responses (${hits} hit(s)). Exposed backup files, configuration, or version control metadata can disclose credentials and source code. Evidence: ${fname}"
                 local rec="Block access to backup files, .git, .env, and config directories in webserver config."
-                FINDINGS_LINES+=("$(_make_finding "$fid" "Sensitive file or directory exposed" "high" "05_web" "$ev_ids" "$desc" "$rec")")
+                FINDINGS_LINES+=("$(_make_finding "$fid" "Sensitive file or directory exposed" "high" "06_web" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("high")
                 log_find "high [05_web] Sensitive file or directory exposed — ${fname}"
             fi
@@ -562,8 +562,8 @@ collect_findings() {
                 local desc_body; desc_body=$(echo "$nikto_hits" | tr '\n' '|')
                 local desc="Nikto scanner identified configuration weaknesses on ${hostport}. Findings (top 10): ${desc_body}"
                 local rec="Review individual Nikto findings and remediate configuration weaknesses."
-                local nikto_phase="05_web"
-                [[ "$fdir" == *wp* || "$fname" == *wp_* ]] && nikto_phase="06_wordpress"
+                local nikto_phase="06_web"
+                [[ "$fdir" == *wp* || "$fname" == *wp_* ]] && nikto_phase="07_wordpress"
                 FINDINGS_LINES+=("$(_make_finding "$fid" "Nikto scanner findings on ${hostport}" "low" "$nikto_phase" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("low")
                 log_find "low [${nikto_phase}] Nikto scanner findings — ${fname}"
@@ -605,7 +605,7 @@ collect_findings() {
                 local fid; fid="f-$(printf '%03d' "$f_count")"
                 local desc="Prompt injection was confirmed against the AI/LLM endpoint. The model accepted injected instructions that overrode its system prompt or changed its output behaviour. This can lead to data exfiltration, safety bypass, and indirect command execution. Evidence: ${fname}"
                 local rec="Implement robust input sanitisation and output validation for all LLM integrations. Use a separate instruction channel from user data. Apply content filtering and monitoring."
-                FINDINGS_LINES+=("$(_make_finding "$fid" "Prompt injection vulnerability confirmed" "high" "09_ai_llm" "$ev_ids" "$desc" "$rec")")
+                FINDINGS_LINES+=("$(_make_finding "$fid" "Prompt injection vulnerability confirmed" "high" "10_ai_llm" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("high")
                 log_find "high [09_ai_llm] Prompt injection confirmed — ${fname}"
             fi
@@ -618,7 +618,7 @@ collect_findings() {
 }
 
 # =============================================================================
-# MRK:12_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679
+# MRK:16_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -677,7 +677,7 @@ build_report_bundle() {
 }
 
 # =============================================================================
-# MRK:12_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744
+# MRK:16_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -731,7 +731,7 @@ write_output() {
         | sort -u | tr '\n' ',' | sed 's/,$//')
 
     {
-        echo "# Session End — 12_report_pack.sh"
+        echo "# Session End — 16_report_pack.sh"
         echo "# Time:        $(_now)"
         echo "# Project:     ${ORCHESTRATOR_PROJECT_ID}"
         echo "# Run dir:     ${run_dir}"
@@ -745,7 +745,7 @@ write_output() {
 }
 
 # =============================================================================
-# MRK:12_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703
+# MRK:16_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -846,7 +846,7 @@ generate_ai_report() {
 
     cat > "$tmp_py" << 'PYTHON_EOF'
 #!/usr/bin/env python3
-"""AI-Powered VAPT Report — embedded engine for 12_report_pack.sh"""
+"""AI-Powered VAPT Report — embedded engine for 16_report_pack.sh"""
 import json, os, re, sys
 from datetime import datetime
 from pathlib import Path
@@ -889,7 +889,8 @@ _bl_env      = os.environ.get("TG_BASELINE_DIR", "")
 BASELINE_DIR = Path(_bl_env) if _bl_env else None
 
 # Load pt-report skill from skills/pt-report/SKILL.md — used as writing methodology guide
-_SKILL_PATH = SCRIPT_DIR / "skills" / "pt-report" / "SKILL.md"
+# Skills live one level up from scripts/ (i.e. pt-orc/skills/), so resolve via parent
+_SKILL_PATH = SCRIPT_DIR.parent / "skills" / "pt-report" / "SKILL.md"
 _PT_REPORT_SKILL = ""
 if _SKILL_PATH.exists():
     try:
@@ -898,7 +899,7 @@ if _SKILL_PATH.exists():
         print(f"[WARN] Could not load pt-report skill: {_e}")
 
 # Load company report methodology prompt from skills/pt-report/REPORT_PROMPT.md
-_REPORT_PROMPT_PATH = SCRIPT_DIR / "skills" / "pt-report" / "REPORT_PROMPT.md"
+_REPORT_PROMPT_PATH = SCRIPT_DIR.parent / "skills" / "pt-report" / "REPORT_PROMPT.md"
 _REPORT_PROMPT_MD = ""
 if _REPORT_PROMPT_PATH.exists():
     try:
@@ -1290,6 +1291,14 @@ def _normalize_ai_result(data):
         if "." in dotkey:
             underkey = dotkey.replace(".", "_")
             summary[underkey] = summary.pop(dotkey)
+    # Ensure severity_counts is always present (small models often omit it)
+    if not isinstance(summary.get("severity_counts"), dict):
+        counts = {"critical": 0, "high": 0, "medium": 0, "low": 0, "informational": 0}
+        for f in data.get("findings", []):
+            sev = (f.get("severity") or "informational").lower()
+            if sev in counts:
+                counts[sev] += 1
+        summary["severity_counts"] = counts
     data["engagement_summary"] = summary
     # Ensure findings is always a list
     if not isinstance(data.get("findings"), list):
@@ -2151,11 +2160,13 @@ def _ollama_company(ollama_host, ollama_model, config, findings, evidence_block,
     caps = _ollama_capabilities(ollama_host, ollama_model)
     ctx_tokens = _ollama_context_length(ollama_host, ollama_model)
     total_chars    = int(ctx_tokens * 3.5)
-    output_reserve = 28000
+    # Reserve 40 % of context for the output; cap at 40K chars so small models
+    # (qwen:7b / 32K ctx) don't overflow and regurgitate input instead of writing.
+    output_reserve = min(40000, int(total_chars * 0.40))
     input_budget   = total_chars - output_reserve
     template_oh    = 2000
     findings_limit = min(8000,  (input_budget - template_oh) // 4)
-    evidence_limit = min(20000, (input_budget - template_oh - findings_limit) // 2)
+    evidence_limit = min(12000, (input_budget - template_oh - findings_limit) // 3)
     # Use tail of REPORT_PROMPT.md — most actionable PT prompt sections are at the end
     prompt_budget  = max(0, input_budget - template_oh - findings_limit - evidence_limit)
     rp_excerpt     = report_prompt[-prompt_budget:] if len(report_prompt) > prompt_budget else report_prompt
@@ -2163,7 +2174,7 @@ def _ollama_company(ollama_host, ollama_model, config, findings, evidence_block,
                                    evidence_limit=evidence_limit,
                                    findings_limit=findings_limit,
                                    prompt_limit=len(rp_excerpt) + 10)
-    print(f"[INFO] Company prompt: {len(prompt):,} chars → Ollama {ollama_model}")
+    print(f"[INFO] Company prompt: {len(prompt):,} chars (budget {input_budget:,}) → Ollama {ollama_model}")
     payload = json.dumps({"model": ollama_model, "prompt": prompt, "stream": False}).encode()
     req = _ur.Request(f"{ollama_host}/api/generate", data=payload,
                       headers={"Content-Type": "application/json"}, method="POST")
@@ -2234,12 +2245,31 @@ def _gemini_company(gemini_key, gemini_models, config, findings, evidence_block,
     return ""
 
 
+def _is_valid_company_report(raw):
+    """Return True only if the output looks like a genuine report, not echoed evidence."""
+    if not raw or len(raw) < 3000:
+        return False
+    s = raw.strip().lower()
+    # Must contain structural markers of a real HTML or markdown report
+    has_html  = "<html" in s or "<!doctype" in s
+    has_heads = s.count("<h") >= 4 or s.count("\n#") >= 4
+    # Reject outputs that open with raw HTTP evidence snippets
+    first500  = s[:500]
+    looks_like_echo = any(p in first500 for p in [
+        "http/1.1 200", "content-type:", "api response body",
+        "{\"status\":", "\"message\":", "response_data",
+    ])
+    return not looks_like_echo and (has_html or has_heads)
+
+
 def run_company_report(config, findings, evidence_block, report_prompt):
     """Route company report generation to the best available AI backend."""
     if OLLAMA_HOST:
         raw = _ollama_company(OLLAMA_HOST, OLLAMA_MODEL, config, findings, evidence_block, report_prompt)
-        if raw:
+        if _is_valid_company_report(raw):
             return raw
+        if raw:
+            print(f"[WARN] Ollama company report looks invalid ({len(raw):,} chars) — falling back to cloud AI")
     if API_KEY:
         raw = _claude_company(API_KEY, MODEL, config, findings, evidence_block, report_prompt)
         if raw:
@@ -2448,7 +2478,7 @@ PYTHON_EOF
 }
 
 # =============================================================================
-# MRK:12_MAIN — MAIN entry point | main,entry,point | L1704-1779
+# MRK:16_MAIN — MAIN entry point | main,entry,point | L1704-1779
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -2457,7 +2487,7 @@ main() {
 
     echo -e "${GREEN}"
     echo "════════════════════════════════════════════════════════════"
-    echo "  12_report_pack.sh"
+    echo "  16_report_pack.sh"
     echo "  TechGuard."
     echo "  Project:  ${ORCHESTRATOR_PROJECT_ID}"
     echo "  Profile:  ${ENGAGEMENT_PROFILE}"
@@ -2471,7 +2501,7 @@ main() {
     echo -e "${NC}"
 
     {
-        echo "# Session Start — 12_report_pack.sh"
+        echo "# Session Start — 16_report_pack.sh"
         echo "# Time:        $(_now)"
         echo "# Project:     ${ORCHESTRATOR_PROJECT_ID}"
         echo "# Profile:     ${ENGAGEMENT_PROFILE}"
@@ -2499,7 +2529,7 @@ main() {
 
     echo ""
     echo -e "${BOLD}${CYAN}══════════════════════════════════════════════════════════${NC}"
-    echo -e "${BOLD}${CYAN}  12_report_pack.sh — Export complete${NC}"
+    echo -e "${BOLD}${CYAN}  16_report_pack.sh — Export complete${NC}"
     echo -e "${BOLD}${CYAN}══════════════════════════════════════════════════════════${NC}"
     printf "  %-14s %s\n" "Run dir:"     "${RUN_DIR_DISPLAY:-<dry-run>}"
     printf "  %-14s %s\n" "scope.json:"  "${SCOPE_TARGET_COUNT} targets"
