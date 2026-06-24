@@ -82,7 +82,7 @@ DRY_RUN=0
 RETEST=0
 AI_REPORT=1             # 0 = skip AI report; disable with --no-ai-report
 AI_NO_PDF=0             # 1 = skip PDF (HTML + JSON only); enable with --no-pdf
-AI_MODEL="claude-haiku-4-5-20251001"
+AI_MODEL="${AI_CLAUDE_MODEL:-claude-haiku-4-5-20251001}"
 BASELINE_RUN_DIR=""     # set via --baseline <prior_run_dir>; enables retest diff
 RUN_DIR_ACTUAL=""       # set by write_output; consumed by generate_ai_report
 
@@ -406,38 +406,31 @@ collect_findings() {
     while IFS= read -r -d '' f; do
         pregen_files+=("$f")
     done < <(find "${WORKING_DIR}" -maxdepth 1 \
-        \( -name "*01_dns_findings_*.jsonl" \
-        -o -name "*02_ip_analysis_findings_*.jsonl" \
-        -o -name "*03_comp_scan_findings_*.jsonl" \
-        -o -name "*04_tls_scan_findings_*.jsonl" \
-        -o -name "*05_web_enum_findings_*.jsonl" \
-        -o -name "*06_wpscan_findings_*.jsonl" \
-        -o -name "*07_service_verify_findings_*.jsonl" \
-        -o -name "*08_app_api_findings_*.jsonl" \
-        -o -name "*09_ai_llm_findings_*.jsonl" \
-        -o -name "*10_cloud_findings_*.jsonl" \
-        -o -name "*11_ad_findings_*.jsonl" \
-        -o -name "*13_fuzz_findings_*.jsonl" \
-        -o -name "*14_corpus_findings_*.jsonl" \
-        -o -name "*15_attack_chain_findings_*.jsonl" \) \
+        -name "${PROJ_SLUG}-*-findings-*.jsonl" \
         -type f -print0 2>/dev/null | sort -z)
 
     for pf in "${pregen_files[@]:-}"; do
         [[ -z "$pf" || ! -f "$pf" ]] && continue
         log_info "  Loading pre-generated findings: $(basename "$pf")"
         while IFS= read -r fline; do
+            fline="${fline//$'\r'/}"   # strip CRLF carriage returns
             [[ -z "$fline" ]] && continue
+            # Skip lines with malformed JSON (unescaped backslashes, control chars, etc.)
+            if ! printf '%s' "$fline" | jq -e . >/dev/null 2>&1; then
+                log_warn "  Skipping malformed finding line in $(basename "$pf")"
+                continue
+            fi
             (( f_count++ )) || true
             local new_id; new_id="f-$(printf '%03d' "$f_count")"
-            local sev; sev=$(echo "$fline" | jq -r '.severity // "info"')
+            local sev; sev=$(printf '%s' "$fline" | jq -r '.severity // "info"')
 
             # Remap evidence_ids: replace any source_file-based references with ev-NNN
             # Strategy: for each source_file name in the finding's evidence_ids field,
             # look up our manifest map; fall back to the original id if not found.
             local remapped_ev
-            remapped_ev=$(echo "$fline" | jq -r '.evidence_ids // [] | @json')
+            remapped_ev=$(printf '%s' "$fline" | jq -c '.evidence_ids // []')
             # Try to rebuild from source_file field if present
-            local src_file; src_file=$(echo "$fline" | jq -r '.source_file // empty')
+            local src_file; src_file=$(printf '%s' "$fline" | jq -r '.source_file // empty')
             if [[ -n "$src_file" ]]; then
                 local mapped="${EV_ID_BY_BASE[$src_file]:-}"
                 if [[ -n "$mapped" ]]; then
@@ -446,13 +439,13 @@ collect_findings() {
             fi
 
             local relined
-            relined=$(echo "$fline" | jq \
+            relined=$(printf '%s' "$fline" | jq -c \
                 --arg new_id "$new_id" \
                 --argjson ev_ids "$remapped_ev" \
-                '.id = $new_id | .evidence_ids = $ev_ids')
+                '.id = $new_id | .evidence_ids = $ev_ids') || continue
             FINDINGS_LINES+=("$relined")
             FINDING_SEVERITIES+=("$sev")
-            log_find "Pre-generated [${sev}] $(echo "$fline" | jq -r '.title // "unknown"')"
+            log_find "Pre-generated [${sev}] $(printf '%s' "$fline" | jq -r '.title // "unknown"')"
         done < "$pf"
     done
     log_info "  Pre-generated findings loaded: ${f_count}"
@@ -702,6 +695,9 @@ write_output() {
     fi
 
     mkdir -p "$run_dir"
+    # When running as root on behalf of a user (sudo), let that user own the run dir
+    # so the Python AI report (which runs as SUDO_USER) can write files into it.
+    [[ "$EUID" -eq 0 && -n "${SUDO_USER:-}" ]] && chown "${SUDO_USER}" "$run_dir"
     RUN_DIR_ACTUAL="$run_dir"
     log "Writing output to ${run_dir}/ ..."
 
@@ -760,16 +756,27 @@ generate_ai_report() {
     local api_key="${ANTHROPIC_API_KEY:-}"
     local gemini_key="${GEMINI_API_KEY:-}"
     local ollama_host="${OLLAMA_HOST:-}"
-    local ollama_model="${OLLAMA_MODEL:-qwen2.5:3b}"
+    local ollama_model="${OLLAMA_MODEL:-qwen:7b}"
     local ollama_ok=0
 
-    if [[ -n "$ollama_host" ]]; then
-        if curl -sf --max-time 3 "${ollama_host}/api/tags" >/dev/null 2>&1; then
+    local _try_ollama_hosts=()
+    [[ -n "$ollama_host" ]] && _try_ollama_hosts+=("$ollama_host")
+    [[ -n "${OLLAMA_HOST_FALLBACK:-}" && "${OLLAMA_HOST_FALLBACK}" != "$ollama_host" ]] \
+        && _try_ollama_hosts+=("${OLLAMA_HOST_FALLBACK}")
+
+    for _oh in "${_try_ollama_hosts[@]:-}"; do
+        [[ -z "$_oh" ]] && continue
+        if curl -sf --max-time 3 "${_oh}/api/tags" >/dev/null 2>&1; then
             ollama_ok=1
+            ollama_host="$_oh"
+            break
         else
-            log_warn "Ollama configured at ${ollama_host} but not reachable — skipping local backend"
-            ollama_host=""
+            log_warn "Ollama not reachable at ${_oh}"
         fi
+    done
+    if [[ "$ollama_ok" -eq 0 ]]; then
+        [[ "${#_try_ollama_hosts[@]}" -gt 0 ]] && log_warn "No Ollama endpoint reachable — skipping local backend"
+        ollama_host=""
     fi
 
     if [[ -z "$api_key" && -z "$gemini_key" && "$ollama_ok" -eq 0 ]]; then
@@ -872,7 +879,7 @@ API_KEY      = os.environ.get("TG_API_KEY", "")
 GEMINI_KEY   = os.environ.get("TG_GEMINI_API_KEY", "")
 MODEL        = os.environ.get("TG_MODEL", "claude-haiku-4-5-20251001")
 OLLAMA_HOST  = os.environ.get("TG_OLLAMA_HOST", "")
-OLLAMA_MODEL = os.environ.get("TG_OLLAMA_MODEL", "qwen2.5:3b")
+OLLAMA_MODEL = os.environ.get("TG_OLLAMA_MODEL", "qwen:7b")
 GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
 NO_PDF       = os.environ.get("TG_NO_PDF", "0") == "1"
 DRY_RUN      = os.environ.get("TG_DRY_RUN", "0") == "1"
@@ -880,6 +887,24 @@ SCRIPT_DIR   = Path(os.environ.get("TG_SCRIPT_DIR", ""))
 WORKING_DIR  = SCRIPT_DIR / "working"
 _bl_env      = os.environ.get("TG_BASELINE_DIR", "")
 BASELINE_DIR = Path(_bl_env) if _bl_env else None
+
+# Load pt-report skill from skills/pt-report/SKILL.md — used as writing methodology guide
+_SKILL_PATH = SCRIPT_DIR / "skills" / "pt-report" / "SKILL.md"
+_PT_REPORT_SKILL = ""
+if _SKILL_PATH.exists():
+    try:
+        _PT_REPORT_SKILL = _SKILL_PATH.read_text(encoding="utf-8")
+    except Exception as _e:
+        print(f"[WARN] Could not load pt-report skill: {_e}")
+
+# Load company report methodology prompt from skills/pt-report/REPORT_PROMPT.md
+_REPORT_PROMPT_PATH = SCRIPT_DIR / "skills" / "pt-report" / "REPORT_PROMPT.md"
+_REPORT_PROMPT_MD = ""
+if _REPORT_PROMPT_PATH.exists():
+    try:
+        _REPORT_PROMPT_MD = _REPORT_PROMPT_PATH.read_text(encoding="utf-8")
+    except Exception as _e:
+        print(f"[WARN] Could not load REPORT_PROMPT.md: {_e}")
 
 MAX_EVIDENCE_LINES = 120
 SEV_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3, "informational": 4}
@@ -1100,50 +1125,89 @@ def collect_evidence_summaries(config):
     return "\n\n".join(blocks)
 
 PROMPT_TEMPLATE = """\
-You are a senior penetration tester writing a formal VAPT report for a client.
+You are a Tech Guard senior penetration tester preparing a customer-facing penetration testing report.
+Follow the Tech Guard pt-report skill and Core Reporting Standard strictly.
+
+## Tech Guard pt-report Skill — Writing Methodology
+{skill_block}
+
+---
+
+## Tech Guard Methodology — Mandatory Rules
+
+### Tone
+Use formal, professional, evidence-based, non-dramatic language.
+Use: "The assessment identified...", "Testing confirmed...", "The observed behaviour indicates..."
+Never use: "we hacked", "severely broken", "critical disaster", "obviously insecure", blame-oriented language.
+
+### Findings vs Observations
+- Finding: real weakness, validated exposure, or justified Tentative risk requiring corrective action.
+- Observation/Informational: strong control, intentional controlled exposure, positive validation, context.
+- Observations must NOT be counted in severity totals.
+
+### Severity Model
+- Critical: direct, immediate, high-impact risk — emergency remediation required.
+- High: significant exploitable weakness with material business impact.
+- Medium: exploitable under specific conditions with moderate impact.
+- Low: low-impact or difficult-to-exploit weakness.
+- Informational: observation, positive control, or context — no corrective action.
+Do NOT inflate severity because a scanner reported a high score. Assess actual exploitability and impact.
+
+### Confidence Model (use for every finding)
+- Certain: directly confirmed by current-engagement evidence.
+- Firm: strongly supported by converging evidence; not every detail directly confirmed.
+- Tentative: plausible risk not fully confirmable from the assessment vantage point; client must confirm-or-close.
+
+### Evidence Discipline
+- Every finding must trace to evidence in the input data.
+- If a condition cannot be fully determined externally, mark it Tentative and say so explicitly.
+- Do not present assumptions as confirmed facts.
+- Do not copy raw tool output as a finding — synthesize and explain the risk.
+
+### Finding Quality Rules
+- Title: concise and specific (e.g. "Missing HTTP Strict-Transport-Security Header on Public Portal")
+- Description: explain the condition, where observed, and why it matters — formal prose, not notes.
+- Business impact: plain language for non-technical executives.
+- Recommendations: numbered, actionable, specific, tied to the finding.
+- CVSS: assign from evidence; do not invent scores. Use CVSS 3.1.
+- OWASP: map to Top 10 2021 (A01–A10). CWE: assign accurate CWE IDs.
 
 ## Engagement Configuration
 {config_block}
 
-## Deduplicated Raw Findings (from automated scans — {finding_count} findings)
+## Deduplicated Raw Findings ({finding_count} findings from automated scans)
 {findings_json}
 
-## Supporting Evidence & Summaries
+## Supporting Evidence and Summaries
 {evidence_block}
 
-## Instructions
+## Output Instructions — CRITICAL
 
-Return a SINGLE JSON object (no markdown fences, no extra text) with this exact structure.
+You MUST return a SINGLE valid JSON object. No markdown fences. No text before or after the JSON.
+You MUST populate the "findings" array with ALL findings from the input data above.
+An empty "findings" array is WRONG — the input contains {finding_count} findings; they must all appear.
+Sort findings: Critical → High → Medium → Low → Informational.
+Consolidate findings with the same root vulnerability into one entry.
 
-Rules:
-1. Consolidate findings with the same root vulnerability into one entry.
-2. Assign accurate CVSS 3.1 scores and vectors from evidence.
-3. Map each finding to OWASP Top 10 2021 (A01–A10).
-4. Assign accurate CWE IDs. Only include CVE IDs if directly applicable.
-5. Write business_impact in plain language for non-technical executives.
-6. Remediation steps must be specific and actionable.
-7. Include informational findings (WAF present, CORS correctly configured) as "Informational" severity.
-8. Sort findings: Critical → High → Medium → Low → Informational.
-9. Identify 2–5 multi-step attack chains where chaining two or more findings reaches a higher-impact outcome than any single finding alone. Each path must reference finding IDs from the findings array above.
-
-Required JSON schema:
+Required JSON schema (populate every field — do not omit "findings"):
 {{
   "engagement_summary": {{
-    "project": "<project name>",
-    "targets": ["<ip:port>", "..."],
+    "project": "<project name from config>",
+    "targets": ["<ip:port>"],
     "assessment_type": "External Web Application Penetration Test",
-    "testing_period": "<e.g. June 2026>",
+    "testing_period": "<month year>",
     "overall_risk_rating": "Critical|High|Medium|Low",
-    "executive_summary": "<3-4 sentences for non-technical executives>",
-    "risk_justification": "<1-2 sentences explaining the rating>",
+    "executive_summary": "<3-4 formal sentences summarising posture, key risks, and priority remediation — Tech Guard tone>",
+    "risk_justification": "<1-2 sentences explaining the overall rating — evidence-based>",
     "severity_counts": {{"critical": 0, "high": 0, "medium": 0, "low": 0, "informational": 0}},
     "tools_used": ["nmap", "nikto", "testssl", "wafw00f", "gobuster", "wpscan"]
   }},
   "findings": [
     {{
-      "id": "F-001",
-      "title": "<concise title>",
+      "id": "F-01",
+      "title": "<concise specific title>",
       "severity": "Critical|High|Medium|Low|Informational",
+      "confidence": "Certain|Firm|Tentative",
       "cvss_score": 7.5,
       "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
       "owasp_id": "A05",
@@ -1154,15 +1218,14 @@ Required JSON schema:
       "cwe_url": "https://cwe.mitre.org/data/definitions/16.html",
       "cve_ids": [],
       "chain_steps": [],
-      "affected_hosts": ["172.16.12.1:443"],
-      "description": "<clear technical description>",
-      "technical_detail": "<observed evidence>",
-      "business_impact": "<plain-language executive risk>",
-      "remediation": "<one-sentence fix>",
-      "remediation_steps": ["Step 1...", "Step 2..."],
-      "references": ["<url>"],
-      "evidence_refs": ["<filename>"],
-      "confidence": "Confirmed|High Confidence|Possible",
+      "affected_hosts": ["<host:port>"],
+      "description": "<formal technical description — condition observed, where, why it matters>",
+      "technical_detail": "<specific observed evidence>",
+      "business_impact": "<plain-language executive risk — what could happen to the business>",
+      "remediation": "<one-sentence primary fix>",
+      "remediation_steps": ["1. <specific action>", "2. <specific action>"],
+      "references": [],
+      "evidence_refs": [],
       "likelihood": "High|Medium|Low",
       "impact": "High|Medium|Low",
       "effort": "Low|Medium|High",
@@ -1172,34 +1235,80 @@ Required JSON schema:
   ],
   "attack_paths": [
     {{
-      "id": "AP-001",
+      "id": "AP-01",
       "title": "<chain name>",
       "combined_severity": "Critical|High|Medium|Low",
       "combined_cvss_score": 9.0,
-      "entry_point": "<initial access vector, e.g. unauthenticated HTTP request>",
-      "finding_ids": ["F-001", "F-003"],
+      "entry_point": "<initial access vector>",
+      "finding_ids": ["F-01", "F-03"],
       "steps": [
-        {{"step": 1, "finding_id": "F-001", "action": "<what attacker does>", "outcome": "<what they gain>"}},
-        {{"step": 2, "finding_id": "F-003", "action": "<what attacker does next>", "outcome": "<escalated access>"}}
+        {{"step": 1, "finding_id": "F-01", "action": "<attacker action>", "outcome": "<what is gained>"}},
+        {{"step": 2, "finding_id": "F-03", "action": "<next action>", "outcome": "<escalated access>"}}
       ],
-      "narrative": "<2-3 sentence kill-chain story explaining how the chain works end-to-end>",
-      "final_impact": "<worst-case business impact if the full chain is exploited>"
+      "narrative": "<2-3 sentence kill-chain story — formal Tech Guard tone>",
+      "final_impact": "<worst-case business impact>"
     }}
   ],
-  "methodology_notes": "<brief testing methodology>",
-  "disclaimer": "<standard pentest disclaimer>"
+  "methodology_notes": "<brief description of testing methodology used>",
+  "disclaimer": "This report was produced for authorized penetration testing purposes only. It is confidential and intended solely for the named client."
 }}"""
+
+def _build_prompt(config, findings, evidence_block, evidence_limit=130000, findings_limit=30000):
+    """Build the full AI prompt, injecting the pt-report skill and capping evidence/findings."""
+    config_block = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
+    skill_block = _PT_REPORT_SKILL if _PT_REPORT_SKILL else "(pt-report skill not found — apply TechGuard standard methodology)"
+    return PROMPT_TEMPLATE.format(
+        skill_block=skill_block,
+        config_block=config_block,
+        finding_count=len(findings),
+        findings_json=json.dumps(findings, indent=2)[:findings_limit],
+        evidence_block=evidence_block[:evidence_limit],
+    )
+
+def _ollama_context_length(ollama_host, ollama_model):
+    """Return the model's context_length from /api/tags, default 32768."""
+    try:
+        req = _urllib_req.Request(
+            f"{ollama_host}/api/tags",
+            headers={"Content-Type": "application/json"},
+            method="GET",
+        )
+        with _urllib_req.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+        for m in data.get("models", []):
+            if m.get("model") == ollama_model or m.get("name") == ollama_model:
+                return m.get("details", {}).get("context_length") or 32768
+    except Exception:
+        pass
+    return 32768
+
+def _normalize_ai_result(data):
+    """Fix known key-name variations that models sometimes produce."""
+    summary = data.get("engagement_summary", {})
+    # Normalize dot-separated keys the model sometimes emits (e.g. risk.justification)
+    for dotkey in list(summary.keys()):
+        if "." in dotkey:
+            underkey = dotkey.replace(".", "_")
+            summary[underkey] = summary.pop(dotkey)
+    data["engagement_summary"] = summary
+    # Ensure findings is always a list
+    if not isinstance(data.get("findings"), list):
+        data["findings"] = []
+    # Ensure attack_paths is always a list
+    if not isinstance(data.get("attack_paths"), list):
+        data["attack_paths"] = []
+    return data
 
 def _parse_ai_json(raw, provider):
     raw = re.sub(r'^```(?:json)?\s*', '', raw.strip())
     raw = re.sub(r'\s*```$', '', raw).strip()
     try:
-        return json.loads(raw)
+        return _normalize_ai_result(json.loads(raw))
     except json.JSONDecodeError:
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         if m:
             try:
-                return json.loads(m.group())
+                return _normalize_ai_result(json.loads(m.group()))
             except Exception:
                 pass
         raise RuntimeError(f"{provider} returned non-JSON. First 400 chars:\n{raw[:400]}")
@@ -1207,15 +1316,11 @@ def _parse_ai_json(raw, provider):
 def analyze_with_claude(api_key, model, config, findings, evidence_block):
     if not _ANTHROPIC_AVAILABLE:
         raise RuntimeError("anthropic package not installed: pip install anthropic")
-    config_block = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
-    prompt = PROMPT_TEMPLATE.format(
-        config_block=config_block,
-        finding_count=len(findings),
-        findings_json=json.dumps(findings, indent=2)[:28000],
-        evidence_block=evidence_block[:48000],
-    )
+    # Cloud AI: send full evidence + full skill — Claude supports 200K context
+    prompt = _build_prompt(config, findings, evidence_block,
+                           evidence_limit=150000, findings_limit=30000)
     client = anthropic.Anthropic(api_key=api_key)
-    print(f"[INFO] Calling Claude ({model}) — {len(prompt):,} chars prompt...")
+    print(f"[INFO] Calling Claude ({model}) — {len(prompt):,} chars prompt (full evidence)...")
     message = client.messages.create(
         model=model,
         max_tokens=16000,
@@ -1231,20 +1336,16 @@ def analyze_with_gemini(gemini_key, gemini_models, config, findings, evidence_bl
             import google.generativeai as genai
     except ImportError:
         raise RuntimeError("google-generativeai not installed: pip install google-generativeai")
-    config_block = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
-    prompt = PROMPT_TEMPLATE.format(
-        config_block=config_block,
-        finding_count=len(findings),
-        findings_json=json.dumps(findings, indent=2)[:28000],
-        evidence_block=evidence_block[:48000],
-    )
+    # Cloud AI: send full evidence + full skill — Gemini 2.5 flash supports 1M context
+    prompt = _build_prompt(config, findings, evidence_block,
+                           evidence_limit=150000, findings_limit=30000)
     genai.configure(api_key=gemini_key)
     if isinstance(gemini_models, str):
         gemini_models = [gemini_models]
     last_err = None
     for model_name in gemini_models:
         try:
-            print(f"[INFO] Calling Gemini ({model_name}) — {len(prompt):,} chars prompt...")
+            print(f"[INFO] Calling Gemini ({model_name}) — {len(prompt):,} chars prompt (full evidence)...")
             model = genai.GenerativeModel(model_name)
             response = model.generate_content(prompt)
             return _parse_ai_json(response.text, "Gemini")
@@ -1261,32 +1362,141 @@ def analyze_with_gemini(gemini_key, gemini_models, config, findings, evidence_bl
             raise
     raise RuntimeError(f"All Gemini models failed (quota or unavailable): {last_err}") from last_err
 
+def _ollama_capabilities(ollama_host, ollama_model):
+    """Return capability list for the model, e.g. ['chat'] or ['completion']."""
+    try:
+        req = _urllib_req.Request(
+            f"{ollama_host}/api/tags",
+            headers={"Content-Type": "application/json"},
+            method="GET",
+        )
+        with _urllib_req.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+        for m in data.get("models", []):
+            if m.get("model") == ollama_model or m.get("name") == ollama_model:
+                return m.get("details", {}).get("capabilities") or m.get("capabilities") or []
+    except Exception:
+        pass
+    return []
+
+OLLAMA_PROMPT_TEMPLATE = """\
+You are a penetration tester writing a VAPT report. Analyse the findings below and return ONLY a valid JSON object — no markdown, no extra text.
+
+Project: {project}
+Targets: {targets}
+
+Findings ({finding_count} total — top {shown} shown):
+{findings_brief}
+
+Return this exact JSON structure:
+{{
+  "engagement_summary": {{
+    "project": "{project}",
+    "targets": {targets_json},
+    "assessment_type": "External Web Application Penetration Test",
+    "testing_period": "June 2026",
+    "overall_risk_rating": "Critical",
+    "executive_summary": "Write 2-3 sentences summarising the key risks found.",
+    "risk_justification": "One sentence explaining the rating.",
+    "severity_counts": {{"critical": 0, "high": 0, "medium": 0, "low": 0, "informational": 0}},
+    "tools_used": ["nmap", "nikto", "testssl", "gobuster"]
+  }},
+  "findings": [
+    {{
+      "id": "F-001",
+      "title": "Finding title",
+      "severity": "Critical",
+      "cvss_score": 9.8,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "owasp_id": "A05",
+      "owasp_name": "Security Misconfiguration",
+      "owasp_url": "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "cwe_id": "CWE-16",
+      "cwe_name": "Configuration",
+      "cwe_url": "https://cwe.mitre.org/data/definitions/16.html",
+      "cve_ids": [],
+      "chain_steps": [],
+      "affected_hosts": ["host:port"],
+      "description": "Technical description of the finding.",
+      "technical_detail": "What was observed.",
+      "business_impact": "Plain-language risk for executives.",
+      "remediation": "Specific fix.",
+      "retest_status": "open",
+      "residual_risk": ""
+    }}
+  ],
+  "attack_paths": [],
+  "remediation_roadmap": {{
+    "immediate": [],
+    "short_term": [],
+    "long_term": []
+  }}
+}}
+"""
+
 def analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_block):
-    """Call local Ollama instance — no API key, no cost. Prompt is truncated for local context limits."""
+    """Call local Ollama instance.
+    Uses the full pt-report skill + evidence budgeted to the model's context_length.
+    Uses /api/chat for chat-capable models; /api/generate for completion-only models."""
     if _urllib_req is None:
         raise RuntimeError("urllib.request unavailable")
-    config_block = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
-    prompt = PROMPT_TEMPLATE.format(
-        config_block=config_block,
-        finding_count=len(findings),
-        findings_json=json.dumps(findings, indent=2)[:12000],
-        evidence_block=evidence_block[:16000],
-    )
-    payload = json.dumps({
-        "model": ollama_model,
-        "messages": [{"role": "user", "content": prompt}],
-        "stream": False,
-    }).encode()
-    req = _urllib_req.Request(
-        f"{ollama_host}/api/chat",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    print(f"[INFO] Calling Ollama ({ollama_model} @ {ollama_host}) — {len(prompt):,} chars prompt...")
-    with _urllib_req.urlopen(req, timeout=600) as resp:
-        data = json.loads(resp.read())
-    text = data.get("message", {}).get("content", "")
+
+    # Calculate safe input budget from the model's declared context_length.
+    # Reserve 4 000 tokens (~14 000 chars) for JSON output.
+    # Use 3.5 chars/token as a conservative estimate.
+    ctx_tokens = _ollama_context_length(ollama_host, ollama_model)
+    total_char_budget = int(ctx_tokens * 3.5)
+    output_reserve   = 14000
+    input_budget     = total_char_budget - output_reserve
+
+    # Allocate: skill (~15K), template overhead (~5K), findings, then evidence with remainder.
+    skill_chars    = len(_PT_REPORT_SKILL)
+    template_overhead = 5000
+    findings_limit = min(10000, (input_budget - skill_chars - template_overhead) // 3)
+    evidence_limit = max(0, input_budget - skill_chars - template_overhead - findings_limit)
+
+    prompt = _build_prompt(config, findings, evidence_block,
+                           evidence_limit=evidence_limit, findings_limit=findings_limit)
+
+    caps = _ollama_capabilities(ollama_host, ollama_model)
+    use_chat = "chat" in caps or not caps  # default to chat if capabilities unknown
+    print(f"[INFO] Calling Ollama ({ollama_model} @ {ollama_host}) — {len(prompt):,} chars prompt"
+          f" [ctx:{ctx_tokens} tokens | evidence:{evidence_limit:,} chars | {'chat' if use_chat else 'generate'} endpoint]...")
+
+    if use_chat:
+        payload = json.dumps({
+            "model": ollama_model,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+            "options": {"num_predict": 4000},
+        }).encode()
+        req = _urllib_req.Request(
+            f"{ollama_host}/api/chat",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with _urllib_req.urlopen(req, timeout=600) as resp:
+            data = json.loads(resp.read())
+        text = data.get("message", {}).get("content", "")
+    else:
+        payload = json.dumps({
+            "model": ollama_model,
+            "prompt": prompt,
+            "stream": False,
+            "format": "json",
+            "options": {"num_predict": 4000},
+        }).encode()
+        req = _urllib_req.Request(
+            f"{ollama_host}/api/generate",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with _urllib_req.urlopen(req, timeout=600) as resp:
+            data = json.loads(resp.read())
+        text = data.get("response", "")
+
     if not text:
         raise RuntimeError(f"Ollama returned empty content: {str(data)[:200]}")
     return _parse_ai_json(text, "Ollama")
@@ -1839,6 +2049,208 @@ def generate_pdf(html_content, output_path):
         print(f"[WARN] PDF generation failed: {e}")
         return False
 
+def _build_company_prompt(config, findings, evidence_block, report_prompt,
+                          evidence_limit=80000, findings_limit=20000, prompt_limit=80000):
+    """Build prompt for the TechGuard company-standard free-form HTML report."""
+    config_block = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
+    rp = report_prompt[:prompt_limit] if report_prompt else "(REPORT_PROMPT.md not found — apply TechGuard PTE methodology)"
+    return f"""{rp}
+
+---
+# ENGAGEMENT DATA
+
+## Engagement Configuration
+{config_block}
+
+## Findings ({len(findings)} total)
+{json.dumps(findings, indent=2)[:findings_limit]}
+
+## Evidence Summary
+{evidence_block[:evidence_limit]}
+
+---
+# TASK
+
+Using the Tech Guard Penetration Testing Report methodology and standards documented above, write a complete, professional, customer-ready HTML penetration testing report.
+
+Requirements:
+- Full HTML document with embedded CSS styling (professional, formal TechGuard appearance)
+- Follow the exact structure from the methodology: Front Matter, Section 1 (Background, Objectives, Scope, Methodology, Team, Limitations, Executive Summary with Key Findings), Section 2 (Severity Grading Table, Findings Summary, Severity Distribution, Assessment Findings, Observations), Section 3 (Appendices and Evidence Index)
+- Include ALL {len(findings)} findings with finding ID, severity, confidence, affected systems, condition, evidence basis, impact, recommendations
+- Severity model: Critical, High, Medium, Low, Informational/Observation
+- Confidence model: Certain, Firm, Tentative
+- Use TechGuard formal tone — no "we hacked", no dramatic language, no placeholders
+- Observations must not appear in severity totals
+
+Output the complete HTML report. Begin with <!DOCTYPE html> and end with </html>.
+"""
+
+
+def _wrap_company_output(raw_text, config):
+    """If AI returns Markdown rather than full HTML, wrap it in a styled page."""
+    import re as _re
+    stripped = raw_text.strip()
+    if stripped.lower().startswith("<!doctype") or stripped.lower().startswith("<html"):
+        return stripped
+    project_name = config.get("PROJECT_NAME", "VAPT Assessment")
+    lines = stripped.split("\n")
+    html_lines = []
+    in_code = False
+    for line in lines:
+        if line.startswith("```"):
+            if in_code:
+                html_lines.append("</pre>")
+                in_code = False
+            else:
+                html_lines.append("<pre>")
+                in_code = True
+            continue
+        if in_code:
+            html_lines.append(line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+            continue
+        line = _re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', line)
+        line = _re.sub(r'\*(.+?)\*', r'<em>\1</em>', line)
+        line = _re.sub(r'^#### (.+)$', r'<h4>\1</h4>', line)
+        line = _re.sub(r'^### (.+)$', r'<h3>\1</h3>', line)
+        line = _re.sub(r'^## (.+)$', r'<h2>\1</h2>', line)
+        line = _re.sub(r'^# (.+)$', r'<h1>\1</h1>', line)
+        line = _re.sub(r'^[-*] (.+)$', r'<li>\1</li>', line)
+        if not line.strip():
+            html_lines.append("<br>")
+        elif not _re.match(r'^<(h[1-4]|li|pre|br|p)', line):
+            html_lines.append(f"<p>{line}</p>")
+        else:
+            html_lines.append(line)
+    body = "\n".join(html_lines)
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{project_name} — TechGuard Penetration Testing Report</title>
+<style>
+  body {{ font-family: 'Segoe UI', Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 2em; color: #1a1a1a; line-height: 1.6; }}
+  h1 {{ color: #1a3a5c; border-bottom: 3px solid #d4232a; padding-bottom: 0.3em; }}
+  h2 {{ color: #1a3a5c; border-bottom: 1px solid #ccc; padding-bottom: 0.2em; margin-top: 2em; }}
+  h3 {{ color: #2c5f8a; margin-top: 1.5em; }}
+  h4 {{ color: #3a7ab5; }}
+  pre {{ background: #f4f4f4; border: 1px solid #ddd; padding: 1em; border-radius: 4px; overflow-x: auto; font-size: 0.85em; }}
+  li {{ margin: 0.3em 0; }}
+  p {{ margin: 0.5em 0 1em; }}
+</style>
+</head>
+<body>
+{body}
+</body>
+</html>"""
+
+
+def _ollama_company(ollama_host, ollama_model, config, findings, evidence_block, report_prompt):
+    """Company report via Ollama — returns raw text (HTML or Markdown)."""
+    import urllib.request as _ur
+    caps = _ollama_capabilities(ollama_host, ollama_model)
+    ctx_tokens = _ollama_context_length(ollama_host, ollama_model)
+    total_chars    = int(ctx_tokens * 3.5)
+    output_reserve = 28000
+    input_budget   = total_chars - output_reserve
+    template_oh    = 2000
+    findings_limit = min(8000,  (input_budget - template_oh) // 4)
+    evidence_limit = min(20000, (input_budget - template_oh - findings_limit) // 2)
+    # Use tail of REPORT_PROMPT.md — most actionable PT prompt sections are at the end
+    prompt_budget  = max(0, input_budget - template_oh - findings_limit - evidence_limit)
+    rp_excerpt     = report_prompt[-prompt_budget:] if len(report_prompt) > prompt_budget else report_prompt
+    prompt = _build_company_prompt(config, findings, evidence_block, rp_excerpt,
+                                   evidence_limit=evidence_limit,
+                                   findings_limit=findings_limit,
+                                   prompt_limit=len(rp_excerpt) + 10)
+    print(f"[INFO] Company prompt: {len(prompt):,} chars → Ollama {ollama_model}")
+    payload = json.dumps({"model": ollama_model, "prompt": prompt, "stream": False}).encode()
+    req = _ur.Request(f"{ollama_host}/api/generate", data=payload,
+                      headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with _ur.urlopen(req, timeout=600) as resp:
+            data = json.loads(resp.read().decode())
+        return data.get("response", "").strip()
+    except Exception as e:
+        print(f"[WARN] Ollama company report failed: {e}")
+        return ""
+
+
+def _claude_company(api_key, model, config, findings, evidence_block, report_prompt):
+    """Company report via Claude — returns raw text (HTML or Markdown)."""
+    import urllib.request as _ur
+    # Claude 200K context: use last 100K of REPORT_PROMPT.md (most actionable sections)
+    rp_excerpt = report_prompt[-100000:] if len(report_prompt) > 100000 else report_prompt
+    prompt = _build_company_prompt(config, findings, evidence_block, rp_excerpt,
+                                   evidence_limit=120000, findings_limit=30000,
+                                   prompt_limit=len(rp_excerpt) + 10)
+    print(f"[INFO] Company prompt: {len(prompt):,} chars → Claude {model}")
+    payload = json.dumps({
+        "model": model,
+        "max_tokens": 8096,
+        "messages": [{"role": "user", "content": prompt}]
+    }).encode()
+    req = _ur.Request("https://api.anthropic.com/v1/messages", data=payload,
+                      headers={"Content-Type": "application/json",
+                               "x-api-key": api_key,
+                               "anthropic-version": "2023-06-01"}, method="POST")
+    try:
+        with _ur.urlopen(req, timeout=300) as resp:
+            data = json.loads(resp.read().decode())
+        return data.get("content", [{}])[0].get("text", "").strip()
+    except Exception as e:
+        print(f"[WARN] Claude company report failed: {e}")
+        return ""
+
+
+def _gemini_company(gemini_key, gemini_models, config, findings, evidence_block, report_prompt):
+    """Company report via Gemini — returns raw text (HTML or Markdown)."""
+    import urllib.request as _ur
+    # Gemini 1M context — can handle the full REPORT_PROMPT.md
+    prompt = _build_company_prompt(config, findings, evidence_block, report_prompt,
+                                   evidence_limit=150000, findings_limit=30000,
+                                   prompt_limit=len(report_prompt) + 10)
+    print(f"[INFO] Company prompt: {len(prompt):,} chars → Gemini")
+    for gm in gemini_models:
+        url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+               f"{gm}:generateContent?key={gemini_key}")
+        payload = json.dumps({
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"maxOutputTokens": 8192}
+        }).encode()
+        req = _ur.Request(url, data=payload,
+                          headers={"Content-Type": "application/json"}, method="POST")
+        try:
+            with _ur.urlopen(req, timeout=300) as resp:
+                data = json.loads(resp.read().decode())
+            candidates = data.get("candidates", [])
+            if candidates:
+                parts = candidates[0].get("content", {}).get("parts", [])
+                text = "".join(p.get("text", "") for p in parts).strip()
+                if text:
+                    return text
+        except Exception as e:
+            print(f"[WARN] Gemini company ({gm}) failed: {e}")
+    return ""
+
+
+def run_company_report(config, findings, evidence_block, report_prompt):
+    """Route company report generation to the best available AI backend."""
+    if OLLAMA_HOST:
+        raw = _ollama_company(OLLAMA_HOST, OLLAMA_MODEL, config, findings, evidence_block, report_prompt)
+        if raw:
+            return raw
+    if API_KEY:
+        raw = _claude_company(API_KEY, MODEL, config, findings, evidence_block, report_prompt)
+        if raw:
+            return raw
+    if GEMINI_KEY:
+        raw = _gemini_company(GEMINI_KEY, GEMINI_MODELS, config, findings, evidence_block, report_prompt)
+        if raw:
+            return raw
+    return ""
+
+
 def main():
     if not RUN_DIR or not RUN_DIR.exists():
         sys.exit(f"[ERROR] TG_RUN_DIR not found: {RUN_DIR}")
@@ -1850,6 +2262,15 @@ def main():
     project_name = config.get("PROJECT_NAME", "VAPT-Assessment")
     print(f"[INFO] Project   : {project_name}")
     print(f"[INFO] Run dir   : {RUN_DIR.name}")
+
+    if _PT_REPORT_SKILL:
+        print(f"[INFO] Skill     : pt-report/SKILL.md loaded ({len(_PT_REPORT_SKILL):,} chars)")
+    else:
+        print(f"[WARN] Skill     : pt-report/SKILL.md not found at {_SKILL_PATH}")
+    if _REPORT_PROMPT_MD:
+        print(f"[INFO] Co.Prompt : REPORT_PROMPT.md loaded ({len(_REPORT_PROMPT_MD):,} chars)")
+    else:
+        print(f"[WARN] Co.Prompt : REPORT_PROMPT.md not found at {_REPORT_PROMPT_PATH}")
 
     findings = load_and_deduplicate_findings(RUN_DIR)
     print(f"[INFO] Findings  : {len(findings)} deduplicated")
@@ -1870,6 +2291,7 @@ def main():
     pdf_out  = OUTPUT_DIR / f"ai_report_{safe}_{ts}.pdf"
     json_out = OUTPUT_DIR / f"ai_report_{safe}_{ts}_analysis.json"
 
+    evidence_block = ""
     if DRY_RUN:
         print("[INFO] Dry run — skipping AI API call")
         analysis = build_dry_run_analysis(findings, config)
@@ -1904,8 +2326,48 @@ def main():
             )
         print(f"[INFO] Evidence  : {len(evidence_block):,} chars")
         analysis = analyze_with_ai(API_KEY, GEMINI_KEY, MODEL, OLLAMA_HOST, OLLAMA_MODEL, config, findings, evidence_block)
-        f_count = len(analysis.get("findings",[]))
+        f_count = len(analysis.get("findings", []))
         print(f"[INFO] Analysis complete — {f_count} findings in report")
+
+        # Fallback: if the AI returned an empty findings list but we have raw findings,
+        # populate from the raw data so the HTML report is never empty.
+        if f_count == 0 and findings:
+            print(f"[WARN] AI returned 0 findings — falling back to {len(findings)} raw findings for HTML report")
+            SEV_ORDER_FB = {"critical": 0, "high": 1, "medium": 2, "low": 3, "informational": 4, "info": 4}
+            raw_sorted = sorted(findings, key=lambda f: SEV_ORDER_FB.get(f.get("severity","info").lower(), 5))
+            analysis["findings"] = [
+                {
+                    "id": f.get("id", f"F-{i+1:02d}"),
+                    "title": f.get("title", "Untitled Finding"),
+                    "severity": f.get("severity", "Low").capitalize(),
+                    "confidence": "Firm",
+                    "cvss_score": f.get("cvss_score", 0),
+                    "cvss_vector": f.get("cvss_vector", ""),
+                    "owasp_id": f.get("owasp_id", ""),
+                    "owasp_name": f.get("owasp_name", ""),
+                    "owasp_url": f.get("owasp_url", ""),
+                    "cwe_id": f.get("cwe_id", ""),
+                    "cwe_name": f.get("cwe_name", ""),
+                    "cwe_url": f.get("cwe_url", ""),
+                    "cve_ids": f.get("cve_ids", []),
+                    "chain_steps": f.get("chain_steps", []),
+                    "affected_hosts": f.get("affected_hosts", []),
+                    "description": f.get("description", ""),
+                    "technical_detail": f.get("technical_detail", f.get("evidence", "")),
+                    "business_impact": f.get("business_impact", ""),
+                    "remediation": f.get("recommendation", f.get("remediation", "")),
+                    "remediation_steps": f.get("remediation_steps", []),
+                    "references": f.get("references", []),
+                    "evidence_refs": f.get("evidence_ids", []),
+                    "likelihood": f.get("likelihood", "Medium"),
+                    "impact": f.get("impact", "Medium"),
+                    "effort": f.get("effort", "Medium"),
+                    "priority": i + 1,
+                    "timeframe": f.get("timeframe", "Medium-term (1-3 months)"),
+                }
+                for i, f in enumerate(raw_sorted)
+            ]
+            print(f"[INFO] Raw fallback applied — {len(analysis['findings'])} findings in HTML report")
 
     json_out.write_text(json.dumps(analysis, indent=2))
     print(f"[OK]   JSON      : {json_out.name}")
@@ -1920,6 +2382,34 @@ def main():
             print(f"[OK]   PDF       : {pdf_out}")
     else:
         print("[INFO] PDF skipped (TG_NO_PDF=1)")
+
+    # -----------------------------------------------------------------------
+    # Company-standard report: second AI pass using REPORT_PROMPT.md
+    # -----------------------------------------------------------------------
+    if _REPORT_PROMPT_MD and not DRY_RUN and evidence_block:
+        print("")
+        print("[INFO] ── Company-standard report pass (REPORT_PROMPT.md) ──")
+        company_html_out = OUTPUT_DIR / f"ai_report_{safe}_{ts}_company.html"
+        company_pdf_out  = OUTPUT_DIR / f"ai_report_{safe}_{ts}_company.pdf"
+        try:
+            raw_report = run_company_report(config, findings, evidence_block, _REPORT_PROMPT_MD)
+            if raw_report:
+                company_html = _wrap_company_output(raw_report, config)
+                company_html_out.write_text(company_html, encoding="utf-8")
+                print(f"[OK]   Company HTML: {company_html_out}")
+                if not NO_PDF:
+                    if generate_pdf(company_html, company_pdf_out):
+                        print(f"[OK]   Company PDF : {company_pdf_out}")
+                else:
+                    print("[INFO] Company PDF skipped (TG_NO_PDF=1)")
+            else:
+                print("[WARN] Company report: AI returned empty response — skipped")
+        except Exception as _ce:
+            print(f"[WARN] Company report generation failed: {_ce}")
+    elif DRY_RUN:
+        print("[INFO] Company report: skipped (dry run)")
+    elif not _REPORT_PROMPT_MD:
+        print(f"[WARN] Company report: REPORT_PROMPT.md not found at {_REPORT_PROMPT_PATH} — skipped")
 
 if __name__ == "__main__":
     main()

@@ -68,6 +68,7 @@ SCAN_PROFILE="${SCAN_PROFILE:-standard}"
 # - MRK:10_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
+EV_TS="$(_ev_ts)"
 LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_10_cloud_${SESSION_TS}.log"
 mkdir -p "${SCRIPT_DIR}/working" "${EVIDENCE_BASE}"
 
@@ -147,7 +148,7 @@ _confirm() {
 
 # - MRK:10_TARGETS
 assemble_targets() {
-    local tf="${SCRIPT_DIR}/working/${PROJ_SLUG}_cloud_targets.txt"
+    local tf="${SCRIPT_DIR}/working/$(ev_fname "cloud-targets" "txt")"
     : > "$tf"
 
     # From MSF DB
@@ -172,11 +173,12 @@ assemble_targets() {
     done
 
     sort -u "$tf" -o "$tf"
+    cp "$tf" "${SCRIPT_DIR}/working/${PROJ_SLUG}_cloud_targets.txt" 2>/dev/null || true
     log_inf "Cloud targets assembled: $(wc -l < "$tf" | tr -d ' ') host:port pairs → ${tf}"
 }
 
 # - MRK:10_FIND
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_10_cloud_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "10-cloud-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
 
@@ -223,7 +225,7 @@ _ev_file() {
     # Return evidence file path for a target+tag
     local tgt="$1" tag="$2"
     local slug="${tgt//:/_}"
-    echo "${EVIDENCE_BASE}/${tag}_${slug}_${SESSION_TS}.txt"
+    echo "${EVIDENCE_BASE}/$(ev_fname "$tag" "txt" "$slug")"
 }
 
 declare -A _T_ENABLED
@@ -1180,7 +1182,7 @@ main() {
     command -v trail_phase_end &>/dev/null && trail_phase_end "10_cloud_testing"
 
     # Summary report
-    local report_f="${SCRIPT_DIR}/working/${PROJ_SLUG}_10_cloud_summary_${SESSION_TS}.md"
+    local report_f="${SCRIPT_DIR}/working/$(ev_fname "10-cloud-summary" "md")"
     {
         printf "# Cloud Testing Summary — %s\n\n" "$PROJECT_NAME"
         printf "| Target | Findings |\n|--------|----------|\n"

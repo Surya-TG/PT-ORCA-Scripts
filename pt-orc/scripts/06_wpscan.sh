@@ -78,6 +78,7 @@ log_info() { echo -e "${CYAN}[$(_now)]   ${NC}$*"; }
 
 PROJ_SLUG="${PROJECT_NAME//[^A-Za-z0-9._-]/_}"
 EVIDENCE_BASE="${SCRIPT_DIR}/evidence/${PROJ_SLUG}"
+EV_TS="$(_ev_ts)"
 AUTO_YES=0
 DRY_RUN=0
 
@@ -208,6 +209,8 @@ detect_wordpress() {
         return 1
     fi
 
+    WP_TARGETS_FILE="${SCRIPT_DIR}/working/$(ev_fname "wp-targets" "txt")"
+
     # Ensure wp_targets.txt directory exists
     local wp_dir
     wp_dir="$(dirname "$WP_TARGETS_FILE")"
@@ -298,6 +301,7 @@ detect_wordpress() {
         return 0
     fi
 
+    cp "$WP_TARGETS_FILE" "${SCRIPT_DIR}/wp_targets.txt" 2>/dev/null || true
     log_ok "Phase 1 complete — ${detected} WordPress instance(s) found"
     log_info "  WP targets file: ${WP_TARGETS_FILE}"
     echo ""
@@ -987,7 +991,7 @@ EOF
 # =============================================================================
 
 write_report() {
-    local report_file="working/${PROJ_SLUG}_wpscan_report_${SESSION_TS}.md"
+    local report_file="${SCRIPT_DIR}/working/$(ev_fname "06-wpscan-report" "md")"
 
     log "Writing consolidated report: ${report_file}"
 
@@ -1194,7 +1198,7 @@ main() {
 
         mkdir -p "${EVIDENCE_BASE}/_wpscan"
         mkdir -p "${SCRIPT_DIR}/working"
-        FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_06_wpscan_findings_${SESSION_TS}.jsonl"
+        FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "06-wpscan-findings" "jsonl")"
         : > "$FINDINGS_FILE"
 
         local total="${#WP_TARGETS[@]}"
@@ -1222,7 +1226,7 @@ main() {
         echo -e "${GREEN}  API budget left:  ${WPSCAN_API_BUDGET}${NC}"
         echo -e "${GREEN}════════════════════════════════════════════════${NC}"
         echo ""
-        echo "Review: working/wpscan_report_${SESSION_TS}.md"
+        echo "Review: ${SCRIPT_DIR}/working/$(ev_fname "06-wpscan-report" "md")"
         [[ -f "$FINDINGS_FILE" ]] && echo "Findings: ${FINDINGS_FILE}"
         echo ""
     fi

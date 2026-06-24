@@ -74,6 +74,7 @@ AD_TIMEOUT=30
 # - MRK:11_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
+EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
 LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_11_ad_${SESSION_TS}.log"
 mkdir -p "${SCRIPT_DIR}/working" "${EVIDENCE_BASE}"
 
@@ -185,7 +186,7 @@ _validate_config() {
 }
 
 # - MRK:11_FIND
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_11_ad_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "11-ad-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
 
@@ -215,7 +216,7 @@ _check_tool() {
 
 _ev_file() {
     local tag="$1"
-    echo "${EVIDENCE_BASE}/${tag}_${SESSION_TS}.txt"
+    echo "${EVIDENCE_BASE}/$(ev_fname "ad-${tag}" "txt")"
 }
 
 _run_impacket() {
@@ -537,7 +538,7 @@ test_T05_kerberoasting() {
         return
     fi
 
-    local spn_hash_file="${EVIDENCE_BASE}/kerberoast_hashes_${SESSION_TS}.txt"
+    local spn_hash_file="${EVIDENCE_BASE}/$(ev_fname "ad-kerberoast-hashes" "txt")"
     local spn_out
     spn_out=$(timeout 60 "$spn_tool" "${_CRED_STR}" -dc-ip "$dc" \
         -outputfile "$spn_hash_file" 2>&1)
@@ -586,7 +587,7 @@ test_T06_asrep_roasting() {
         return
     fi
 
-    local hash_file="${EVIDENCE_BASE}/asrep_hashes_${SESSION_TS}.txt"
+    local hash_file="${EVIDENCE_BASE}/$(ev_fname "ad-asrep-hashes" "txt")"
     local asrep_out
 
     if [[ "$_HAS_CREDS" -eq 1 ]]; then
@@ -844,7 +845,7 @@ test_T10_adcs_enum() {
             return
         fi
 
-        local certipy_out_dir="${EVIDENCE_BASE}/adcs_${SESSION_TS}"
+        local certipy_out_dir="${EVIDENCE_BASE}/$(ev_fname "ad-adcs" "dir")"
         mkdir -p "$certipy_out_dir"
 
         local certipy_out
@@ -916,7 +917,7 @@ test_T11_bloodhound() {
         return
     fi
 
-    local bh_out_dir="${EVIDENCE_BASE}/bloodhound_${SESSION_TS}"
+    local bh_out_dir="${EVIDENCE_BASE}/$(ev_fname "ad-bloodhound" "dir")"
     mkdir -p "$bh_out_dir"
 
     local bh_args=("-u" "${AD_USERNAME}" "-p" "${AD_PASSWORD:-}" \
@@ -1451,7 +1452,7 @@ main() {
     command -v trail_phase_end &>/dev/null && trail_phase_end "11_ad_testing"
 
     # Summary report
-    local report_f="${SCRIPT_DIR}/working/${PROJ_SLUG}_11_ad_summary_${SESSION_TS}.md"
+    local report_f="${SCRIPT_DIR}/working/$(ev_fname "11-ad-summary" "md")"
     {
         printf "# Active Directory Testing Summary — %s\n\n" "$PROJECT_NAME"
         printf "| DC | Domain | Findings |\n|----|--------|----------|\n"

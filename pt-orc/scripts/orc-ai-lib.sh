@@ -82,6 +82,26 @@ if ! declare -F log_ok >/dev/null 2>&1; then
     log_info() { echo -e "${CYAN}[$(_now_ai)]   $1${NC}" >&2; }
 fi
 
+# Bootstrap ev_fname helpers if orc-common-lib.sh was not sourced first.
+if ! declare -F ev_fname >/dev/null 2>&1; then
+    _ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+    ev_fname() {
+        local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+        local ts; ts="${EV_TS:-$(_ev_ts)}"
+        local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+        if [[ -n "$extra" ]]; then
+            printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+        else
+            printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+        fi
+    }
+    find_latest_ev() {
+        local pattern="${1:?find_latest_ev: pattern required}"
+        local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+        find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+    }
+fi
+
 # Bootstrap _alert if orc-common-lib.sh was not sourced first.
 # _alert is used for conditions that should never happen in normal operation.
 if ! declare -F _alert >/dev/null 2>&1; then
@@ -97,8 +117,11 @@ fi
 # =============================================================================
 
 # Ollama local inference — override in pt-orc.conf
+# OLLAMA_HOST         primary endpoint (tried first)
+# OLLAMA_HOST_FALLBACK secondary endpoint (tried if primary unreachable; empty = disabled)
 : "${OLLAMA_HOST:=http://127.0.0.1:11434}"
-: "${OLLAMA_MODEL:=qwen2.5:3b}"
+: "${OLLAMA_HOST_FALLBACK:=}"
+: "${OLLAMA_MODEL:=qwen:7b}"
 
 # Anthropic Claude API — set ANTHROPIC_API_KEY in pt-orc.conf or environment.
 # Model used for ai_query fallback. Haiku is fast and cheap for synthesis prompts.
@@ -119,8 +142,9 @@ _AI_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 mkdir -p "${NVD_CACHE_DIR}" 2>/dev/null || true
 
 # Connectivity probe result cache — checked once per session, not per call.
-declare -g _AI_OLLAMA_OK=""    # "" = unchecked, "1" = ok, "0" = not ok
-declare -g _AI_NVD_OK=""       # same pattern
+declare -g _AI_OLLAMA_OK=""             # "" = unchecked, "1" = ok, "0" = not ok
+declare -g _AI_OLLAMA_ACTIVE_HOST=""    # resolved host that responded (primary or fallback)
+declare -g _AI_NVD_OK=""               # same pattern
 
 # OSV inter-call politeness delay (ms → enforced via sleep).
 : "${OSV_CALL_DELAY:=0.5}"
@@ -150,16 +174,28 @@ _real_jq() {
 # =============================================================================
 
 # _ai_ollama_available — probes ollama once, caches result for the session.
+# Tries OLLAMA_HOST first; if unreachable and OLLAMA_HOST_FALLBACK is set, tries that too.
+# Sets _AI_OLLAMA_ACTIVE_HOST to whichever endpoint responds.
 # Returns 0 if reachable, 1 if not.
 _ai_ollama_available() {
     if [[ -z "$_AI_OLLAMA_OK" ]]; then
-        if curl -sf --connect-timeout 3 --max-time 5 \
-                "${OLLAMA_HOST}/api/tags" >/dev/null 2>&1; then
-            _AI_OLLAMA_OK="1"
-            log_ok "ai-lib: ollama reachable at ${OLLAMA_HOST} (model: ${OLLAMA_MODEL})"
-        else
+        local _try_hosts=("$OLLAMA_HOST")
+        [[ -n "${OLLAMA_HOST_FALLBACK:-}" ]] && _try_hosts+=("$OLLAMA_HOST_FALLBACK")
+        local _h
+        for _h in "${_try_hosts[@]}"; do
+            if curl -sf --connect-timeout 3 --max-time 5 \
+                    "${_h}/api/tags" >/dev/null 2>&1; then
+                _AI_OLLAMA_OK="1"
+                _AI_OLLAMA_ACTIVE_HOST="$_h"
+                log_ok "ai-lib: ollama reachable at ${_h} (model: ${OLLAMA_MODEL})"
+                break
+            else
+                log_warn "ai-lib: ollama not reachable at ${_h}"
+            fi
+        done
+        if [[ "$_AI_OLLAMA_OK" != "1" ]]; then
             _AI_OLLAMA_OK="0"
-            log_warn "ai-lib: ollama not reachable at ${OLLAMA_HOST} — Claude API fallback active"
+            log_warn "ai-lib: no ollama endpoint reachable — Claude API fallback active"
         fi
     fi
     [[ "$_AI_OLLAMA_OK" == "1" ]]
@@ -188,9 +224,16 @@ ai_status() {
     echo -e "${CYAN}${line}${NC}" >&2
     echo -e "${CYAN}  orc-ai-lib — backend status${NC}" >&2
     echo -e "${CYAN}${line}${NC}" >&2
-    _ai_ollama_available \
-        && echo -e "  ${GREEN}✓${NC} ollama       ${OLLAMA_HOST} / ${OLLAMA_MODEL}" >&2 \
-        || echo -e "  ${YELLOW}✗${NC} ollama       not reachable" >&2
+    if _ai_ollama_available; then
+        echo -e "  ${GREEN}✓${NC} ollama       ${_AI_OLLAMA_ACTIVE_HOST} / ${OLLAMA_MODEL}" >&2
+        [[ "${_AI_OLLAMA_ACTIVE_HOST}" != "${OLLAMA_HOST}" ]] && \
+            echo -e "  ${CYAN}  ${NC}             (primary ${OLLAMA_HOST} unreachable; using fallback)" >&2
+    else
+        echo -e "  ${YELLOW}✗${NC} ollama       not reachable" >&2
+        echo -e "  ${YELLOW}  ${NC}             primary:  ${OLLAMA_HOST}" >&2
+        [[ -n "${OLLAMA_HOST_FALLBACK:-}" ]] && \
+            echo -e "  ${YELLOW}  ${NC}             fallback: ${OLLAMA_HOST_FALLBACK}" >&2
+    fi
     [[ -n "$ANTHROPIC_API_KEY" ]] \
         && echo -e "  ${GREEN}✓${NC} Anthropic    key set (model: ${AI_CLAUDE_MODEL})" >&2 \
         || echo -e "  ${YELLOW}✗${NC} Anthropic    ANTHROPIC_API_KEY not set" >&2
@@ -222,9 +265,10 @@ _ai_ollama_query() {
         --arg usr    "$usr_prompt" \
         '{"model": $model, "messages": [{"role": "system", "content": $sys}, {"role": "user", "content": $usr}], "stream": false}') || return 1
 
+    local _active_host="${_AI_OLLAMA_ACTIVE_HOST:-$OLLAMA_HOST}"
     local resp
     resp=$(curl -sf --connect-timeout 10 --max-time 180 \
-        -X POST "${OLLAMA_HOST}/api/chat" \
+        -X POST "${_active_host}/api/chat" \
         -H "Content-Type: application/json" \
         -d "$body" 2>/dev/null) || return 1
 
@@ -717,7 +761,7 @@ Rate limits (NVD API v2):
 
 pt-orc.conf variables consumed:
   OLLAMA_HOST           (default: http://127.0.0.1:11434)
-  OLLAMA_MODEL          (default: qwen2.5:3b)
+  OLLAMA_MODEL          (default: qwen:7b)
   ANTHROPIC_API_KEY     (default: empty — Anthropic fallback disabled)
   AI_CLAUDE_MODEL       (default: claude-haiku-4-5-20251001)
   NVD_API_KEY           (default: empty — 5 req/30s mode)

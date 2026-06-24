@@ -141,6 +141,7 @@ _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/web_enum_${SESSION_TS}.log"
@@ -289,7 +290,7 @@ assemble_targets() {
 # =============================================================================
 
 _FIND_CTR=0
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_05_web_enum_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "05-webenum-findings" "jsonl")"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="$5"
@@ -314,7 +315,7 @@ write_web_exports() {
     [[ $# -eq 0 ]] && return 0
     local export_dir="${EVIDENCE_BASE}/_exports"
     mkdir -p "$export_dir"
-    local export_file="${export_dir}/05_web_report_${SESSION_TS}.jsonl"
+    local export_file="${export_dir}/$(ev_fname "05-web-export" "jsonl")"
     for row in "$@"; do
         IFS='|' read -r _ rip rport rfinds rcors rwaf rdirs rapi rcms <<< "$row"
         local scheme="http"
@@ -437,7 +438,7 @@ test_01_headers_fingerprint() {
     fi
 
     # WhatWeb fingerprint
-    local whatweb_out="${ev_dir}/t01_whatweb.txt"
+    local whatweb_out="${ev_dir}/$(ev_fname "whatweb" "txt" "${ip}-${port}")"
     if command -v whatweb &>/dev/null && [[ "${DRY_RUN:-0}" -eq 0 ]]; then
         timeout "$WHATWEB_TIMEOUT" whatweb --color=never \
             -a "$(whatweb_aggression "$TIER")" "${base_url}" \
@@ -706,7 +707,7 @@ test_05_directory_discovery() {
 
     # Gobuster
     if command -v gobuster &>/dev/null && [[ "${DRY_RUN:-0}" -eq 0 ]]; then
-        local gb_out="${ev_dir}/t05_gobuster.txt"
+        local gb_out="${ev_dir}/$(ev_fname "gobuster" "txt" "${ip}-${port}")"
         local threads; threads=$(gobuster_threads "$TIER")
         local -a gb_flags=(-k -q)
         [[ "$TIER" == "ghost" || "$TIER" == "evasion" ]] && gb_flags+=("--delay" "2000ms")
@@ -744,7 +745,7 @@ test_05_directory_discovery() {
     # ffuf for additional coverage (faster, more configurable)
     if command -v ffuf &>/dev/null && [[ "${DRY_RUN:-0}" -eq 0 ]] && [[ "$PROFILE" == "deep" ]]; then
         local ffuf_wl="${WORDLIST}"
-        local ffuf_out="${ev_dir}/t05_ffuf.txt"
+        local ffuf_out="${ev_dir}/$(ev_fname "ffuf" "txt" "${ip}-${port}")"
         {
             echo "# ffuf — ${base_url}"
             echo "---"
@@ -767,7 +768,7 @@ test_05_directory_discovery() {
 
 test_06_nikto() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t06_nikto.txt"
+    local evfile="${ev_dir}/$(ev_fname "nikto" "txt" "${ip}-${port}")"
     log "T06: Nikto Scan — ${base_url}"
 
     # Skip nikto in evasion tier (too noisy)
@@ -1692,7 +1693,7 @@ main() {
     write_web_exports "${summary_rows[@]+"${summary_rows[@]}"}"
 
     # ── Markdown summary ─────────────────────────────────────────────────────
-    local summary_md="${SCRIPT_DIR}/working/${PROJ_SLUG}_web_enum_summary_${SESSION_TS}.md"
+    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "05-webenum-summary" "md")"
     {
         echo "# Web Enumeration Summary — ${PROJECT_NAME:-unknown}"
         echo ""

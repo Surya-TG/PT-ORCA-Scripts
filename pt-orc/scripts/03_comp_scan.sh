@@ -325,6 +325,22 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
+_ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+ev_fname() {
+    local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+    local ts; ts="${EV_TS:-$(_ev_ts)}"
+    local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+    if [[ -n "$extra" ]]; then
+        printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+    else
+        printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+    fi
+}
+find_latest_ev() {
+    local pattern="${1:?find_latest_ev: pattern required}"
+    local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+    find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+}
 
 # Resolve EVIDENCE_BASE to absolute path now, before LOG_FILE is set.
 # db_nmap inside msfconsole uses the rc file's paths verbatim  if msfconsole
@@ -332,8 +348,9 @@ _now() { date +'%Y-%m-%d %H:%M:%S'; }
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/scan_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_03_comp_scan_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "03-compscan-findings" "jsonl")"
 
 log()      { local m="[$(_now)] $1";       echo -e "${BLUE}${m}${NC}"        >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_ok()   { local m="[$(_now)] [OK] $1";  echo -e "${GREEN}${m}${NC}"       >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -1132,7 +1149,7 @@ ensure_workspace() {
         # Do NOT abort  workspace -a in every RC file handles it.
     fi
 
-    local spool="${EVIDENCE_BASE}/_msf/${SESSION_TS}_console.log"
+    local spool="${EVIDENCE_BASE}/_msf/$(ev_fname "msf-console" "log")"
     echo "MSF spool path: ${spool}" >> "$LOG_FILE"
 }
 
@@ -1450,8 +1467,8 @@ list_target_ips_in_subnet() {
 # TCP SYN scan (phase_tcp) is the primary host discovery method for this engagement.
 phase_discovery() {
     log "=== PHASE 1: HOST DISCOVERY (optional ARP sweep) ==="
-    local ts; ts="$(_ts)"
-    local out="${EVIDENCE_BASE}/_sweep/sweep_arp_${ts}"
+    local out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-arp" "nmap")"
+    out="${out%.*}"
     local targets; targets="$(all_targets)"
 
     if [[ -z "$targets" ]]; then
@@ -1639,7 +1656,8 @@ phase_tcp() {
         fi
 
         if [[ "${FAST_TCP_SCANNER}" == "db_nmap" ]]; then
-            local out_fast="${EVIDENCE_BASE}/_sweep/db_nmap_fast_${tier}_${session_ts}"
+            local out_fast="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-tcpfast-dbnmap" "nmap" "$tier")"
+            out_fast="${out_fast%.*}"
             local out_xml="${out_fast}.xml"
             tier_xml_lists["$tier"]+="${out_xml} "
             all_fast_xml+=("$out_xml")
@@ -1660,8 +1678,8 @@ phase_tcp() {
             done
 
             local safe="${target//\//_}"
-            local out_xml="${EVIDENCE_BASE}/_sweep/${FAST_TCP_SCANNER}_fast_${tier}_${safe}_${session_ts}.xml"
-            local out_log="${EVIDENCE_BASE}/_sweep/${FAST_TCP_SCANNER}_fast_${tier}_${safe}_${session_ts}.log"
+            local out_xml="${EVIDENCE_BASE}/_sweep/$(ev_fname "${FAST_TCP_SCANNER}-tcpfast-${tier}" "xml" "$safe")"
+            local out_log="${EVIDENCE_BASE}/_sweep/$(ev_fname "${FAST_TCP_SCANNER}-tcpfast-${tier}" "log" "$safe")"
             local out_json=""
             local -a masscan_route_args=()
             tier_xml_lists["$tier"]+="${out_xml} "
@@ -1702,7 +1720,7 @@ phase_tcp() {
                 fi
             else
                 local -a naabu_args=()
-                out_json="${EVIDENCE_BASE}/_sweep/naabu_fast_${tier}_${safe}_${session_ts}.jsonl"
+                out_json="${EVIDENCE_BASE}/_sweep/$(ev_fname "naabu-tcpfast-${tier}" "jsonl" "$safe")"
                 [[ -n "$route_dev" ]] && naabu_args+=(-interface "$route_dev")
 
                 if [[ "${DRY_RUN:-0}" -eq 1 ]]; then
@@ -1771,7 +1789,8 @@ phase_tcp() {
             # Evasion: nmap Pass 1  masscan cannot do fragmentation/source-port tricks
             # Remove host-timeout for full -p- scan; retries kept low for stealth
             local evasion_flags; evasion_flags="$(nmap_tier_flags "evasion" 1 | sed 's/--host-timeout [^ ]*//')"
-            local out_fast="${EVIDENCE_BASE}/_sweep/tcp_fast_evasion_${tier_ts}"
+            local out_fast="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-tcpfast-evasion" "nmap")"
+            out_fast="${out_fast%.*}"
             log "TCP [evasion] Pass 1  nmap full scan (stealth): ${count} target(s)"
             run_rc_scan "tcp_fast_evasion" "${scan_type_args[@]}" -p- --open -Pn \
                 ${evasion_flags} ${excl} -iL "$tier_list" -oA "${out_fast}"
@@ -1806,7 +1825,8 @@ phase_tcp() {
         log "TCP [${tier}] Pass 2  version/OS/scripts: ${open_count} port(s) across ${count} target(s)"
 
         local scripts; scripts="$(tier_scripts "$tier")"
-        local out_deep="${EVIDENCE_BASE}/_sweep/tcp_deep_${tier}_${tier_ts}"
+        local out_deep="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-tcpdeep" "nmap" "$tier")"
+        out_deep="${out_deep%.*}"
         run_rc_scan "tcp_deep_${tier}" "${scan_type_args[@]}" -sV -O ${scripts} --open -Pn $flags $excl \
             -p "$open_ports" -iL "$tier_list" -oA "${out_deep}"
         log_ok "TCP deep [${tier}]: ${out_deep}.{nmap,xml,gnmap}"
@@ -1860,7 +1880,8 @@ phase_sweep_nse() {
     local flags; flags="$(nmap_tier_flags "${GLOBAL_TIER}" 1)"
     local excl;  excl="$(nmap_exclude_args)"
     local ts;    ts="$(_ts)"
-    local out="${EVIDENCE_BASE}/_sweep/nse_common_${ts}"
+    local out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-common" "nmap")"
+    out="${out%.*}"
 
     # Port set: DB-discovered ports -> Pass 1 XMLs -> BASELINE_PORTS last resort.
     # Do NOT inflate unconditionally with BASELINE_PORTS: scan what was actually
@@ -1884,7 +1905,7 @@ phase_sweep_nse() {
     if [[ -z "$sweep_ports" ]]; then
         local extra_xml
         set +u
-        extra_xml="$(find "${EVIDENCE_BASE}/_sweep" \( -name 'masscan_fast_*.xml' -o -name 'naabu_fast_*.xml' \) 2>/dev/null | tr '\n' ' ')"
+        extra_xml="$(find "${EVIDENCE_BASE}/_sweep" \( -name '*-nmap-tcpfast-*-*.xml' \) 2>/dev/null | tr '\n' ' ')"
         set -u
         if [[ -n "$extra_xml" ]]; then
             # BUG-ACTIVE-1 fix (Nimbus-84 2026-05-15): quote array expansion to prevent
@@ -1939,7 +1960,8 @@ phase_sweep_nse_vapt_cve() {
 
     # SMB vulnerability scripts (EternalBlue CVE-2017-0144, signing check)
     local smb_ports="445,139"
-    local smb_out="${EVIDENCE_BASE}/_sweep/nse_vapt_smb_${ts}"
+    local smb_out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-vapt-smb" "nmap")"
+    smb_out="${smb_out%.*}"
     log "  VAPT NSE: SMB vulnerabilities (MS17-010 EternalBlue, signing)"
     run_rc_scan "nse_vapt_smb_${ts}" \
         "${scan_type_args[@]:-"-sS"}" -Pn --open \
@@ -1955,7 +1977,8 @@ phase_sweep_nse_vapt_cve() {
     # HTTP Shellshock (CVE-2014-6271) — still found on embedded/IoT devices
     local http_ports; http_ports=$(echo "$sweep_ports" | tr ',' '\n' | grep -E "^(80|443|8080|8443|8888|8000|8008)$" | tr '\n' ',' | sed 's/,$//' || true)
     if [[ -n "$http_ports" ]]; then
-        local shellshock_out="${EVIDENCE_BASE}/_sweep/nse_vapt_shellshock_${ts}"
+        local shellshock_out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-vapt-shellshock" "nmap")"
+        shellshock_out="${shellshock_out%.*}"
         log "  VAPT NSE: Shellshock (CVE-2014-6271) on HTTP ports"
         run_rc_scan "nse_vapt_shellshock_${ts}" \
             -sS -Pn --open \
@@ -1973,7 +1996,8 @@ phase_sweep_nse_vapt_cve() {
     # SSL/TLS vulnerability scripts (Heartbleed, POODLE, DROWN)
     local tls_ports; tls_ports=$(echo "$sweep_ports" | tr ',' '\n' | grep -E "^(443|8443|465|993|995|636|3269|8080|8000)$" | tr '\n' ',' | sed 's/,$//' || true)
     if [[ -n "$tls_ports" ]]; then
-        local ssl_vuln_out="${EVIDENCE_BASE}/_sweep/nse_vapt_ssl_${ts}"
+        local ssl_vuln_out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-vapt-ssl" "nmap")"
+        ssl_vuln_out="${ssl_vuln_out%.*}"
         log "  VAPT NSE: SSL/TLS vulnerabilities (Heartbleed, POODLE, DROWN, CCS)"
         run_rc_scan "nse_vapt_ssl_${ts}" \
             -sS -Pn --open \
@@ -1990,7 +2014,8 @@ phase_sweep_nse_vapt_cve() {
     # RDP vulnerability (CVE-2019-0708 BlueKeep, MS12-020 DoS)
     local rdp_ports; rdp_ports=$(echo "$sweep_ports" | tr ',' '\n' | grep -E "^(3389|3388)$" | tr '\n' ',' | sed 's/,$//' || true)
     if [[ -n "$rdp_ports" ]]; then
-        local rdp_out="${EVIDENCE_BASE}/_sweep/nse_vapt_rdp_${ts}"
+        local rdp_out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-vapt-rdp" "nmap")"
+        rdp_out="${rdp_out%.*}"
         log "  VAPT NSE: RDP vulnerabilities (BlueKeep CVE-2019-0708, MS12-020)"
         run_rc_scan "nse_vapt_rdp_${ts}" \
             -sS -Pn --open \
@@ -2006,7 +2031,8 @@ phase_sweep_nse_vapt_cve() {
 
     # HTTP slow-loris DoS check (informational — verify RoE before testing)
     if [[ -n "$http_ports" ]] && [[ "${GLOBAL_TIER:-normal}" == "loud" ]]; then
-        local slowloris_out="${EVIDENCE_BASE}/_sweep/nse_vapt_slowloris_${ts}"
+        local slowloris_out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-vapt-slowloris" "nmap")"
+        slowloris_out="${slowloris_out%.*}"
         log "  VAPT NSE: SlowLoris DoS check (tier=loud, informational)"
         run_rc_scan "nse_vapt_slowloris_${ts}" \
             -sS -Pn --open \
@@ -2022,7 +2048,8 @@ phase_sweep_nse_vapt_cve() {
     # FTP anonymous login check
     local ftp_ports; ftp_ports=$(echo "$sweep_ports" | tr ',' '\n' | grep -E "^(21|990|2121)$" | tr '\n' ',' | sed 's/,$//' || true)
     if [[ -n "$ftp_ports" ]]; then
-        local ftp_out="${EVIDENCE_BASE}/_sweep/nse_vapt_ftp_${ts}"
+        local ftp_out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-vapt-ftp" "nmap")"
+        ftp_out="${ftp_out%.*}"
         log "  VAPT NSE: FTP anonymous login + banner"
         run_rc_scan "nse_vapt_ftp_${ts}" \
             -sS -Pn --open \
@@ -2039,7 +2066,8 @@ phase_sweep_nse_vapt_cve() {
     # MS-SQL / MySQL enumeration
     local db_ports; db_ports=$(echo "$sweep_ports" | tr ',' '\n' | grep -E "^(1433|1434|3306|5432|27017)$" | tr '\n' ',' | sed 's/,$//' || true)
     if [[ -n "$db_ports" ]]; then
-        local db_out="${EVIDENCE_BASE}/_sweep/nse_vapt_db_${ts}"
+        local db_out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-nse-vapt-db" "nmap")"
+        db_out="${db_out%.*}"
         log "  VAPT NSE: Database service fingerprinting"
         run_rc_scan "nse_vapt_db_${ts}" \
             -sS -Pn --open \
@@ -2113,7 +2141,7 @@ phase_os_detect() {
     local os_ports="${BASELINE_PORTS}"
     local extra_xml
     set +u
-    extra_xml="$(find "${EVIDENCE_BASE}/_sweep" \( -name 'masscan_fast_*.xml' -o -name 'naabu_fast_*.xml' \) 2>/dev/null | tr '\n' ' ')"
+    extra_xml="$(find "${EVIDENCE_BASE}/_sweep" \( -name '*-nmap-tcpfast-*-*.xml' \) 2>/dev/null | tr '\n' ' ')"
     set -u
     if [[ -n "$extra_xml" ]]; then
         local extra_ports; extra_ports="$(extract_open_ports_xml $extra_xml 2>/dev/null || true)"
@@ -2155,8 +2183,8 @@ phase_os_detect() {
 
         local flags; flags="$(nmap_tier_flags "$tier" 1)"
         local excl; excl="$(nmap_exclude_args)"
-        local ts; ts="$(_ts)"
-        local out="${EVIDENCE_BASE}/_sweep/os_detect_${tier}_${ts}"
+        local out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-osdetect" "nmap" "$tier")"
+        out="${out%.*}"
 
         log "OS detect [${tier}]: ${count} host(s)"
 
@@ -2220,8 +2248,8 @@ phase_udp() {
         fi
 
         local flags; flags="$(nmap_tier_flags "${GLOBAL_TIER}" 1)"
-        local ts; ts="$(_ts)"
-        local out="${EVIDENCE_BASE}/_sweep/udp_fallback_${ts}"
+        local out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-udp-fallback" "nmap")"
+        out="${out%.*}"
         # Baseline UDP ports: SNMP, NTP, DNS, NetBIOS, DHCP, TFTP, IPMI, RPC, NFS, IKE, L2TP
         local udp_ports="53,67,68,69,123,137,138,161,162,389,443,500,623,1194,1434,1701,2049,4500"
 
@@ -2238,8 +2266,8 @@ phase_udp() {
     while IFS= read -r ip; do
         [[ -z "$ip" ]] && continue
         local tier; tier="$(resolve_tier "$ip")"
-        local ts; ts="$(_ts)"
-        local out="${EVIDENCE_BASE}/_sweep/udp_${ip}_${ts}"
+        local out="${EVIDENCE_BASE}/_sweep/$(ev_fname "nmap-udp" "nmap" "${ip//./-}")"
+        out="${out%.*}"
         local flags; flags="$(nmap_tier_flags "$tier" 1)"
 
         # Baseline UDP  always probe these on every live host
@@ -2349,7 +2377,7 @@ probe_mongodb() {
 }
 
 # Manual follow-up tracker
-FOLLOWUP_FILE="working/${PROJ_SLUG}_manual_followup_${SESSION_TS}.md"
+FOLLOWUP_FILE="${SCRIPT_DIR}/working/$(ev_fname "03-followup" "md")"
 
 add_followup() {
     local ip="$1" reason="$2" action="$3"
@@ -2404,7 +2432,8 @@ phase_enum() {
         # ----- SMB (PTI only) -----
         if [[ "$skip_internal" -eq 0 ]] && any_port_open "$ip" 445 139; then
             log_info "  SMB detected on ${ip}"
-            local out="${dir}/nmap_smb_${ts}"
+            local out="${dir}/$(ev_fname "nmap-smb" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "smb-os-discovery" -Pn -p 445,139 $flags --script "smb-os-discovery,smb-enum-shares,smb-enum-users,smb-protocols,smb2-security-mode,smb-vuln-ms17-010" "$ip" -oA "$out"
             # enum4linux-ng  auto when both 445+139 open
             if port_open "$ip" 445 "tcp" 2>/dev/null && port_open "$ip" 139 "tcp" 2>/dev/null; then
@@ -2419,7 +2448,8 @@ phase_enum() {
         # ----- NFS / RPC (PTI only) -----
         if [[ "$skip_internal" -eq 0 ]] && any_port_open "$ip" 111 2049; then
             log_info "  NFS/RPC detected on ${ip}"
-            local out="${dir}/nmap_nfs_${ts}"
+            local out="${dir}/$(ev_fname "nmap-nfs" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "nfs-showmount" -Pn -p 111,2049 $flags --script "nfs-showmount,nfs-ls,nfs-statfs,rpcinfo" "$ip" -oA "$out"
             add_followup "$ip" "NFS exports found" "Mount and verify write access; check world-accessible exports"
         fi
@@ -2427,7 +2457,8 @@ phase_enum() {
         # ----- FTP -----
         if port_open "$ip" 21 "tcp" 2>/dev/null; then
             log_info "  FTP detected on ${ip}"
-            local out="${dir}/nmap_ftp_${ts}"
+            local out="${dir}/$(ev_fname "nmap-ftp" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ftp-anon" -Pn -p 21 $flags --script "ftp-anon,ftp-syst,ftp-bounce,banner" "$ip" -oA "$out"
             add_followup "$ip" "FTP open" "Test anonymous login + STOR write; confirm manually"
         fi
@@ -2435,7 +2466,8 @@ phase_enum() {
         # ----- SSH -----
         if port_open "$ip" 22 "tcp" 2>/dev/null; then
             log_info "  SSH detected on ${ip}"
-            local out="${dir}/nmap_ssh_${ts}"
+            local out="${dir}/$(ev_fname "nmap-ssh" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ssh-auth-methods" -Pn -p 22 $flags --script "ssh-auth-methods,ssh-hostkey,ssh2-enum-algos" "$ip" -oA "$out"
             add_followup "$ip" "SSH version detected" "Check version against CVE-2024-6387 (regreSSHion); review accepted auth methods"
         fi
@@ -2443,7 +2475,8 @@ phase_enum() {
         # ----- Telnet -----
         if port_open "$ip" 23 "tcp" 2>/dev/null; then
             log_info "  Telnet detected on ${ip}  cleartext protocol"
-            local out="${dir}/nmap_telnet_${ts}"
+            local out="${dir}/$(ev_fname "nmap-telnet" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "telnet-encryption" -Pn -p 23 $flags --script "telnet-encryption,banner" "$ip" -oA "$out"
             add_followup "$ip" "Telnet open (cleartext)" "Capture banner; confirm device type; manual banner review"
         fi
@@ -2452,7 +2485,8 @@ phase_enum() {
         for vnc_port in 5900 5901 5902 5903 5904 5905; do
             if port_open "$ip" "$vnc_port" "tcp" 2>/dev/null; then
                 log_info "  VNC detected on ${ip}:${vnc_port}"
-                local out="${dir}/nmap_vnc_${vnc_port}_${ts}"
+                local out="${dir}/$(ev_fname "nmap-vnc" "nmap" "${ip//./-}-${vnc_port}")"
+                out="${out%.*}"
                 run_rc_scan "vnc-info" -Pn -p "$vnc_port" $flags --script "vnc-info,vnc-auth,realvnc-auth-bypass" "$ip" -oA "$out"
                 add_followup "$ip" "VNC port ${vnc_port} open" "Check auth type  None auth = Critical; test manually"
             fi
@@ -2466,7 +2500,8 @@ phase_enum() {
         if [[ ${#web_ports[@]} -gt 0 ]]; then
             log_info "  Web ports on ${ip}: ${web_ports[*]}"
             local port_str; port_str=$(IFS=','; echo "${web_ports[*]}")
-            local out="${dir}/nmap_http_${ts}"
+            local out="${dir}/$(ev_fname "nmap-http" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "http-title" -Pn -p "$port_str" $flags --script "http-title,http-headers,http-auth-finder,http-methods,http-default-accounts,http-robots.txt" "$ip" -oA "$out"
             # Flag HTTPS hosts for TLS script
             for wp in "${web_ports[@]}"; do
@@ -2481,7 +2516,8 @@ phase_enum() {
         # ----- SNMP -----
         if port_open "$ip" 161 "udp" 2>/dev/null; then
             log_info "  SNMP detected on ${ip}"
-            local out="${dir}/nmap_snmp_${ts}"
+            local out="${dir}/$(ev_fname "nmap-snmp" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "snmp-info" -Pn -sU -p 161 $flags --script "snmp-info,snmp-interfaces,snmp-processes,snmp-netstat" "$ip" -oA "$out"
             add_followup "$ip" "SNMP responding" "Run snmpwalk -v1/v2c -c public; confirm community string"
         fi
@@ -2489,7 +2525,8 @@ phase_enum() {
         # ----- LDAP -----
         if any_port_open "$ip" 389 636 3268 3269; then
             log_info "  LDAP detected on ${ip}"
-            local out="${dir}/nmap_ldap_${ts}"
+            local out="${dir}/$(ev_fname "nmap-ldap" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ldap-rootdse" -Pn -p 389,636,3268,3269 $flags --script "ldap-rootdse" "$ip" -oA "$out"
             add_followup "$ip" "LDAP/AD detected" "Test anonymous bind; run ldapsearch; check for DC role"
         fi
@@ -2503,7 +2540,8 @@ phase_enum() {
         # ----- RDP -----
         if port_open "$ip" 3389 "tcp" 2>/dev/null; then
             log_info "  RDP detected on ${ip}"
-            local out="${dir}/nmap_rdp_${ts}"
+            local out="${dir}/$(ev_fname "nmap-rdp" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "rdp-enum-encryption" -Pn -p 3389 $flags --script "rdp-enum-encryption,rdp-vuln-ms12-020" "$ip" -oA "$out"
             add_followup "$ip" "RDP detected" "Check NLA requirement; verify encryption level; assess firewall exposure"
         fi
@@ -2547,7 +2585,8 @@ phase_enum() {
         # ----- OOB Management (PTI only) -----
         if [[ "$skip_internal" -eq 0 ]] && port_open "$ip" 623 "udp" 2>/dev/null; then
             log_info "  IPMI detected on ${ip}"
-            local out="${dir}/nmap_ipmi_${ts}"
+            local out="${dir}/$(ev_fname "nmap-ipmi" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ipmi-version" -Pn -sU -p 623 $flags --script "ipmi-version,ipmi-cipher-zero" "$ip" -oA "$out"
             add_followup "$ip" "IPMI (port 623/udp)" "Check cipher-zero; test default credentials (ADMIN/ADMIN, root/calvin)"
         fi
@@ -2559,7 +2598,8 @@ phase_enum() {
         # ----- TFTP -----
         if port_open "$ip" 69 "udp" 2>/dev/null; then
             log_info "  TFTP detected on ${ip}  cleartext file transfer"
-            local out="${dir}/nmap_tftp_${ts}"
+            local out="${dir}/$(ev_fname "nmap-tftp" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "tftp-enum" -Pn -sU -p 69 $flags --script "tftp-enum" "$ip" -oA "$out"
             add_followup "$ip" "TFTP open (cleartext)" "Attempt file listing; check for config file exposure"
         fi
@@ -2617,7 +2657,8 @@ phase_enum() {
         # ----- SIP / VoIP -----
         if any_port_open "$ip" 5060 5061; then
             log_info "  SIP detected on ${ip}"
-            local out="${dir}/nmap_sip_${ts}"
+            local out="${dir}/$(ev_fname "nmap-sip" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "sip-methods" -Pn -p 5060,5061 $flags --script "sip-methods,sip-enum-users" "$ip" -oA "$out"
             add_followup "$ip" "SIP/VoIP detected" "Test INVITE enumeration; check for authentication bypass"
         fi
@@ -2625,7 +2666,8 @@ phase_enum() {
         # ----- Mail -----
         if any_port_open "$ip" 25 110 143 465 587 993 995; then
             log_info "  Mail services detected on ${ip}"
-            local out="${dir}/nmap_mail_${ts}"
+            local out="${dir}/$(ev_fname "nmap-mail" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "smtp-commands" -Pn -p 25,110,143,465,587,993,995 $flags --script "smtp-commands,smtp-open-relay,smtp-enum-users,pop3-capabilities,imap-capabilities" "$ip" -oA "$out"
             add_followup "$ip" "Mail services detected" "Open relay check; cleartext auth check; VRFY/EXPN enumeration"
         fi
@@ -2633,7 +2675,8 @@ phase_enum() {
         # ----- RPCbind -----
         if port_open "$ip" 111 "tcp" 2>/dev/null; then
             log_info "  RPCbind on ${ip}"
-            local out="${dir}/nmap_rpc_${ts}"
+            local out="${dir}/$(ev_fname "nmap-rpc" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "rpcinfo" -Pn -p 111 $flags --script "rpcinfo" "$ip" -oA "$out"
             add_followup "$ip" "RPCbind open" "Review exposed RPC services; correlate with NFS/NIS findings"
         fi
@@ -2705,7 +2748,8 @@ phase_enum_pte() {
         #  SSH
         if port_open "$ip" 22 "tcp" 2>/dev/null; then
             log_info "  SSH on ${ip}"
-            local out="${dir}/nmap_ssh_${ts}"
+            local out="${dir}/$(ev_fname "nmap-ssh" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ssh-auth-methods" -Pn -p 22 $flags --script "ssh-auth-methods,ssh-hostkey,ssh2-enum-algos" "$ip" -oA "$out"
             add_followup "$ip" "SSH detected" "Version CVE check (regreSSHion); auth methods review"
         fi
@@ -2718,7 +2762,8 @@ phase_enum_pte() {
         if [[ ${#web_ports[@]} -gt 0 ]]; then
             log_info "  Web ports on ${ip}: ${web_ports[*]}"
             local port_str; port_str=$(IFS=','; echo "${web_ports[*]}")
-            local out="${dir}/nmap_http_${ts}"
+            local out="${dir}/$(ev_fname "nmap-http" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             # http-waf-detect / http-waf-fingerprint: WAF detection  critical for PTE to
             # understand defensive controls before deeper testing. Adds minimal noise.
             run_rc_scan "http-title" -Pn -p "$port_str" $flags \
@@ -2738,7 +2783,8 @@ phase_enum_pte() {
         #  SNMP
         if port_open "$ip" 161 "udp" 2>/dev/null; then
             log_info "  SNMP on ${ip}"
-            local out="${dir}/nmap_snmp_${ts}"
+            local out="${dir}/$(ev_fname "nmap-snmp" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "snmp-info" -Pn -sU -p 161 $flags --script "snmp-info,snmp-interfaces" "$ip" -oA "$out"
             add_followup "$ip" "SNMP (publicly exposed)" "Test public community; v1/v2c = High"
             emit_finding "medium" "SNMP Publicly Exposed: ${ip}:161/udp" \
@@ -2749,7 +2795,8 @@ phase_enum_pte() {
         #  LDAP (exposed externally = critical finding candidate)
         if any_port_open "$ip" 389 636 3268; then
             log_info "  LDAP externally exposed on ${ip}  High severity candidate"
-            local out="${dir}/nmap_ldap_${ts}"
+            local out="${dir}/$(ev_fname "nmap-ldap" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ldap-rootdse" -Pn -p 389,636,3268 $flags --script "ldap-rootdse" "$ip" -oA "$out"
             add_followup "$ip" "LDAP externally exposed  HIGH" "Anonymous bind test; confirm exposure"
             emit_finding "high" "LDAP Externally Exposed: ${ip}" \
@@ -2760,7 +2807,8 @@ phase_enum_pte() {
         #  RDP (externally exposed)
         if port_open "$ip" 3389 "tcp" 2>/dev/null; then
             log_warn "  RDP externally exposed on ${ip}  High severity"
-            local out="${dir}/nmap_rdp_${ts}"
+            local out="${dir}/$(ev_fname "nmap-rdp" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "rdp-enum-encryption" -Pn -p 3389 $flags --script "rdp-enum-encryption" "$ip" -oA "$out"
             add_followup "$ip" "RDP externally exposed  HIGH" "NLA check; brute-force surface; firewall exposure"
             emit_finding "high" "RDP Externally Exposed: ${ip}:3389" \
@@ -2773,15 +2821,17 @@ phase_enum_pte() {
         # SSL-VPN web consoles (4443, 10443, 8443) are already covered by the HTTP section above.
         if any_port_open "$ip" 500 1194 1723; then
             log_info "  VPN/gateway ports on ${ip}"
-            local out="${dir}/nmap_vpn_${ts}"
+            local out="${dir}/$(ev_fname "nmap-vpn" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ike-version" -Pn -sU -p 500,4500 $flags --script "ike-version" "$ip" -oA "$out"
             add_followup "$ip" "VPN/gateway detected (IKE/IPSec or OpenVPN)" "Zyxel CVE-2023-28771/CVE-2024-42057 check; IKE aggressive mode test; version identification"
         fi
 
-        #  Mail 
+        #  Mail
         if any_port_open "$ip" 25 110 143 465 587 993 995; then
             log_info "  Mail services on ${ip}"
-            local out="${dir}/nmap_mail_${ts}"
+            local out="${dir}/$(ev_fname "nmap-mail" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "smtp-commands" -Pn -p 25,110,143,465,587,993,995 $flags --script "smtp-commands,smtp-open-relay,smtp-enum-users,pop3-capabilities,imap-capabilities" "$ip" -oA "$out"
             add_followup "$ip" "Mail services" "Open relay check; cleartext protocol check; auth methods"
         fi
@@ -2806,7 +2856,8 @@ phase_enum_pte() {
         #  FTP (externally exposed)
         if port_open "$ip" 21 "tcp" 2>/dev/null; then
             log_warn "  FTP externally exposed on ${ip}"
-            local out="${dir}/nmap_ftp_${ts}"
+            local out="${dir}/$(ev_fname "nmap-ftp" "nmap" "${ip//./-}")"
+            out="${out%.*}"
             run_rc_scan "ftp-anon" -Pn -p 21 $flags --script "ftp-anon,ftp-syst,banner" "$ip" -oA "$out"
             add_followup "$ip" "FTP externally exposed" "Anonymous login test; cleartext protocol"
             emit_finding "medium" "FTP Externally Exposed: ${ip}:21" \
@@ -2863,8 +2914,7 @@ phase_enum_pte() {
 
 phase_report() {
     log "=== PHASE 5: SCAN SUMMARY ==="
-    local ts; ts="$(_ts)"
-    local report="working/${PROJ_SLUG}_scan_summary_${ts}.md"
+    local report="${SCRIPT_DIR}/working/$(ev_fname "03-scan-summary" "md")"
     local host_count; host_count=$(get_scan_hosts | wc -l | tr -d ' ')
 
     cat > "$report" << EOF

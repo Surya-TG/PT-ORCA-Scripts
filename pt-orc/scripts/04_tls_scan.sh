@@ -97,11 +97,13 @@ _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 # Ensure evidence dirs exist under repo
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/tls_scan_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_04_tls_scan_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "tls-findings" "jsonl")"
+TLS_SUMMARY_FILE="${SCRIPT_DIR}/working/$(ev_fname "tls-summary" "md")"
 
 # Colored output to stderr, plain log to file
 log()      { local m="[$(_now)] $1";       echo -e "${BLUE}${m}${NC}"        >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -337,13 +339,12 @@ assess_host() {
     ip="${ip%%/*}"      # strip CIDR suffix if present (e.g. 10.0.0.1/32 → 10.0.0.1)
     local port="${target##*:}"
     local dir="${EVIDENCE_BASE}/${ip}"
-    local ts; ts="$(_ts)"
 
     mkdir -p "$dir"
     log "Assessing TLS: ${target}"
 
     # ── 1. Certificate info (openssl) ──────────────────────────────────────
-    local cert_out="${dir}/cert_${port}_${ts}.txt"
+    local cert_out="${dir}/$(ev_fname "tls-cert" "txt" "${ip}:${port}")"
     {
         echo "# TLS Certificate — ${target}"
         echo "# Engagement: ${PROJECT_NAME}"
@@ -364,7 +365,7 @@ assess_host() {
     log_info "  Expiry:  ${expiry}"
 
     # ── 1b. Certificate expiry check ──────────────────────────────────────────
-    local cert_pem_file="${dir}/cert_pem_${port}_${ts}.pem"
+    local cert_pem_file="${dir}/$(ev_fname "tls-cert-pem" "pem" "${ip}:${port}")"
     if timeout 12 bash -c "echo | openssl s_client -connect '${ip}:${port}' \
         -servername '${ip}' 2>/dev/null | openssl x509" > "$cert_pem_file" 2>/dev/null \
         && [[ -s "$cert_pem_file" ]]; then
@@ -387,7 +388,7 @@ assess_host() {
     # OpenSSL 3.x dropped SSLv2/SSLv3 entirely — test only what the local binary
     # supports. TLS 1.0/1.1 "unexpected eof" means the server refused that version,
     # which is the expected (correct) result for a hardened server.
-    local legacy_out="${dir}/tls_legacy_${port}_${ts}.txt"
+    local legacy_out="${dir}/$(ev_fname "tls-legacy" "txt" "${ip}:${port}")"
     {
         echo "# Legacy Protocol Check — ${target}"
         echo "# Engagement: ${PROJECT_NAME}"
@@ -439,7 +440,8 @@ assess_host() {
 
     if [[ "$FAST_MODE" -eq 1 ]]; then
         # ── FAST: nmap ssl-enum-ciphers only ───────────────────────────────
-        local cipher_out="${dir}/nmap_tls_${port}_${ts}"
+        local cipher_out="${dir}/$(ev_fname "tls-nmap-ciphers" "nmap" "${ip}:${port}")"
+        cipher_out="${cipher_out%.nmap}"
         run_rc_scan "ssl-ciphers_${ip}_${port}" \
              -Pn -p "$port" \
              --script "ssl-enum-ciphers,ssl-cert" \
@@ -451,7 +453,8 @@ assess_host() {
     else
         # ── FULL: testssl (non-interactive, batch mode) ─────────────────────
         if command -v testssl &>/dev/null; then
-            local testssl_base="${dir}/testssl_${port}_${ts}"
+            local testssl_html; testssl_html="${dir}/$(ev_fname "tls-testssl" "html" "${ip}:${port}")"
+            local testssl_base="${testssl_html%.html}"
             log "  Running testssl on ${target} (timeout: ${TESTSSL_TIMEOUT}s)..."
             timeout "$TESTSSL_TIMEOUT" testssl \
                 --htmlfile "${testssl_base}.html" \
@@ -508,7 +511,8 @@ except:pass
             fi
         else
             log_warn "  testssl not found — falling back to nmap ssl-enum-ciphers"
-            local cipher_out="${dir}/nmap_tls_${port}_${ts}"
+            local cipher_out="${dir}/$(ev_fname "tls-nmap-ciphers" "nmap" "${ip}:${port}")"
+            cipher_out="${cipher_out%.nmap}"
             run_rc_scan "ssl-ciphers_${ip}_${port}" \
                  -Pn -p "$port" \
                  --script "ssl-enum-ciphers,ssl-cert" \
@@ -522,7 +526,7 @@ except:pass
 
     # ── 2b. VAPT: Extended certificate analysis ────────────────────────────
     if [[ "$DRY_RUN" -eq 0 ]]; then
-        local cert_ext_out="${dir}/cert_ext_${port}_${ts}.txt"
+        local cert_ext_out="${dir}/$(ev_fname "tls-cert-ext" "txt" "${ip}:${port}")"
         {
             echo "# Extended Certificate Analysis — ${target}"
             echo "# Engagement: ${PROJECT_NAME}"
@@ -627,7 +631,7 @@ except:pass
         # CT log lookup via crt.sh (passive — no active connection to target)
         local cn_for_ct; cn_for_ct=$(grep -oE "CN = [^,]+" "$cert_out" 2>/dev/null | head -1 | sed 's/CN = //' || true)
         if [[ -n "$cn_for_ct" && "$cn_for_ct" != "[unknown]" ]]; then
-            local ct_out="${dir}/ct_log_${port}_${ts}.json"
+            local ct_out="${dir}/$(ev_fname "tls-ct-log" "json" "${ip}:${port}")"
             log "  CT log lookup (crt.sh): ${cn_for_ct}"
             local ct_resp
             ct_resp=$(curl -s --max-time 20 \
@@ -650,7 +654,7 @@ for e in d:
         if n: names.add(n)
 print('\n'.join(sorted(names)))" 2>/dev/null || true)
                 if [[ -n "$ct_sans" ]]; then
-                    local ct_sans_file="${dir}/ct_sans_${port}_${ts}.txt"
+                    local ct_sans_file="${dir}/$(ev_fname "tls-ct-sans" "txt" "${ip}:${port}")"
                     echo "$ct_sans" > "$ct_sans_file"
                     log_info "  CT SANs discovered ($(echo "$ct_sans" | wc -l)): see ${ct_sans_file}"
                 fi
@@ -666,7 +670,7 @@ print('\n'.join(sorted(names)))" 2>/dev/null || true)
             _is_http=0 ;;
     esac
 
-    local headers_out="${dir}/headers_${port}_${ts}.txt"
+    local headers_out="${dir}/$(ev_fname "tls-headers" "txt" "${ip}:${port}")"
     if [[ $_is_http -eq 0 ]]; then
         { echo "# HTTP Security Headers — ${target}"
           echo "# Engagement: ${PROJECT_NAME}"
@@ -690,7 +694,7 @@ print('\n'.join(sorted(names)))" 2>/dev/null || true)
     fi
 
     # Analyse security headers — only meaningful for HTTP services
-    local sec_headers_out="${dir}/sec_headers_${port}_${ts}.txt"
+    local sec_headers_out="${dir}/$(ev_fname "tls-sec-headers" "txt" "${ip}:${port}")"
     if [[ $_is_http -eq 0 ]]; then
         echo "[SKIP] Port ${port} is not an HTTP service — header analysis not applicable" > "$sec_headers_out"
     else
@@ -783,7 +787,7 @@ print('\n'.join(sorted(names)))" 2>/dev/null || true)
 
     # ── 4. Append to TLS summary ───────────────────────────────────────────
     echo "| ${ip} | ${port} | ${expiry} | ${subject} | ${dir} |" \
-        >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+        >> "$TLS_SUMMARY_FILE"
 }
 
 # =============================================================================
@@ -802,7 +806,7 @@ run_grab_scores() {
     log "Running GrabScores-v2.5.py..."
     python3 "$script_path" \
         --targets "$TARGETS_FILE" \
-        --output-dir "$SCREENS_DIR" 2>&1 | tee "${SCRIPT_DIR}/working/${PROJ_SLUG}_grab_scores_${SESSION_TS}.log"
+        --output-dir "$SCREENS_DIR" 2>&1 | tee "${SCRIPT_DIR}/working/$(ev_fname "tls-grab-scores" "log")"
     log_ok "Screenshots: ${SCREENS_DIR}"
 }
 
@@ -830,7 +834,7 @@ main() {
 
     # TLS summary header
     mkdir -p "${EVIDENCE_BASE}/_sweep" "${EVIDENCE_BASE}/_exports" "${SCRIPT_DIR}/working"
-    cat > "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md" << EOF
+    cat > "$TLS_SUMMARY_FILE" << EOF
 # TLS Assessment Summary — ${PROJECT_NAME}
 *Generated: $(_now) | Session: ${SESSION_TS}*
 
@@ -858,14 +862,14 @@ EOF
     run_grab_scores
 
     # Finalise summary
-    echo "" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
-    echo "---" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
-    echo "## JSONL Findings (auto-ingested by 12_report_pack.sh)" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
-    echo "- **Count:** ${_FIND_CTR}" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
-    echo "- **File:** \`${FINDINGS_FILE}\`" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
-    echo "" >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    echo "" >> "$TLS_SUMMARY_FILE"
+    echo "---" >> "$TLS_SUMMARY_FILE"
+    echo "## JSONL Findings (auto-ingested by 12_report_pack.sh)" >> "$TLS_SUMMARY_FILE"
+    echo "- **Count:** ${_FIND_CTR}" >> "$TLS_SUMMARY_FILE"
+    echo "- **File:** \`${FINDINGS_FILE}\`" >> "$TLS_SUMMARY_FILE"
+    echo "" >> "$TLS_SUMMARY_FILE"
     echo "*04_tls_scan.sh | TechGuard. | Findings: ${_FIND_CTR}*" \
-        >> "${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+        >> "$TLS_SUMMARY_FILE"
 
     export_db "tls"
 
@@ -874,7 +878,7 @@ EOF
     trail_phase_end phase "tls" project "${PROJECT_NAME:-}" session "${SESSION_TS:-}" duration_sec "$((_04_t_end - _04_t_start))" targets "$count" ts "$(date -u +%FT%TZ)" 2>/dev/null || true
 
     log_ok "Findings: ${_FIND_CTR} written to ${FINDINGS_FILE}"
-    log_ok "TLS scan complete. Summary: ${SCRIPT_DIR}/working/${PROJ_SLUG}_tls_summary_${SESSION_TS}.md"
+    log_ok "TLS scan complete. Summary: ${TLS_SUMMARY_FILE}"
     log_ok "Evidence per host: ${EVIDENCE_BASE}/<IP>/testssl_<port>_<TS>.{html,json,log}"
 }
 

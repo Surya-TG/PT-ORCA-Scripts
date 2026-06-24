@@ -158,10 +158,11 @@ _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/app_api_review_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_08_app_api_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "08-appapi-findings" "jsonl")"
 : > "$FINDINGS_FILE"
 
 log()     { local m="[$(_now)] $1";   echo -e "${BLUE}${m}${NC}" >&2;    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -468,7 +469,7 @@ setup_profile() {
 
 test_01_http_methods() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t01_http_methods.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t01-http-methods" "txt")"
     log "T01: HTTP Method Enumeration — ${base_url}"
 
     local dangerous_methods=("PUT" "DELETE" "PATCH" "TRACE" "CONNECT" "PROPFIND" "PROPPATCH" "MKCOL" "COPY" "MOVE" "LOCK" "UNLOCK")
@@ -533,7 +534,7 @@ test_01_http_methods() {
 
 test_02_schema_discovery() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t02_schema.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t02-schema" "txt")"
     log "T02: Schema/API Discovery — ${base_url}"
     _SUMMARY_SCHEMA=0
 
@@ -585,7 +586,7 @@ test_02_schema_discovery() {
 
 test_03_authentication() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t03_auth.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t03-auth" "txt")"
     log "T03: Authentication Tests — ${base_url}"
     _SUMMARY_AUTH=0
 
@@ -664,7 +665,7 @@ test_03_authentication() {
 
 test_04_rate_limiting() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t04_rate_limit.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t04-rate-limit" "txt")"
     log "T04: Rate Limiting — ${base_url}"
     _SUMMARY_RATE=0
 
@@ -714,7 +715,7 @@ test_04_rate_limiting() {
 
 test_05_cors() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t05_cors.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t05-cors" "txt")"
     log "T05: CORS Misconfiguration — ${base_url}"
     _SUMMARY_CORS=0
 
@@ -768,7 +769,7 @@ test_05_cors() {
 
 test_06_bola_idor() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t06_bola.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t06-bola" "txt")"
     log "T06: BOLA/IDOR — ${base_url}"
     _SUMMARY_BOLA=0
 
@@ -813,7 +814,7 @@ test_06_bola_idor() {
 
 test_07_mass_assignment() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t07_mass_assign.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t07-mass-assign" "txt")"
     log "T07: Mass Assignment / BOPLA — ${base_url}"
 
     local -a auth_args
@@ -867,7 +868,7 @@ test_07_mass_assignment() {
 
 test_08_security_headers() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t08_sec_headers.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t08-sec-headers" "txt")"
     log "T08: Security Headers — ${base_url}"
 
     local headers_resp
@@ -935,7 +936,7 @@ test_08_security_headers() {
 
 test_09_jwt_attacks() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t09_jwt.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t09-jwt" "txt")"
     log "T09: JWT Advanced Attacks — ${base_url}"
     _SUMMARY_JWT=0
 
@@ -1035,7 +1036,7 @@ test_09_jwt_attacks() {
 
 test_10_graphql() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t10_graphql.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t10-graphql" "txt")"
     log "T10: GraphQL Security — ${base_url}"
     _SUMMARY_GQL=0
 
@@ -1108,7 +1109,7 @@ test_10_graphql() {
 
 test_11_ssrf() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t11_ssrf.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t11-ssrf" "txt")"
     log "T11: SSRF Detection — ${base_url}"
     _SUMMARY_SSRF=0
 
@@ -1191,7 +1192,7 @@ test_11_ssrf() {
 
 test_12_xxe() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t12_xxe.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t12-xxe" "txt")"
     log "T12: XXE Injection — ${base_url}"
 
     # Gate: only send XML payloads to endpoints that accept XML
@@ -1245,7 +1246,7 @@ test_12_xxe() {
 
 test_13_ssti() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t13_ssti.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t13-ssti" "txt")"
     log "T13: Server-Side Template Injection — ${base_url}"
 
     # Polyglot SSTI probes: covers Jinja2, Twig, Smarty, Freemarker, Velocity, Mako, ERB, Pebble
@@ -1300,7 +1301,7 @@ test_13_ssti() {
 
 test_14_smuggling() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t14_smuggling.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t14-smuggling" "txt")"
     log "T14: HTTP Request Smuggling — ${base_url}"
     echo "[WARNING] Smuggling probes may cause unintended side effects on shared frontends." >> "$evfile"
 
@@ -1353,7 +1354,7 @@ test_14_smuggling() {
 
 test_15_host_header() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t15_host_header.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t15-host-header" "txt")"
     log "T15: Host Header Injection — ${base_url}"
 
     local evil_hosts=("evil.com" "attacker.io" "169.254.169.254" "localhost" "127.0.0.1" "${ip}.evil.com")
@@ -1403,7 +1404,7 @@ test_15_host_header() {
 
 test_16_versioning() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t16_versioning.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t16-versioning" "txt")"
     log "T16: API Versioning / Shadow APIs — ${base_url}"
 
     local versions=("v1" "v2" "v3" "v0" "v1.0" "v1.1" "v2.0" "beta" "alpha" "dev" "test" "internal" "old" "legacy" "2020" "2021" "2022" "2023")
@@ -1444,7 +1445,7 @@ test_16_versioning() {
 
 test_17_sensitive_data() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t17_sensitive.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t17-sensitive" "txt")"
     log "T17: Sensitive Data Exposure — ${base_url}"
 
     local sensitive_paths=(
@@ -1505,7 +1506,7 @@ test_17_sensitive_data() {
 
 test_18_business_logic() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t18_business.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t18-business" "txt")"
     log "T18: Business Logic / BFLA — ${base_url}"
 
     local -a auth_args
@@ -1558,7 +1559,7 @@ test_18_business_logic() {
 
 test_19_websocket() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t19_websocket.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t19-websocket" "txt")"
     log "T19: WebSocket Detection — ${base_url}"
 
     local ws_paths=("/ws" "/websocket" "/socket" "/socket.io" "/sockjs"
@@ -1593,7 +1594,7 @@ test_19_websocket() {
 
 test_20_tls_transport() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t20_tls.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t20-tls" "txt")"
     log "T20: TLS / Transport Security — ${base_url}"
 
     # Only meaningful on TLS ports
@@ -1668,7 +1669,7 @@ test_20_tls_transport() {
 
 test_21_package_manifests() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t21_pkg_manifests.txt"
+    local evfile="${ev_dir}/$(ev_fname "api-t21-pkg-manifests" "txt")"
     log "T21: Package Manifest Exposure — ${base_url}"
 
     # manifest → ecosystem (colon-separated pairs)
@@ -1903,7 +1904,7 @@ main() {
     done
 
     # ── Markdown summary ─────────────────────────────────────────────────────
-    local summary_md="${SCRIPT_DIR}/working/${PROJ_SLUG}_app_api_summary_${SESSION_TS}.md"
+    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "08-appapi-summary" "md")"
     {
         echo "# App/API Review Summary — ${PROJECT_NAME:-unknown}"
         echo ""

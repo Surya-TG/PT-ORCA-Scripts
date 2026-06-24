@@ -50,7 +50,24 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 _ts()  { date +'%Y%m%d_%H%M%S'; }
+_ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+ev_fname() {
+    local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+    local ts; ts="${EV_TS:-$(_ev_ts)}"
+    local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+    if [[ -n "$extra" ]]; then
+        printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+    else
+        printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+    fi
+}
+find_latest_ev() {
+    local pattern="${1:?find_latest_ev: pattern required}"
+    local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+    find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+}
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 
 mkdir -p working evidence
 
@@ -75,7 +92,7 @@ log_step() {
 PROJ_SLUG="${PROJECT_NAME:-PT-Orc}"
 PROJ_SLUG="${PROJ_SLUG//[^a-zA-Z0-9_-]/_}"
 
-FINDINGS_FILE="working/${PROJ_SLUG}_15_attack_chain_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR:-$(pwd)}/working/$(ev_fname "15-chain-findings" "jsonl")"
 EVIDENCE_BASE="evidence/${SESSION_TS}/15_attack_chain"
 mkdir -p "$EVIDENCE_BASE"
 FINDING_COUNT=0
@@ -246,7 +263,7 @@ Wrap all chains in: {\"attack_chains\": [ ... ]}"
     AI_CLAUDE_MODEL="$orig_model"
 
     # Save raw response as evidence
-    [[ -d "$EVIDENCE_BASE" ]] && echo "$raw_response" > "${EVIDENCE_BASE}/ai_synthesis_raw_${SESSION_TS}.txt" 2>/dev/null || true
+    [[ -d "$EVIDENCE_BASE" ]] && echo "$raw_response" > "${EVIDENCE_BASE}/$(ev_fname "chain-ai-raw" "txt")" 2>/dev/null || true
 
     # Extract JSON — handle LLM wrapping in markdown fences
     local json_response
@@ -477,7 +494,7 @@ main() {
     compact_jsonl=$(_compact_findings_for_prompt "$all_findings")
 
     # Save compacted input as evidence
-    [[ -d "$EVIDENCE_BASE" ]] && echo "$compact_jsonl" > "${EVIDENCE_BASE}/synthesis_input_${SESSION_TS}.jsonl" 2>/dev/null || true
+    [[ -d "$EVIDENCE_BASE" ]] && echo "$compact_jsonl" > "${EVIDENCE_BASE}/$(ev_fname "chain-synthesis-input" "jsonl")" 2>/dev/null || true
 
     if [[ "$NO_AI" -eq 1 ]]; then
         log_warn "--no-ai: skipping AI synthesis, using heuristic ranking only"

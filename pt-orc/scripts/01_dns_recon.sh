@@ -251,8 +251,25 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
+_ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+ev_fname() {
+    local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+    local ts; ts="${EV_TS:-$(_ev_ts)}"
+    local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+    if [[ -n "$extra" ]]; then
+        printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+    else
+        printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+    fi
+}
+find_latest_ev() {
+    local pattern="${1:?find_latest_ev: pattern required}"
+    local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+    find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+}
 
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 
 # Ensure directories are under the repo and owned by the invoking user where possible
 mkdir -p "${EVIDENCE_BASE}/_dns" "${EVIDENCE_BASE}/_exports" working scripts
@@ -267,7 +284,8 @@ log_info(){ local m="[$(_now)]   $1";          echo -e "${CYAN}${m}${NC}" >&2;  
 log_find(){ local m="[$(_now)] ★ FINDING: $1"; echo -e "${BOLD}${RED}${m}${NC}" >&2;  echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 _FIND_CTR=0
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_01_dns_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "01-dns-findings" "jsonl")"
+DNS_SUMMARY_FILE="${SCRIPT_DIR}/working/$(ev_fname "01-dns-summary" "md")"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4"
@@ -418,7 +436,7 @@ check_takeover() {
             emit_finding "high" "Subdomain Takeover Candidate: ${subdomain}" \
                 "The subdomain ${subdomain} shows a fingerprint ('${pattern}') indicating an unclaimed third-party service. An attacker could register the underlying service and serve arbitrary content from this subdomain." \
                 "Immediately remove the DNS record for ${subdomain} or re-register the underlying service. Priority: high — exploitation typically requires only a free account registration."
-            echo "${subdomain}" >> "${EVIDENCE_BASE}/_dns/takeover_candidates_${SESSION_TS}.txt"
+            echo "${subdomain}" >> "${EVIDENCE_BASE}/_dns/$(ev_fname "dns-takeover" "txt")"
             return 0
         fi
     done
@@ -462,7 +480,7 @@ add_ip() {
 recon_crt() {
     local domain="$1"
     log "crt.sh certificate transparency: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/crt_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-crt" "txt" "$domain")"
     curl -s --max-time 30 "https://crt.sh/?q=%25.${domain}&output=json" 2>/dev/null | \
         python3 -c "
 import json,sys
@@ -483,7 +501,7 @@ recon_subfinder() {
     local domain="$1"
     command -v subfinder &>/dev/null || { log_warn "subfinder not found — skipping"; return; }
     log "subfinder: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/subfinder_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-subfinder" "txt" "$domain")"
     timeout "$TOOL_TIMEOUT" subfinder -d "$domain" -silent -o "$out" 2>/dev/null || true
     log_ok "subfinder: $(wc -l < "$out" 2>/dev/null || echo 0) hits → ${out}"
     cat "$out" 2>/dev/null || true
@@ -493,7 +511,7 @@ recon_amass() {
     local domain="$1"
     command -v amass &>/dev/null || { log_warn "amass not found — skipping"; return; }
     log "amass (passive): ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/amass_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-amass" "txt" "$domain")"
     timeout "$TOOL_TIMEOUT" amass enum -passive -d "$domain" -o "$out" 2>/dev/null || true
     log_ok "amass: $(wc -l < "$out" 2>/dev/null || echo 0) hits → ${out}"
     cat "$out" 2>/dev/null || true
@@ -503,7 +521,7 @@ recon_amass_brute() {
     local domain="$1"
     command -v amass &>/dev/null || { log_warn "amass not found — skipping brute"; return; }
     log "amass (brute): ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/amass_brute_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-amass-brute" "txt" "$domain")"
     timeout "$TOOL_TIMEOUT" amass enum -brute -d "$domain" -o "$out" 2>/dev/null || true
     log_ok "amass brute: $(wc -l < "$out" 2>/dev/null || echo 0) hits → ${out}"
     cat "$out" 2>/dev/null || true
@@ -513,7 +531,7 @@ recon_harvester() {
     local domain="$1"
     command -v theHarvester &>/dev/null || { log_warn "theHarvester not found — skipping"; return; }
     log "theHarvester: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/harvester_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-harvester" "txt" "$domain")"
     # Avoid "-b all" — many sources require API keys and produce timeout/auth errors in PTE.
     # These sources are reliable without keys. Add api-keyed sources if SHODAN/etc are configured.
     local harvester_sources="google,bing,baidu,crt,dnsdumpster,hackertarget,certspotter"
@@ -527,7 +545,7 @@ recon_securitytrails() {
     local domain="$1"
     [[ -z "$SECURITYTRAILS_API_KEY" ]] && return
     log "SecurityTrails: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/securitytrails_${domain}_${SESSION_TS}.json"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-securitytrails" "json" "$domain")"
     curl -s --max-time 30 \
         "https://api.securitytrails.com/v1/domain/${domain}/subdomains" \
         -H "APIKEY: ${SECURITYTRAILS_API_KEY}" | tee "$out" | \
@@ -546,7 +564,7 @@ recon_censys() {
     local domain="$1"
     [[ -z "$CENSYS_API_ID" || -z "$CENSYS_API_SECRET" ]] && return
     log "Censys: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/censys_${domain}_${SESSION_TS}.json"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-censys" "json" "$domain")"
     curl -s --max-time 30 \
         "https://search.censys.io/api/v2/certificates/search" \
         -u "${CENSYS_API_ID}:${CENSYS_API_SECRET}" \
@@ -572,7 +590,7 @@ recon_shodan_domain() {
     [[ -z "$SHODAN_API_KEY" ]] && return
     command -v shodan &>/dev/null || { log_warn "shodan CLI not found — skipping"; return; }
     log "Shodan domain: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/shodan_domain_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-shodan-domain" "txt" "$domain")"
     shodan domain "$domain" 2>/dev/null | tee "$out" || true
 }
 
@@ -581,7 +599,7 @@ recon_shodan_ip() {
     [[ -z "$SHODAN_API_KEY" ]] && return
     command -v shodan &>/dev/null || return
     log "Shodan host: ${ip}"
-    local out="${EVIDENCE_BASE}/_dns/shodan_host_${ip}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-shodan-host" "txt" "$ip")"
     shodan host "$ip" 2>/dev/null | tee "$out" || true
 }
 
@@ -589,9 +607,9 @@ recon_dnsx() {
     local domain="$1"
     command -v dnsx &>/dev/null || { log_warn "dnsx not found — skipping fast resolution validation"; return; }
     log "dnsx fast resolution: ${domain}"
-    local input="${EVIDENCE_BASE}/_dns/all_subdomains_${domain}_${SESSION_TS}.txt"
+    local input="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-all-subdomains" "txt" "$domain")"
     [[ -f "$input" ]] || { log_warn "  dnsx: no subdomain list yet for ${domain}"; return; }
-    local out="${EVIDENCE_BASE}/_dns/dnsx_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-dnsx" "txt" "$domain")"
     # -a: resolve A records, -aaaa: AAAA, -cname: CNAME, -resp: show response
     timeout "$TOOL_TIMEOUT" dnsx \
         -l "$input" -silent -a -cname -resp \
@@ -619,7 +637,7 @@ recon_puredns() {
     done
     [[ -z "$wordlist" ]] && { log_warn "puredns: no wordlist found — skipping"; return; }
     log "puredns bruteforce: ${domain} (${wordlist})"
-    local out="${EVIDENCE_BASE}/_dns/puredns_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-puredns" "txt" "$domain")"
     timeout "$TOOL_TIMEOUT" puredns bruteforce "$wordlist" "$domain" \
         --write "$out" 2>/dev/null || true
     local cnt; cnt=$(wc -l < "$out" 2>/dev/null || echo 0)
@@ -631,7 +649,7 @@ recon_virustotal_subdomains() {
     local domain="$1"
     [[ -z "${VIRUSTOTAL_API_KEY:-}" ]] && { log_info "VT: no VIRUSTOTAL_API_KEY — skipping subdomain enum"; return; }
     log "VirusTotal subdomain enum: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/vt_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-vt" "txt" "$domain")"
     local resp
     resp=$(curl -s --max-time 30 \
         -H "x-apikey: ${VIRUSTOTAL_API_KEY}" \
@@ -658,7 +676,7 @@ except Exception as e:
 check_dnssec() {
     local domain="$1"
     log "DNSSEC check: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/dnssec_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-dnssec" "txt" "$domain")"
     {
         echo "# DNSSEC Validation — ${domain} — $(_now)"
         echo "---"
@@ -684,7 +702,7 @@ check_dnssec() {
 check_doh() {
     local domain="$1"
     log "DNS-over-HTTPS probe: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/doh_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-doh" "txt" "$domain")"
     {
         echo "# DNS-over-HTTPS probe — ${domain} — $(_now)"
         echo "---"
@@ -717,7 +735,7 @@ axfr_attempt() {
     local domain="$1"
     [[ "$SKIP_ACTIVE" -eq 1 ]] && return
     log "AXFR attempts: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/axfr_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-axfr" "txt" "$domain")"
     {
         echo "# AXFR Attempts — ${domain} — $(_now)"
         echo "---"
@@ -756,7 +774,7 @@ brute_subdomains() {
     done
     [[ -z "$wordlist" ]] && { log_warn "No DNS wordlist found — skipping brute"; return; }
     log "DNS brute: ${domain} (${wordlist})"
-    local out="${EVIDENCE_BASE}/_dns/brute_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-brute" "txt" "$domain")"
     # Wildcard DNS detection — must run before brute to prevent false-positive flood
     _WILDCARD_DNS=0; _WILDCARD_IP=""
     local _wc_probe="nxdomain-$(date +%s%3N).${domain}"
@@ -785,7 +803,7 @@ brute_subdomains() {
 check_email_security() {
     local domain="$1"
     log "Email security checks: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/email_sec_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-email-sec" "txt" "$domain")"
     {
         echo "# Email Security Analysis — ${domain} — $(_now)"
         echo ""
@@ -889,7 +907,7 @@ check_email_security() {
 check_extended_records() {
     local domain="$1"
     log "Extended DNS records: ${domain}"
-    local out="${EVIDENCE_BASE}/_dns/extended_${domain}_${SESSION_TS}.txt"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-extended" "txt" "$domain")"
     {
         echo "# Extended DNS Records — ${domain} — $(_now)"
         echo ""
@@ -1006,8 +1024,8 @@ resolve_subdomain() {
 
 httpx_verify() {
     log "Live HTTP/S verification..."
-    local input_file="${EVIDENCE_BASE}/_dns/all_targets_${SESSION_TS}.txt"
-    local out="${EVIDENCE_BASE}/_dns/httpx_${SESSION_TS}.txt"
+    local input_file="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-all-targets" "txt")"
+    local out="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-httpx" "txt")"
     {
         set +u
         for ip in "${!DISCOVERED_IPS[@]}"; do echo "$ip"; done
@@ -1052,10 +1070,10 @@ httpx_verify() {
 write_targets() {
     # Use SCRIPT_DIR-anchored path so the file lands alongside the scripts
     # regardless of which directory the caller cd'd into.
-    local targets_file="${SCRIPT_DIR}/targets.txt"
+    local targets_file="${SCRIPT_DIR}/working/$(ev_fname "targets" "txt")"
     [[ "$APPEND_TARGETS" -eq 0 ]] && > "$targets_file"
     {
-        echo "# targets.txt — 01_dns_recon.sh | ${PROJECT_NAME} | $(_now)"
+        echo "# targets — 01_dns_recon.sh | ${PROJECT_NAME} | $(_now)"
         echo "# ─────────────────────────────────────────────"
         echo "# Seed IPs (explicitly provided in scope — written unconditionally)"
         for ip in $TARGET_IPS; do echo "$ip"; done
@@ -1070,17 +1088,18 @@ write_targets() {
     local tmp
     tmp=$(grep -v "^#" "$targets_file" | grep -E '^[0-9]' | sort -u -t. -k1,1n -k2,2n -k3,3n -k4,4n)
     {
-        echo "# targets.txt — 01_dns_recon.sh | ${PROJECT_NAME} | $(_now)"
+        echo "# targets — 01_dns_recon.sh | ${PROJECT_NAME} | $(_now)"
         echo "$tmp"
     } > "$targets_file"
 
     local total; total=$(grep -cE '^[0-9]' "$targets_file" 2>/dev/null || echo 0)
-    log_ok "targets.txt: ${total} IPs → ${targets_file}"
+    log_ok "targets: ${total} IPs → ${targets_file}"
+    cp "$targets_file" "${SCRIPT_DIR}/targets.txt" 2>/dev/null || true
 }
 
 write_summary() {
-    local summary="working/${PROJ_SLUG}_dns_summary_${SESSION_TS}.md"
-    local takeover_file="${EVIDENCE_BASE}/_dns/takeover_candidates_${SESSION_TS}.txt"
+    local summary="${DNS_SUMMARY_FILE}"
+    local takeover_file="${EVIDENCE_BASE}/_dns/$(ev_fname "dns-takeover" "txt")"
     local takeover_count=0
     [[ -f "$takeover_file" ]] && takeover_count=$(wc -l < "$takeover_file")
     local targets_count; targets_count=$(grep -cE '^[0-9]' "${SCRIPT_DIR}/targets.txt" 2>/dev/null || echo 0)
@@ -1291,7 +1310,7 @@ main() {
         set -u
         local sub_count; sub_count=$(echo "$unique_subs" | grep -c '.' 2>/dev/null || echo 0)
         log_ok "Domain ${domain}: ${sub_count} unique subdomains"
-        echo "$unique_subs" > "${EVIDENCE_BASE}/_dns/all_subdomains_${domain}_${SESSION_TS}.txt"
+        echo "$unique_subs" > "${EVIDENCE_BASE}/_dns/$(ev_fname "dns-all-subdomains" "txt" "$domain")"
 
         # Resolve subdomains sequentially; run takeover checks in background with
         # a concurrency cap (MAX_TAKEOVER_JOBS) to avoid spawning thousands of
@@ -1364,8 +1383,8 @@ main() {
     echo -e "${GREEN}  Third-party:     ${final_thirdparty} (flagged — verify RoE)${NC}"
     echo -e "${GREEN}  Live HTTP/S:     ${final_live}${NC}"
     echo -e "${GREEN}  Findings:        ${_FIND_CTR} (JSONL: ${FINDINGS_FILE})${NC}"
-    echo -e "${GREEN}  Targets file:    scripts/targets.txt${NC}"
-    echo -e "${GREEN}  Summary:         working/${PROJ_SLUG}_dns_summary_${SESSION_TS}.md${NC}"
+    echo -e "${GREEN}  Targets file:    ${SCRIPT_DIR}/targets.txt${NC}"
+    echo -e "${GREEN}  Summary:         ${DNS_SUMMARY_FILE}${NC}"
     echo -e "${GREEN}════════════════════════════════════════════════${NC}"
     echo ""
 }

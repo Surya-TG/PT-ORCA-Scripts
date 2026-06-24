@@ -322,13 +322,16 @@ should_run() {
     if [[ "$ONLY_STEP" -ne 0 ]]; then
         [[ "$n" -eq "$ONLY_STEP" ]] && return 0 || return 1
     fi
-    # --from: skip steps before FROM_STEP
-    [[ "$n" -lt "$FROM_STEP" ]] && return 1
-    # --skip: explicitly skipped steps
+    # --skip: explicitly skipped steps (evaluated before --from so explicit skip always wins)
     local s
     for s in "${SKIP_STEPS[@]+"${SKIP_STEPS[@]}"}"; do
         [[ "$n" -eq "$s" ]] && return 1
     done
+    # Step 12 (Report Pack) is intentionally last in the run loop regardless of its number.
+    # Never filter it by --from; only an explicit --skip 12 can suppress it.
+    [[ "$n" -eq 12 ]] && return 0
+    # --from: skip steps whose number is below the start point
+    [[ "$n" -lt "$FROM_STEP" ]] && return 1
     return 0
 }
 

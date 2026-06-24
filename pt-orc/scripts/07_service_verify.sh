@@ -165,6 +165,7 @@ _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 
 mkdir -p "${EVIDENCE_BASE}/_verify" working
 LOG_FILE="${EVIDENCE_BASE}/_verify/verify_${SESSION_TS}.log"
@@ -286,7 +287,7 @@ trap 'rm -rf "${RESULTS_DIR:-/tmp/ptorc_results_NOOP}"' EXIT
 _FIND_CTR=0
 _CURRENT_IP=""
 _SKIP_AUTO_EMIT=0
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_07_service_verify_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "07-svcverify-findings" "jsonl")"
 
 emit_finding() {
     local sev="$1" title="$2" desc="$3" rec="$4" ev_tag="${5:-}"
@@ -764,7 +765,7 @@ verify_dir_for() {
 probe_redis() {
     local ip="$1" port="${2:-6379}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/redis_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-redis-noauth" "txt" "${ip}-${port}")"
     log "  Probing Redis NOAUTH @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -835,7 +836,7 @@ probe_redis() {
 probe_mysql() {
     local ip="$1" port="${2:-3306}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/mysql_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-mysql-noauth" "txt" "${ip}-${port}")"
     log "  Probing MySQL NOAUTH @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -897,7 +898,7 @@ probe_mysql() {
 probe_postgres() {
     local ip="$1" port="${2:-5432}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/postgres_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-postgres-noauth" "txt" "${ip}-${port}")"
     log "  Probing PostgreSQL NOAUTH @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -961,7 +962,7 @@ probe_postgres() {
 probe_mongodb() {
     local ip="$1" port="${2:-27017}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/mongodb_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-mongodb-noauth" "txt" "${ip}-${port}")"
     log "  Probing MongoDB NOAUTH @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1029,7 +1030,7 @@ probe_mongodb() {
 probe_ssh_version() {
     local ip="$1" port="${2:-22}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/ssh_version_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-ssh-version" "txt" "${ip}-${port}")"
     log "  Probing SSH version @ ${ip}:${port} (CVE-2024-6387 range check)"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1081,7 +1082,7 @@ probe_ssh_version() {
 
     # --- ssh-audit: algorithm-level CVE detection (runs if installed) ----------
     if have ssh-audit; then
-        audit_out="${vdir}/ssh_audit_${SESSION_TS}.txt"
+        audit_out="${vdir}/$(ev_fname "svc-ssh-audit" "txt" "${ip}-${port}")"
         timeout 30 ssh-audit -n "${ip}:${port}" > "$audit_out" 2>&1 || true
         { echo ""; echo "# ssh-audit @ ${ip}:${port} — $(_now)"; cat "$audit_out"; } >> "$evfile"
         ssh_audit_ran=1
@@ -1204,7 +1205,7 @@ probe_ssh_version() {
 probe_ftp_anon() {
     local ip="$1" port="${2:-21}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/ftp_anon_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-ftp-anon" "txt" "${ip}-${port}")"
     log "  Probing FTP anonymous @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1276,7 +1277,7 @@ probe_ftp_anon() {
 probe_smb_null() {
     local ip="$1" port="${2:-445}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/smb_null_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-smb-null" "txt" "${ip}-${port}")"
     log "  Probing SMB null session @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1320,7 +1321,7 @@ probe_smb_null() {
     # CVE-2017-0144 (MS17-010 EternalBlue) — still found on unpatched Windows hosts
     # Also checks CVE-2020-0796 (SMBGhost, Windows 10/2019 SMBv3.1.1 compression)
     if have nmap; then
-        local eb_out="${vdir}/smb_eternalblue_${SESSION_TS}.txt"
+        local eb_out="${vdir}/$(ev_fname "svc-smb-eternalblue" "txt" "${ip}-${port}")"
         log "    [SMB] Checking MS17-010 (EternalBlue) via nmap NSE..."
         local eb_result
         eb_result=$(timeout 30 nmap -Pn -p "$port" \
@@ -1348,7 +1349,7 @@ probe_smb_null() {
 probe_snmp() {
     local ip="$1" port="${2:-161}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/snmp_default_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-snmp-default" "txt" "${ip}-${port}")"
     log "  Probing SNMP default community @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1410,7 +1411,7 @@ probe_snmp() {
 probe_smtp_relay() {
     local ip="$1" port="${2:-25}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/smtp_relay_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-smtp-relay" "txt" "${ip}-${port}")"
     log "  Probing SMTP open relay @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1481,7 +1482,7 @@ probe_smtp_relay() {
 probe_ssrf_imds() {
     local ip="$1" port="${2:-80}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/ssrf_imds_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-ssrf-imds" "txt" "${ip}-${port}")"
     log "  Probing SSRF→IMDS @ ${ip}:${port} (parameter sweep)"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1552,7 +1553,7 @@ probe_ssrf_imds() {
 probe_tls_cert() {
     local ip="$1" port="${2:-443}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/tls_cert_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-tls-cert" "txt" "${ip}-${port}")"
     log "  Probing TLS cert @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1618,7 +1619,7 @@ probe_tls_cert() {
 probe_web_headers() {
     local ip="$1" port="${2:-80}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/web_headers_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-web-headers" "txt" "${ip}-${port}")"
     log "  Probing HTTP security headers @ ${ip}:${port}"
 
     if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -1838,7 +1839,7 @@ enumerate_mongodb_vuln() {
 probe_mssql() {
     local ip="$1" port="${2:-1433}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/mssql_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-mssql" "txt" "${ip}-${port}")"
     log "  Probing MSSQL @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] mssqlclient / MSF mssql_ping + mssql_login"; return; }
     echo "# MSSQL probe @ ${ip}:${port} — $(_now)" > "$evfile"
@@ -1884,7 +1885,7 @@ probe_mssql() {
 probe_nfs() {
     local ip="$1" port="${2:-2049}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/nfs_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-nfs" "txt" "${ip}-${port}")"
     log "  Probing NFS exports @ ${ip}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] showmount -e ${ip}"; return; }
     echo "# NFS showmount @ ${ip} — $(_now)" > "$evfile"
@@ -1923,7 +1924,7 @@ probe_nfs() {
 probe_telnet() {
     local ip="$1" port="${2:-23}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/telnet_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-telnet" "txt" "${ip}-${port}")"
     log "  Probing Telnet @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] nc -w5 ${ip} ${port}"; return; }
     echo "# Telnet banner @ ${ip}:${port} — $(_now)" > "$evfile"
@@ -1961,7 +1962,7 @@ probe_telnet() {
 probe_ipmi() {
     local ip="$1" port="${2:-623}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/ipmi_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-ipmi" "txt" "${ip}-${port}")"
     log "  Probing IPMI @ ${ip}:${port} (cipher-zero + default creds)"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] MSF ipmi_version + ipmi_cipher_zero"; return; }
     echo "# IPMI probe @ ${ip}:${port} — $(_now)" > "$evfile"
@@ -2015,7 +2016,7 @@ probe_ipmi() {
 probe_rdp() {
     local ip="$1" port="${2:-3389}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/rdp_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-rdp" "txt" "${ip}-${port}")"
     log "  Probing RDP @ ${ip}:${port} (NLA + encryption)"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] MSF rdp_scanner + nmap rdp-enum-encryption"; return; }
     echo "# RDP probe @ ${ip}:${port} — $(_now)" > "$evfile"
@@ -2059,7 +2060,7 @@ probe_rdp() {
 probe_winrm() {
     local ip="$1" port="${2:-5985}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/winrm_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-winrm" "txt" "${ip}-${port}")"
     log "  Probing WinRM @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/wsman"; return; }
     echo "# WinRM probe @ ${ip}:${port} — $(_now)" > "$evfile"
@@ -2113,7 +2114,7 @@ probe_winrm() {
 probe_memcached() {
     local ip="$1" port="${2:-11211}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/memcached_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-memcached-noauth" "txt" "${ip}-${port}")"
     log "  Probing Memcached NOAUTH @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] echo 'stats' | nc -w3 ${ip} ${port}"; return; }
     echo "# Memcached NOAUTH @ ${ip}:${port} — $(_now)" > "$evfile"
@@ -2153,7 +2154,7 @@ probe_memcached() {
 probe_docker_api() {
     local ip="$1" port="${2:-2375}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/docker_api_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-docker-api" "txt" "${ip}-${port}")"
     log "  Probing Docker Remote API @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/version"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "docker" "curl not available" ""; return; }
@@ -2200,7 +2201,7 @@ probe_docker_api() {
 probe_kubernetes_api() {
     local ip="$1" port="${2:-6443}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/k8s_api_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-k8s-api" "txt" "${ip}-${port}")"
     log "  Probing Kubernetes API Server @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl -k https://${ip}:${port}/api/v1/namespaces"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "kubernetes" "curl not available" ""; return; }
@@ -2270,7 +2271,7 @@ probe_kubernetes_api() {
 probe_consul() {
     local ip="$1" port="${2:-8500}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/consul_acl_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-consul-acl" "txt" "${ip}-${port}")"
     log "  Probing HashiCorp Consul ACL @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/v1/agent/self"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "consul" "curl not available" ""; return; }
@@ -2323,7 +2324,7 @@ probe_consul() {
 probe_vault_dev() {
     local ip="$1" port="${2:-8200}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/vault_dev_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-vault-dev" "txt" "${ip}-${port}")"
     log "  Probing HashiCorp Vault dev/root mode @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/v1/sys/health"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "vault" "curl not available" ""; return; }
@@ -2387,7 +2388,7 @@ probe_vault_dev() {
 probe_kafka_noauth() {
     local ip="$1" port="${2:-9092}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/kafka_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-kafka-noauth" "txt" "${ip}-${port}")"
     log "  Probing Apache Kafka NOAUTH @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] nc -w3 ${ip} ${port} (Kafka handshake)"; return; }
 
@@ -2436,7 +2437,7 @@ probe_kafka_noauth() {
 probe_web_generic() {
     local ip="$1" port="${2:-80}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/web_generic_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-web-generic" "txt" "${ip}-${port}")"
     log "  Probing web generic @ ${ip}:${port} (headers/banner/default)"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl -Isk http://${ip}:${port}/"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "web" "curl not available" ""; return; }
@@ -2638,7 +2639,7 @@ probe_web_generic() {
 probe_elasticsearch() {
     local ip="$1" port="${2:-9200}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/elasticsearch_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-elasticsearch-noauth" "txt" "${ip}-${port}")"
     log "  Probing Elasticsearch/OpenSearch NOAUTH @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/_cat/indices"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "elasticsearch" "curl not available" ""; return; }
@@ -2695,7 +2696,7 @@ probe_elasticsearch() {
 probe_kibana() {
     local ip="$1" port="${2:-5601}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/kibana_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-kibana-noauth" "txt" "${ip}-${port}")"
     log "  Probing Kibana NOAUTH @ ${ip}:${port}"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/api/status"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "kibana" "curl not available" ""; return; }
@@ -2741,7 +2742,7 @@ probe_kibana() {
 probe_etcd() {
     local ip="$1" port="${2:-2379}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/etcd_noauth_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-etcd-noauth" "txt" "${ip}-${port}")"
     log "  Probing etcd NOAUTH @ ${ip}:${port} (Kubernetes secret exposure)"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/v2/keys/"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "etcd" "curl not available" ""; return; }
@@ -2791,7 +2792,7 @@ probe_etcd() {
 probe_spring_actuator() {
     local ip="$1" port="${2:-8080}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/spring_actuator_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-spring-actuator" "txt" "${ip}-${port}")"
     log "  Probing Spring Boot Actuator @ ${ip}:${port} (credential leak check)"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/actuator/env"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "spring-actuator" "curl not available" ""; return; }
@@ -2865,7 +2866,7 @@ probe_spring_actuator() {
 probe_jenkins() {
     local ip="$1" port="${2:-8080}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/jenkins_${port}_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-jenkins" "txt" "${ip}-${port}")"
     log "  Probing Jenkins @ ${ip}:${port} (anon access + CVE-2024-23897)"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/login (Jenkins detection)"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "jenkins" "curl not available" ""; return; }
@@ -2968,7 +2969,7 @@ probe_jenkins() {
 probe_cups_ipp() {
     local ip="$1" port="${2:-631}"
     local vdir; vdir="$(verify_dir_for "$ip")"
-    local evfile="${vdir}/cups_ipp_${SESSION_TS}.txt"
+    local evfile="${vdir}/$(ev_fname "svc-cups-ipp" "txt" "${ip}-${port}")"
     log "  Probing CUPS/IPP @ ${ip}:${port} (CVE-2024-47076/47175/47176/47177 exposure)"
     [[ "${DRY_RUN}" -eq 1 ]] && { log "  [DRY RUN] curl http://${ip}:${port}/ (CUPS web interface)"; return; }
     have curl || { add_result MANUAL "$ip" "$port" "cups" "curl not available" ""; return; }
@@ -3485,7 +3486,7 @@ run_all_probes() {
 # =============================================================================
 
 write_verify_summary() {
-    local report_file="working/${PROJ_SLUG}_verify_summary_${SESSION_TS}.md"
+    local report_file="working/$(ev_fname "07-svcverify-summary" "md")"
     local vuln_rows=() safe_rows=() unknown_rows=() manual_rows=()
 
     while IFS='|' read -r status ip port svc detail evfile; do

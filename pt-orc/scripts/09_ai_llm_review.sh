@@ -160,10 +160,11 @@ _ts()  { date +'%Y%m%d_%H%M%S'; }
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/ai_llm_review_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_09_ai_llm_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "09-llm-findings" "jsonl")"
 : > "$FINDINGS_FILE"
 
 log()     { local m="[$(_now)] $1";   echo -e "${BLUE}${m}${NC}" >&2;    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -433,7 +434,7 @@ _CHATBOT_SIGS=(
 
 harvest_prior_scans() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t00_prior_harvest.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t00-prior-harvest" "txt")"
     local harvested=0
 
     log "T00: Harvesting prior step evidence for ${base_url}"
@@ -536,7 +537,7 @@ harvest_prior_scans() {
 
 detect_chatbot_widgets() {
     local base_url="$1" ev_dir="$2"
-    local evfile="${ev_dir}/t00_chatbot_widgets.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t00-chatbot-widgets" "txt")"
     local page_src
 
     log "T00: Chatbot widget fingerprinting — ${base_url}"
@@ -611,7 +612,7 @@ _PRIMARY_MODEL=""
 
 test_01_endpoint_discovery() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t01_endpoints.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t01-endpoints" "txt")"
     log "T01: LLM Endpoint Discovery — ${base_url}"
     _SUMMARY_EP=0
 
@@ -713,7 +714,7 @@ test_01_endpoint_discovery() {
 
 test_02_authentication() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t02_auth.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t02-auth" "txt")"
     log "T02: Authentication Testing — ${base_url}"
     _SUMMARY_AUTH=0
 
@@ -777,7 +778,7 @@ test_02_authentication() {
 
 test_03_rate_limiting() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t03_rate.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t03-rate" "txt")"
     log "T03: Rate Limiting — ${base_url}"
     _SUMMARY_RATE=0
 
@@ -819,7 +820,7 @@ test_03_rate_limiting() {
 
 test_04_prompt_injection() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t04_injection.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t04-injection" "txt")"
     log "T04: Direct Prompt Injection — ${base_url}"
     _SUMMARY_INJECT=0
 
@@ -905,7 +906,7 @@ test_04_prompt_injection() {
 
 test_05_indirect_injection() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t05_indirect.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t05-indirect" "txt")"
     log "T05: Indirect Prompt Injection (RAG/Tool Context) — ${base_url}"
 
     [[ -z "$_PRIMARY_EP" ]] && { log_info "T05: No LLM endpoint — skip"; return; }
@@ -954,7 +955,7 @@ test_05_indirect_injection() {
 
 test_06_system_prompt_leakage() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t06_sysprompt.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t06-sysprompt" "txt")"
     log "T06: System Prompt Leakage — ${base_url}"
     _SUMMARY_LEAK=0
 
@@ -1012,7 +1013,7 @@ test_06_system_prompt_leakage() {
 
 test_07_jailbreak() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t07_jailbreak.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t07-jailbreak" "txt")"
     log "T07: Jailbreaking / Safety Bypass — ${base_url}"
 
     [[ -z "$_PRIMARY_EP" ]] && { log_info "T07: No LLM endpoint — skip"; return; }
@@ -1085,7 +1086,7 @@ test_07_jailbreak() {
 
 test_08_excessive_agency() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t08_agency.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t08-agency" "txt")"
     log "T08: Excessive Agency / Tool Discovery — ${base_url}"
 
     local -a auth_args; mapfile -t auth_args < <(_auth_args)
@@ -1144,7 +1145,7 @@ test_08_excessive_agency() {
 
 test_09_sensitive_data() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t09_sensitive.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t09-sensitive" "txt")"
     log "T09: Sensitive Data Extraction — ${base_url}"
 
     [[ -z "$_PRIMARY_EP" ]] && { log_info "T09: No LLM endpoint — skip"; return; }
@@ -1203,7 +1204,7 @@ test_09_sensitive_data() {
 
 test_10_model_dos() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t10_dos.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t10-dos" "txt")"
     log "T10: Model DoS / Resource Exhaustion — ${base_url} [deep profile only]"
     echo "[WARNING] DoS probes — use with caution in production environments" >> "$evfile"
 
@@ -1264,7 +1265,7 @@ test_10_model_dos() {
 
 test_11_output_handling() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t11_output.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t11-output" "txt")"
     log "T11: Insecure Output Handling — ${base_url}"
 
     [[ -z "$_PRIMARY_EP" ]] && { log_info "T11: No LLM endpoint — skip"; return; }
@@ -1324,7 +1325,7 @@ test_11_output_handling() {
 
 test_12_key_exposure() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t12_keys.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t12-keys" "txt")"
     log "T12: API Key / Secret Exposure — ${base_url}"
 
     local -a auth_args; mapfile -t auth_args < <(_auth_args)
@@ -1382,7 +1383,7 @@ test_12_key_exposure() {
 
 test_13_fingerprinting() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t13_fingerprint.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t13-fingerprint" "txt")"
     log "T13: Model Fingerprinting — ${base_url}"
 
     local -a auth_args; mapfile -t auth_args < <(_auth_args)
@@ -1421,7 +1422,7 @@ test_13_fingerprinting() {
 
 test_14_cors_headers() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t14_cors.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t14-cors" "txt")"
     log "T14: CORS and Security Headers — ${base_url}"
 
     # CORS check on primary endpoint
@@ -1464,7 +1465,7 @@ test_14_cors_headers() {
 
 test_15_plugin_enum() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t15_plugins.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t15-plugins" "txt")"
     log "T15: Plugin / Function Calling Enumeration — ${base_url}"
 
     local -a auth_args; mapfile -t auth_args < <(_auth_args)
@@ -1513,7 +1514,7 @@ EOF
 
 test_16_training_extraction() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t16_training.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t16-training" "txt")"
     log "T16: Training Data Extraction / Memorization Attack — ${base_url}"
 
     [[ -z "$_PRIMARY_EP" ]] && { log_info "T16: No LLM endpoint — skip"; return; }
@@ -1585,7 +1586,7 @@ test_16_training_extraction() {
 
 test_17_rag_vector_store() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t17_rag.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t17-rag" "txt")"
     log "T17: RAG / Vector Store Endpoint Exposure — ${base_url}"
 
     local -a auth_args; mapfile -t auth_args < <(_auth_args)
@@ -1663,7 +1664,7 @@ test_17_rag_vector_store() {
 
 test_18_agentic_ssrf() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t18_agentic_ssrf.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t18-agentic-ssrf" "txt")"
     log "T18: Agentic SSRF / File-Read via Tool Prompt — ${base_url}"
 
     # Gate: only run if T08 found a live tool/agent endpoint
@@ -1728,7 +1729,7 @@ test_18_agentic_ssrf() {
 
 test_19_thread_idor() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t19_thread_idor.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t19-thread-idor" "txt")"
     log "T19: Conversation Thread IDOR / Isolation Test — ${base_url}"
 
     # Gate: only run if T01 found /v1/threads
@@ -1804,7 +1805,7 @@ test_19_thread_idor() {
 
 test_20_supply_chain() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t20_supply_chain.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t20-supply-chain" "txt")"
     log "T20: LLM Supply Chain / Model File Exposure — ${base_url}"
 
     local -a auth_args; mapfile -t auth_args < <(_auth_args)
@@ -1882,7 +1883,7 @@ test_20_supply_chain() {
 
 test_21_context_manipulation() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
-    local evfile="${ev_dir}/t21_context.txt"
+    local evfile="${ev_dir}/$(ev_fname "09-t21-context" "txt")"
     log "T21: Context Window Manipulation / Shadow Prompt — ${base_url}"
 
     [[ -z "$_PRIMARY_EP" ]] && { log_info "T21: No LLM endpoint — skip"; return; }
@@ -2054,7 +2055,7 @@ main() {
     done
 
     # ── Markdown summary ─────────────────────────────────────────────────────
-    local summary_md="${SCRIPT_DIR}/working/${PROJ_SLUG}_ai_llm_summary_${SESSION_TS}.md"
+    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "09-llm-summary" "md")"
     {
         echo "# AI/LLM Security Review Summary — ${PROJECT_NAME:-unknown}"
         echo ""

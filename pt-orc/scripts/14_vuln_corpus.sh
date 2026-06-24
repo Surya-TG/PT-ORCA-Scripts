@@ -58,7 +58,24 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 _ts()  { date +'%Y%m%d_%H%M%S'; }
+_ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+ev_fname() {
+    local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+    local ts; ts="${EV_TS:-$(_ev_ts)}"
+    local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+    if [[ -n "$extra" ]]; then
+        printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+    else
+        printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+    fi
+}
+find_latest_ev() {
+    local pattern="${1:?find_latest_ev: pattern required}"
+    local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+    find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+}
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 
 mkdir -p working evidence
 
@@ -83,7 +100,7 @@ log_step() {
 PROJ_SLUG="${PROJECT_NAME:-PT-Orc}"
 PROJ_SLUG="${PROJ_SLUG//[^a-zA-Z0-9_-]/_}"
 
-FINDINGS_FILE="working/${PROJ_SLUG}_14_corpus_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR:-$(pwd)}/working/$(ev_fname "14-corpus-findings" "jsonl")"
 EVIDENCE_BASE="evidence/${SESSION_TS}/14_corpus"
 mkdir -p "$EVIDENCE_BASE"
 FINDING_COUNT=0
@@ -482,7 +499,7 @@ T02_exploitdb_xref() {
             title=$(_real_jq -r '.title // ""' <<< "$edb_json" 2>/dev/null)
             path=$(_real_jq -r '.path // ""' <<< "$edb_json" 2>/dev/null)
 
-            local ev_file="${EVIDENCE_BASE}/edb_${edb_id}.txt"
+            local ev_file="${EVIDENCE_BASE}/$(ev_fname "corpus-edb" "txt" "$edb_id")"
             {
                 echo "EDB-ID:  ${edb_id}"
                 echo "CVE:     ${cve_id}"
@@ -611,8 +628,8 @@ T04_nuclei_full() {
     local stats_flag=""
     [[ "$DEPTH" == "deep" ]] && stats_flag="-stats"
 
-    local nuclei_out="${EVIDENCE_BASE}/nuclei_full_${SESSION_TS}.jsonl"
-    local target_file="${EVIDENCE_BASE}/nuclei_targets_${SESSION_TS}.txt"
+    local nuclei_out="${EVIDENCE_BASE}/$(ev_fname "corpus-nuclei" "jsonl")"
+    local target_file="${EVIDENCE_BASE}/$(ev_fname "corpus-nuclei-targets" "txt")"
     printf '%s\n' "${TARGET_URLS[@]}" > "$target_file"
 
     log "T04: nuclei full suite — severity: ${sev} | targets: ${#TARGET_URLS[@]} | rate: ${rate}/s"

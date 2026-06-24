@@ -72,7 +72,24 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 _ts()  { date +'%Y%m%d_%H%M%S'; }
+_ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+ev_fname() {
+    local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+    local ts; ts="${EV_TS:-$(_ev_ts)}"
+    local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+    if [[ -n "$extra" ]]; then
+        printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+    else
+        printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+    fi
+}
+find_latest_ev() {
+    local pattern="${1:?find_latest_ev: pattern required}"
+    local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+    find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+}
 SESSION_TS="$(_ts)"
+EV_TS="$(_ev_ts)"
 
 mkdir -p working evidence
 
@@ -97,7 +114,7 @@ log_step() {
 PROJ_SLUG="${PROJECT_NAME:-PT-Orc}"
 PROJ_SLUG="${PROJ_SLUG//[^a-zA-Z0-9_-]/_}"
 
-FINDINGS_FILE="working/${PROJ_SLUG}_13_fuzz_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR:-$(pwd)}/working/$(ev_fname "13-fuzz-findings" "jsonl")"
 EVIDENCE_BASE="evidence/${SESSION_TS}/13_fuzz"
 mkdir -p "$EVIDENCE_BASE"
 FINDING_COUNT=0
@@ -299,7 +316,7 @@ _norm_sev() {
 # Write raw tool output to evidence dir and echo the path
 _save_evidence() {
     local tag="$1" ext="${2:-txt}"
-    local f="${EVIDENCE_BASE}/${tag}_${SESSION_TS}.${ext}"
+    local f="${EVIDENCE_BASE}/$(ev_fname "fuzz-${tag}" "${ext}")"
     cat > "$f"
     echo "$f"
 }
@@ -663,7 +680,7 @@ test_T03_dalfox() {
     fi
 
     local slug; slug="$(_slug "$base_url")"
-    local out_json="${EVIDENCE_BASE}/dalfox_${slug}_${SESSION_TS}.json"
+    local out_json="${EVIDENCE_BASE}/$(ev_fname "fuzz-dalfox" "json" "$slug")"
 
     local df_flags=(
         --timeout "$OPT_DALFOX_TIMEOUT"
@@ -756,7 +773,7 @@ test_T04_nuclei() {
     fi
 
     local slug; slug="$(_slug "$base_url")"
-    local out_json="${EVIDENCE_BASE}/nuclei_${slug}_${SESSION_TS}.jsonl"
+    local out_json="${EVIDENCE_BASE}/$(ev_fname "fuzz-nuclei" "jsonl" "$slug")"
 
     local n_flags=(
         -u "$base_url"
@@ -859,7 +876,7 @@ test_T05_commix() {
     fi
 
     local slug; slug="$(_slug "$base_url")"
-    local out_file="${EVIDENCE_BASE}/commix_${slug}_${SESSION_TS}.txt"
+    local out_file="${EVIDENCE_BASE}/$(ev_fname "fuzz-commix" "txt" "$slug")"
 
     local cx_flags=(
         --url="$base_url"
@@ -910,7 +927,7 @@ test_T06_arjun() {
     fi
 
     local slug; slug="$(_slug "$base_url")"
-    local out_json="${EVIDENCE_BASE}/arjun_${slug}_${SESSION_TS}.json"
+    local out_json="${EVIDENCE_BASE}/$(ev_fname "fuzz-arjun" "json" "$slug")"
 
     local arj_flags=(
         -u "$base_url"
@@ -962,7 +979,7 @@ test_T07_tplmap() {
     fi
 
     local slug; slug="$(_slug "$base_url")"
-    local out_file="${EVIDENCE_BASE}/tplmap_${slug}_${SESSION_TS}.txt"
+    local out_file="${EVIDENCE_BASE}/$(ev_fname "fuzz-tplmap" "txt" "$slug")"
 
     # tplmap marks injection point with * in URL; probe query params first
     local probe_url="${base_url}?q=*"
@@ -1012,7 +1029,7 @@ test_T08_ghauri() {
     fi
 
     local slug; slug="$(_slug "$base_url")"
-    local out_file="${EVIDENCE_BASE}/ghauri_${slug}_${SESSION_TS}.txt"
+    local out_file="${EVIDENCE_BASE}/$(ev_fname "fuzz-ghauri" "txt" "$slug")"
 
     local gh_flags=(
         --url="$base_url"
@@ -1116,7 +1133,7 @@ WORDLIST
         fuzz_url="${base_url}?file=FUZZ"
     fi
 
-    local out_json="${EVIDENCE_BASE}/ffuf_lfi_${slug}_${SESSION_TS}.json"
+    local out_json="${EVIDENCE_BASE}/$(ev_fname "fuzz-ffuf-lfi" "json" "$slug")"
     local ff_flags=(
         -u "$fuzz_url"
         -w "${lfi_wl}:FUZZ"
@@ -1188,7 +1205,7 @@ test_T10_crlfuzz() {
     fi
 
     local slug; slug="$(_slug "$base_url")"
-    local out_file="${EVIDENCE_BASE}/crlfuzz_${slug}_${SESSION_TS}.txt"
+    local out_file="${EVIDENCE_BASE}/$(ev_fname "fuzz-crlfuzz" "txt" "$slug")"
 
     local crlf_flags=(-u "$base_url")
     [[ -n "$OPT_FUZZ_COOKIE" ]] && crlf_flags+=(-H "Cookie: ${OPT_FUZZ_COOKIE}")

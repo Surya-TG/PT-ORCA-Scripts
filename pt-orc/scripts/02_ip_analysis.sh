@@ -52,6 +52,23 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 _now() { date +'%Y-%m-%d %H:%M:%S'; }
 _ts()  { date +'%Y%m%d_%H%M%S'; }
 SESSION_TS="$(_ts)"
+_ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+ev_fname() {
+    local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+    local ts; ts="${EV_TS:-$(_ev_ts)}"
+    local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+    if [[ -n "$extra" ]]; then
+        printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+    else
+        printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+    fi
+}
+find_latest_ev() {
+    local pattern="${1:?find_latest_ev: pattern required}"
+    local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+    find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+}
+EV_TS="$(_ev_ts)"
 
 log()      { echo -e "${BLUE}[$(_now)]${NC} $*"; }
 log_ok()   { echo -e "${GREEN}[$(_now)] ✓${NC} $*"; }
@@ -93,7 +110,7 @@ emit_finding() {
 
 PROJ_SLUG="${PROJECT_NAME//[^A-Za-z0-9._-]/_}"
 EVIDENCE_BASE="${SCRIPT_DIR}/evidence/${PROJ_SLUG}"
-FINDINGS_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_02_ip_analysis_findings_${SESSION_TS}.jsonl"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "02-ip-findings" "jsonl")"
 AUTO_YES=0   # 1 = skip interactive confirmations (not recommended for PTE)
 DRY_RUN=0    # 1 = print commands, do not execute
 CLI_TARGETS_OVERRIDE=0   # set to 1 by --targets flag; bypasses PTE_TARGETS_FILE
@@ -340,7 +357,7 @@ analyze_ip() {
 
     # ── Step 1: WHOIS / ASN ─────────────────────────────────────────────────
     log "  [${ip}] Step 1: WHOIS / ASN"
-    local whois_file="${ipdir}/whois_${safe}.txt"
+    local whois_file="${ipdir}/$(ev_fname "ip-whois" "txt" "$safe")"
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
         log_info "  [DRY-RUN] timeout 10 whois ${ip} > ${whois_file}"
@@ -405,7 +422,7 @@ analyze_ip() {
     # org field: "AS396982 Google LLC" — split into ASN + name
     # prefix: taken from WHOIS CIDR (step 1); ipinfo.io prefix is paid-tier only
     log "  [${ip}] Step 3: Routing info (ipinfo.io)"
-    local ipinfo_file="${ipdir}/ipinfo_${safe}.json"
+    local ipinfo_file="${ipdir}/$(ev_fname "ip-ipinfo" "json" "$safe")"
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
         log_info "  [DRY-RUN] curl -s --max-time 10 https://ipinfo.io/${ip}/json > ${ipinfo_file}"
@@ -439,7 +456,7 @@ analyze_ip() {
 
     # ── Step 4: Geolocation (ip-api.com) ────────────────────────────────────
     log "  [${ip}] Step 4: Geolocation (ip-api.com)"
-    local geo_file="${ipdir}/geo_${safe}.json"
+    local geo_file="${ipdir}/$(ev_fname "ip-geo" "json" "$safe")"
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
         log_info "  [DRY-RUN] curl -s --max-time 10 http://ip-api.com/json/${ip}?fields=... > ${geo_file}"
@@ -508,7 +525,7 @@ analyze_ip() {
 
     # ── Step 6: Traceroute ──────────────────────────────────────────────────
     log "  [${ip}] Step 6: Traceroute"
-    local tr_file="${ipdir}/traceroute_${safe}.txt"
+    local tr_file="${ipdir}/$(ev_fname "ip-traceroute" "txt" "$safe")"
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
         log_info "  [DRY-RUN] traceroute -m ${TRACEROUTE_MAX_HOPS} -w ${TRACEROUTE_TIMEOUT} ${ip} > ${tr_file}"
@@ -559,7 +576,7 @@ analyze_ip() {
     log "  [${ip}] Step 7: Shodan"
     if [[ -n "$SHODAN_API_KEY" ]]; then
         if command -v shodan &>/dev/null; then
-            local shodan_file="${ipdir}/shodan_${safe}.txt"
+            local shodan_file="${ipdir}/$(ev_fname "ip-shodan" "txt" "$safe")"
             if [[ "$DRY_RUN" -eq 1 ]]; then
                 log_info "  [DRY-RUN] shodan host ${ip} > ${shodan_file}"
             else
@@ -592,7 +609,7 @@ analyze_ip() {
         if [[ "$DRY_RUN" -eq 1 ]]; then
             log_info "  [DRY-RUN] curl AbuseIPDB /check?ipAddress=${ip}"
         else
-            local abuse_file="${ipdir}/abuseipdb_${safe}.json"
+            local abuse_file="${ipdir}/$(ev_fname "ip-abuseipdb" "json" "$safe")"
             local abuse_resp
             abuse_resp=$(curl -s --max-time 15 \
                 "https://api.abuseipdb.com/api/v2/check?ipAddress=${ip}&maxAgeInDays=90&verbose" \
@@ -630,7 +647,7 @@ analyze_ip() {
         if [[ "$DRY_RUN" -eq 1 ]]; then
             log_info "  [DRY-RUN] curl VirusTotal /ip_addresses/${ip}"
         else
-            local vt_file="${ipdir}/virustotal_${safe}.json"
+            local vt_file="${ipdir}/$(ev_fname "ip-virustotal" "json" "$safe")"
             local vt_resp
             vt_resp=$(curl -s --max-time 15 \
                 "https://www.virustotal.com/api/v3/ip_addresses/${ip}" \
@@ -664,7 +681,7 @@ analyze_ip() {
     fi
 
     # ── Per-IP summary markdown ─────────────────────────────────────────────
-    local summary_file="${ipdir}/summary_${safe}.md"
+    local summary_file="${ipdir}/$(ev_fname "ip-summary" "md" "$safe")"
     if [[ "$DRY_RUN" -eq 1 ]]; then
         log_info "  [DRY-RUN] write ${summary_file}"
     else
@@ -694,7 +711,7 @@ fi)
 
 ## Traceroute
 - Hop count: ${IP_HOPS[$ip]:-n/a}
-- Raw file: traceroute_${safe}.txt
+- Raw file: ${tr_file##*/}
 
 ## Shodan
 $(if [[ -n "${IP_PORTS[$ip]:-}" ]]; then
@@ -720,7 +737,7 @@ EOF
 # =============================================================================
 
 write_report() {
-    local report_file="working/${PROJ_SLUG}_ip_range_report_${SESSION_TS}.md"
+    local report_file="${SCRIPT_DIR}/working/$(ev_fname "02-ip-report" "md")"
 
     log "Writing consolidated report: ${report_file}"
 
@@ -758,7 +775,7 @@ write_report() {
 | Mode         | ${MODE} |
 | Script       | 02_ip_analysis.sh |
 | IP count     | ${#TARGETS[@]} |
-| Findings     | ${_FIND_CTR} (see JSONL: working/${PROJ_SLUG}_02_ip_analysis_findings_${SESSION_TS}.jsonl) |
+| Findings     | ${_FIND_CTR} (see JSONL: ${FINDINGS_FILE##*/}) |
 | Shodan       | $([ -n "$SHODAN_API_KEY" ] && echo "enabled" || echo "not configured") |
 | AbuseIPDB    | $([ -n "${ABUSEIPDB_API_KEY:-}" ] && echo "enabled" || echo "not configured") |
 | VirusTotal   | $([ -n "${VIRUSTOTAL_API_KEY:-}" ] && echo "enabled" || echo "not configured") |
@@ -921,7 +938,7 @@ RECS
 write_exports() {
     local export_dir="${EVIDENCE_BASE}/_exports"
     mkdir -p "$export_dir"
-    local export_file="${export_dir}/02_ip_report_${SESSION_TS}.jsonl"
+    local export_file="${export_dir}/$(ev_fname "02-ip-export" "jsonl")"
     log "Writing structured export: ${export_file}"
 
     > "$export_file"  # truncate/create
@@ -996,9 +1013,9 @@ main() {
     echo -e "${GREEN}  IP Range Analysis Complete — ${PROJECT_NAME}${NC}"
     echo -e "${GREEN}  IPs analysed:  ${total}${NC}"
     echo -e "${GREEN}  Findings:      ${_FIND_CTR} (${FINDINGS_FILE})${NC}"
-    echo -e "${GREEN}  Export:        ${EVIDENCE_BASE}/_exports/02_ip_report_${SESSION_TS}.jsonl${NC}"
+    echo -e "${GREEN}  Export:        ${EVIDENCE_BASE}/_exports/$(ev_fname "02-ip-export" "jsonl")${NC}"
     echo -e "${GREEN}  Evidence base: ${EVIDENCE_BASE}/_ip_analysis/${NC}"
-    echo -e "${GREEN}  Report:        working/${PROJ_SLUG}_ip_range_report_${SESSION_TS}.md${NC}"
+    echo -e "${GREEN}  Report:        ${SCRIPT_DIR}/working/$(ev_fname "02-ip-report" "md")${NC}"
     echo -e "${GREEN}════════════════════════════════════════════════${NC}"
     echo ""
     echo "Next step: sudo ./03_comp_scan.sh --mode pte"
