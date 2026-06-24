@@ -400,6 +400,7 @@ print_summary() {
         [13]="Active Fuzz"
         [14]="Vuln Corpus"
         [15]="Attack Chain AI"
+        [16]="OSINT Recon"
     )
     local line; line="$(printf '━%.0s' {1..60})"
 
@@ -415,7 +416,7 @@ print_summary() {
 
     local all_ok=1
     local n
-    for n in 1 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
+    for n in 1 16 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
         local status="${STEP_STATUS[$n]:-—}"
         local dur="${STEP_DURATION[$n]:-—}"
         local scr="${STEP_SCRIPT[$n]:-—}"
@@ -441,7 +442,7 @@ print_summary() {
         echo "=== PT-Orc Suite Summary ==="
         echo "Project: ${PROJECT_NAME:-[project]}"
         [[ -n "$total" ]] && echo "Total elapsed: ${total}"
-        for n in 1 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
+        for n in 1 16 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
             printf "  Step %-2s  %-22s  %-14s  %s\n" \
                 "$n" "${names[$n]}" "${STEP_STATUS[$n]:-—}" "${STEP_DURATION[$n]:-—}"
         done
@@ -518,7 +519,7 @@ main() {
         if [[ -n "$_psteps" ]]; then
             log "Profile '${ENGAGEMENT_PROFILE}' active — running steps: ${_psteps}"
             local _s
-            for _s in 1 2 3 4 5 6 7 8 9 10 11 12 13; do
+            for _s in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
                 [[ " ${_psteps} " == *" ${_s} "* ]] || SKIP_STEPS+=("$_s")
             done
             [[ "${#SKIP_STEPS[@]}" -gt 0 ]] && log "  Auto-skipping: ${SKIP_STEPS[*]}"
@@ -531,7 +532,7 @@ main() {
     local suite_start; suite_start=$(date +%s)
     local n
 
-    for n in 1 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
+    for n in 1 16 2 3 4 5 6 7 8 9 10 11 13 14 15 12; do
         if ! should_run "$n"; then
             STEP_STATUS[$n]="SKIP"
             STEP_DURATION[$n]="—"
@@ -608,13 +609,19 @@ main() {
             15)
                 [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
+            16)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
+                [[ -n "${OSINT_GITHUB_TOKEN:-}" ]] && flags+=("--github-token" "$OSINT_GITHUB_TOKEN")
+                [[ -n "${HIBP_API_KEY:-}" ]]        && flags+=("--hibp-key" "$HIBP_API_KEY")
+                ;;
             12)
                 [[ -n "$OPT_PROJECT_ID" ]] && flags+=("--project-id" "$OPT_PROJECT_ID")
                 [[ "$OPT_RETEST" -eq 1  ]] && flags+=("--retest")
                 ;;
         esac
 
-        local step_names=([1]="DNS Recon" [2]="IP Analysis" [3]="Comprehensive Scan" [4]="TLS Scan" [5]="Web Enumeration" [6]="WPScan" [7]="Service Verify" [8]="App / API Review" [9]="AI / LLM Review" [10]="Cloud Testing" [11]="AD Testing" [12]="Report Pack" [13]="Active Fuzz" [14]="Vuln Corpus" [15]="Attack Chain AI")
+        local step_names=([1]="DNS Recon" [2]="IP Analysis" [3]="Comprehensive Scan" [4]="TLS Scan" [5]="Web Enumeration" [6]="WPScan" [7]="Service Verify" [8]="App / API Review" [9]="AI / LLM Review" [10]="Cloud Testing" [11]="AD Testing" [12]="Report Pack" [13]="Active Fuzz" [14]="Vuln Corpus" [15]="Attack Chain AI" [16]="OSINT Recon")
 
         if ! run_step "$n" "${step_names[$n]}" "${flags[@]+"${flags[@]}"}"; then
             if [[ "$CONTINUE_ON_ERROR" -eq 1 ]]; then

@@ -21,7 +21,12 @@
 # - MRK:11_T16 — T16 PASSWORD SPRAYING (DEEP ONLY) | t16,password,spraying,deep | L48-48
 # - MRK:11_T17 — T17 DCSYNC RIGHTS CHECK | t17,dcsync,rights,check | L49-49
 # - MRK:11_T18 — T18 KERBEROS TICKET / HASH ATTACK SURFACE | t18,kerberos,ticket,hash,attack | L50-1477
-# NAV-LEN: 18 entries | Integrity-hash: d16b2c1aa927c06a | Last-indexed: 2026-06-16T13:41:02Z
+# - MRK:11_T19 — T19 SHADOW CREDENTIALS (msDS-KeyCredentialLink) | t19,shadow,credentials,pkinit,keycredential | LXXXX-XXXX
+# - MRK:11_T20 — T20 RESOURCE-BASED CONSTRAINED DELEGATION (RBCD) | t20,rbcd,delegation,s4u | LXXXX-XXXX
+# - MRK:11_T21 — T21 ADCS ESC9–ESC13 | t21,adcs,esc9,esc10,esc11,esc13,certipy | LXXXX-XXXX
+# - MRK:11_T22 — T22 SCCM/MECM ATTACK SURFACE | t22,sccm,mecm,pxe,naa,configmgr | LXXXX-XXXX
+# NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-24
+# <!-- NAV-NEEDS-REINDEX: 2026-06-24 — T19 Shadow Creds, T20 RBCD, T21 ESC9-13, T22 SCCM added -->
 
 # =============================================================================
 # 11_active_directory.sh — Active Directory / Windows Domain Security Testing
@@ -249,13 +254,13 @@ _apply_cli_filters() {
 # - MRK:11_PROF
 setup_profile() {
     local prof="${1:-standard}"
-    for n in T01 T02 T03 T04 T05 T06 T07 T08 T09 T10 T11 T12 T13 T14 T15 T16 T17 T18; do
+    for n in T01 T02 T03 T04 T05 T06 T07 T08 T09 T10 T11 T12 T13 T14 T15 T16 T17 T18 T19 T20 T21 T22; do
         _T_ENABLED[$n]=1
     done
     case "$prof" in
         quick)
             # Quick: DC discovery, LDAP null, SMB shares, password policy, privilege groups
-            for n in T05 T06 T09 T10 T11 T12 T13 T14 T15 T16 T17 T18; do _T_ENABLED[$n]=0; done ;;
+            for n in T05 T06 T09 T10 T11 T12 T13 T14 T15 T16 T17 T18 T19 T20 T21 T22; do _T_ENABLED[$n]=0; done ;;
         standard)
             # Standard: everything except BloodHound, spray, active LLMNR
             for n in T09 T11 T16; do _T_ENABLED[$n]=0; done ;;
@@ -1391,6 +1396,332 @@ test_T18_kerberos_surface() {
 }
 
 # =============================================================================
+# - MRK:11_T19 — T19 SHADOW CREDENTIALS (msDS-KeyCredentialLink)
+# =============================================================================
+test_T19_shadow_credentials() {
+    local dc="${AD_DC_IP}"
+    local ev_f; ev_f=$(_ev_file "t19-shadow-creds")
+    log_inf "T19: Shadow Credentials (msDS-KeyCredentialLink) — ${dc}"
+
+    _check_tool ldapsearch || { log_wrn "T19: ldapsearch not found — skipping"; return; }
+
+    local -a bind_args=("-x" "-H" "ldap://${dc}")
+    [[ "$_HAS_CREDS" -eq 1 ]] && bind_args+=("-D" "${AD_USERNAME}@${AD_DOMAIN}" "-w" "${AD_PASSWORD}")
+
+    local base_dn="${AD_BASE_DN}"
+    [[ -z "$base_dn" ]] && { log_wrn "T19: AD_BASE_DN not set — skipping"; return; }
+
+    log_inf "T19: Querying msDS-KeyCredentialLink attribute..."
+    local kcl_output
+    kcl_output=$(ldapsearch "${bind_args[@]}" -b "$base_dn" \
+        "(msDS-KeyCredentialLink=*)" dn sAMAccountName \
+        2>/dev/null | head -60 || true)
+    echo "$kcl_output" >> "$ev_f"
+
+    local kcl_count
+    kcl_count=$(echo "$kcl_output" | grep -c "^dn:" || true)
+
+    if [[ "${kcl_count:-0}" -gt 0 ]]; then
+        # Non-computer accounts with this attribute are suspicious (DCs expect it for WHFB)
+        local suspicious
+        suspicious=$(echo "$kcl_output" | grep -A2 "^dn:" | grep "sAMAccountName:" \
+            | grep -iv '\$$' | awk '{print $2}' | head -10 | tr '\n' ' ' || true)
+        if [[ -n "$suspicious" ]]; then
+            emit_finding "high" \
+                "Shadow Credentials — msDS-KeyCredentialLink Set on Non-Computer Account" \
+                "Non-computer accounts have msDS-KeyCredentialLink set: ${suspicious}. This attribute enables PKINIT-based authentication. An attacker with WriteProperty on this attribute can add a rogue KeyCredential and obtain a TGT for the account via PKINIT — effectively a persistent backdoor." \
+                "Audit msDS-KeyCredentialLink on all accounts. Only DC\$ accounts should have this set (Windows Hello for Business). Remove unauthorized entries. Monitor for PKINIT authentication (Event 4768 with Certificate)." \
+                "ad_shadow_creds"
+        else
+            emit_finding "info" \
+                "Shadow Credentials — msDS-KeyCredentialLink Present (Computer Accounts Only)" \
+                "${kcl_count} account(s) with msDS-KeyCredentialLink — all appear to be computer/DC accounts (expected for WHFB). No suspicious non-computer entries found." \
+                "Continue monitoring for unexpected additions to msDS-KeyCredentialLink. Audit WriteProperty permissions on this attribute across all user objects." \
+                "ad_shadow_creds_info"
+        fi
+    else
+        log_inf "T19: No msDS-KeyCredentialLink entries found"
+        echo "[T19] No msDS-KeyCredentialLink entries" >> "$ev_f"
+    fi
+
+    # pywhisker enumeration if credentials are available
+    if [[ "$_HAS_CREDS" -eq 1 ]] && _check_tool pywhisker && [[ "$DRY_RUN" -eq 0 ]]; then
+        log_inf "T19: pywhisker list — enumerating PKINIT attack surface..."
+        local whisker_out
+        whisker_out=$(timeout "${AD_TIMEOUT}" pywhisker \
+            -d "$AD_DOMAIN" -u "$AD_USERNAME" -p "${AD_PASSWORD}" \
+            --dc-ip "$dc" --action list 2>&1 | head -30 || true)
+        echo "$whisker_out" >> "$ev_f"
+        if echo "$whisker_out" | grep -qi "KeyCredential"; then
+            emit_finding "medium" \
+                "Shadow Credentials — pywhisker Identified KeyCredentials" \
+                "pywhisker enumerated KeyCredentials via LDAP. Review the evidence file for unexpected credentials. Attackers with write access can inject credentials for persistent PKINIT TGT capture." \
+                "Rotate WHFB credentials where unexpected. Monitor PKINIT events (4768/4769 with certificate authentication)." \
+                "ad_shadow_creds_whisker"
+        fi
+    fi
+
+    log_ok "T19: Shadow credentials check complete"
+}
+
+# =============================================================================
+# - MRK:11_T20 — T20 RESOURCE-BASED CONSTRAINED DELEGATION (RBCD)
+# =============================================================================
+test_T20_rbcd_enum() {
+    local dc="${AD_DC_IP}"
+    local ev_f; ev_f=$(_ev_file "t20-rbcd")
+    log_inf "T20: Resource-Based Constrained Delegation (RBCD) — ${dc}"
+
+    _check_tool ldapsearch || { log_wrn "T20: ldapsearch not found — skipping"; return; }
+
+    local -a bind_args=("-x" "-H" "ldap://${dc}")
+    [[ "$_HAS_CREDS" -eq 1 ]] && bind_args+=("-D" "${AD_USERNAME}@${AD_DOMAIN}" "-w" "${AD_PASSWORD}")
+    local base_dn="${AD_BASE_DN}"
+    [[ -z "$base_dn" ]] && { log_wrn "T20: AD_BASE_DN not set — skipping"; return; }
+
+    log_inf "T20: Querying msDS-AllowedToActOnBehalfOfOtherIdentity..."
+    local rbcd_output
+    rbcd_output=$(ldapsearch "${bind_args[@]}" -b "$base_dn" \
+        "(msDS-AllowedToActOnBehalfOfOtherIdentity=*)" dn sAMAccountName \
+        2>/dev/null | head -60 || true)
+    echo "$rbcd_output" >> "$ev_f"
+
+    local rbcd_count
+    rbcd_count=$(echo "$rbcd_output" | grep -c "^dn:" || true)
+
+    if [[ "${rbcd_count:-0}" -gt 0 ]]; then
+        local rbcd_accounts
+        rbcd_accounts=$(echo "$rbcd_output" | grep "sAMAccountName:" | awk '{print $2}' \
+            | head -10 | tr '\n' ', ' | sed 's/,$//' || true)
+        emit_finding "high" \
+            "Resource-Based Constrained Delegation Configured (${rbcd_count} account(s))" \
+            "The following accounts have msDS-AllowedToActOnBehalfOfOtherIdentity set: ${rbcd_accounts}. RBCD allows the configured service to impersonate any domain user to the resource via S4U2Self/S4U2Proxy. An attacker who can write this attribute gains full impersonation rights over that resource." \
+            "Audit RBCD with: Get-ADComputer -Filter * -Properties msDS-AllowedToActOnBehalfOfOtherIdentity. Remove unauthorized entries. Monitor write operations on this attribute. Add sensitive computer accounts to Protected Users group." \
+            "ad_rbcd_enum"
+    else
+        log_inf "T20: No RBCD configurations found"
+        echo "[T20] No RBCD configurations found" >> "$ev_f"
+    fi
+
+    # Enumerate computer count visible to current user (RBCD write primitive awareness)
+    if [[ "$_HAS_CREDS" -eq 1 ]]; then
+        local comp_count
+        comp_count=$(ldapsearch "${bind_args[@]}" -b "$base_dn" \
+            "(objectClass=computer)" dn 2>/dev/null | grep -c "^dn:" || echo 0)
+        echo "[T20] Visible computer objects: ${comp_count}" >> "$ev_f"
+        if [[ "${comp_count:-0}" -gt 0 ]]; then
+            emit_finding "info" \
+                "RBCD Write Primitive — Manual ACL Review Recommended (${comp_count} computer objects)" \
+                "${comp_count} computer object(s) enumerable. Manual review for GenericWrite/WriteProperty on computer objects is recommended. RBCD exploitation requires a controllable computer account + write access to msDS-AllowedToActOnBehalfOfOtherIdentity on a target computer." \
+                "Use BloodHound or PowerView (Find-InterestingDomainAclsForUser) to identify write rights on computer objects. Set ms-DS-MachineAccountQuota=0 to prevent low-privilege accounts from creating computer accounts." \
+                "ad_rbcd_write_check"
+        fi
+    fi
+
+    log_ok "T20: RBCD enumeration complete"
+}
+
+# =============================================================================
+# - MRK:11_T21 — T21 ADCS ESC9–ESC13
+# =============================================================================
+test_T21_adcs_esc9_esc13() {
+    local dc="${AD_DC_IP}"
+    local ev_f; ev_f=$(_ev_file "t21-adcs-esc9-13")
+    log_inf "T21: ADCS ESC9–ESC13 Enumeration — ${dc}"
+
+    local certipy_bin=""
+    _check_tool certipy    && certipy_bin="certipy"
+    _check_tool certipy-ad && certipy_bin="certipy-ad"
+
+    local base_dn="${AD_BASE_DN}"
+
+    if [[ -z "$certipy_bin" ]]; then
+        log_wrn "T21: certipy not found — LDAP fallback for ESC9 (CT_FLAG_NO_SECURITY_EXTENSION)"
+        _check_tool ldapsearch || { log_wrn "T21: ldapsearch not found either — skipping"; return; }
+        [[ -z "$base_dn" ]] && { log_wrn "T21: AD_BASE_DN not set — skipping"; return; }
+        local -a bind_args=("-x" "-H" "ldap://${dc}")
+        [[ "$_HAS_CREDS" -eq 1 ]] && bind_args+=("-D" "${AD_USERNAME}@${AD_DOMAIN}" "-w" "${AD_PASSWORD}")
+        local pki_dn="CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,${base_dn}"
+        local esc9_raw
+        esc9_raw=$(ldapsearch "${bind_args[@]}" -b "$pki_dn" \
+            "(objectClass=pKICertificateTemplate)" cn msPKI-Certificate-Name-Flag \
+            2>/dev/null | head -80 || true)
+        echo "$esc9_raw" >> "$ev_f"
+        # CT_FLAG_NO_SECURITY_EXTENSION = 0x80000000 = −2147483648 (signed 32-bit)
+        local no_sec_ext
+        no_sec_ext=$(echo "$esc9_raw" | grep -B5 "msPKI-Certificate-Name-Flag: -2147483648\|msPKI-Certificate-Name-Flag: 2147483648" \
+            | grep "^cn:" | awk '{print $2}' | head -5 | tr '\n' ' ' || true)
+        if [[ -n "$no_sec_ext" ]]; then
+            emit_finding "high" \
+                "ADCS ESC9 — CT_FLAG_NO_SECURITY_EXTENSION on Template(s): ${no_sec_ext}" \
+                "Certificate template(s) with CT_FLAG_NO_SECURITY_EXTENSION found: ${no_sec_ext}. Combined with GenericWrite on a user account, an attacker can modify the UPN and obtain a certificate authenticating as any user without the security extension SAN check (ESC9)." \
+                "Enable Strong Certificate Binding Enforcement (KB5014754). Remove CT_FLAG_NO_SECURITY_EXTENSION from templates. Audit UPN change permissions on user accounts." \
+                "ad_adcs_esc9_ldap"
+        else
+            log_inf "T21: No ESC9 CT_FLAG_NO_SECURITY_EXTENSION templates found via LDAP fallback"
+        fi
+        return
+    fi
+
+    if [[ "$_HAS_CREDS" -eq 0 ]]; then
+        log_wrn "T21: certipy requires credentials — skipping authenticated ESC9–ESC13 enumeration"
+        return
+    fi
+
+    log_inf "T21: Running certipy find -vulnerable (ESC1–ESC13)..."
+    local certipy_out_base="${ev_f%.txt}_certipy"
+    if [[ "$DRY_RUN" -eq 0 ]]; then
+        timeout "${AD_TIMEOUT}" ${certipy_bin} find \
+            -u "${AD_USERNAME}@${AD_DOMAIN}" \
+            -p "${AD_PASSWORD}" \
+            -dc-ip "$dc" \
+            -vulnerable \
+            -json \
+            -output "${certipy_out_base}" \
+            2>/dev/null >> "$ev_f" || true
+    fi
+
+    local certipy_json="${certipy_out_base}.json"
+    if [[ -f "$certipy_json" ]]; then
+        for esc in ESC9 ESC10 ESC11 ESC13; do
+            local hits
+            hits=$(grep -c "\"${esc}\"" "$certipy_json" 2>/dev/null || echo 0)
+            [[ "${hits:-0}" -eq 0 ]] && continue
+            case "$esc" in
+                ESC9)
+                    emit_finding "high" \
+                        "ADCS ESC9 — No Security Extension (${hits} template(s))" \
+                        "certipy found ${hits} template(s) vulnerable to ESC9 (CT_FLAG_NO_SECURITY_EXTENSION). Combined with GenericWrite on a user, attacker can modify UPN and impersonate any domain user via PKINIT." \
+                        "Enable Strong Certificate Binding Enforcement (KB5014754). Remove CT_FLAG_NO_SECURITY_EXTENSION. Audit UPN modification rights." \
+                        "ad_adcs_esc9_certipy" ;;
+                ESC10)
+                    emit_finding "high" \
+                        "ADCS ESC10 — Weak Certificate Mapping (${hits} template(s))" \
+                        "certipy found ${hits} template(s) vulnerable to ESC10 (weak cert-to-account mapping). If StrongCertificateBindingEnforcement=0 or weak UPN mapping is active, GenericWrite on a user enables impersonation via PKINIT." \
+                        "Set StrongCertificateBindingEnforcement=2 (KB5014754 Full Enforcement). Use subject/issuer or SAN-based mapping exclusively." \
+                        "ad_adcs_esc10_certipy" ;;
+                ESC11)
+                    emit_finding "high" \
+                        "ADCS ESC11 — EDITF_ATTRIBUTESUBJECTALTNAME2 on CA (${hits} template(s))" \
+                        "certipy found ${hits} template(s) vulnerable to ESC11 (EDITF_ATTRIBUTESUBJECTALTNAME2 on a standalone CA). Attackers can request certificates for arbitrary users via non-DC CAs." \
+                        "Remove EDITF_ATTRIBUTESUBJECTALTNAME2 flag from standalone CAs. Restrict issuance to Enterprise CAs. Enforce Manager Approval on sensitive templates." \
+                        "ad_adcs_esc11_certipy" ;;
+                ESC13)
+                    emit_finding "high" \
+                        "ADCS ESC13 — OID Group Link Abuse (${hits} template(s))" \
+                        "certipy found ${hits} template(s) vulnerable to ESC13 (issuance policy OID linked to a privileged group). Enrolling in the template yields forged membership in the linked group." \
+                        "Review all templates with OID group links. Ensure linked groups are not privileged. Require Manager Approval for OID-linked templates." \
+                        "ad_adcs_esc13_certipy" ;;
+            esac
+        done
+    else
+        log_wrn "T21: certipy JSON output not found — scan may have failed or timed out"
+        echo "[T21] certipy output missing" >> "$ev_f"
+    fi
+
+    log_ok "T21: ADCS ESC9–ESC13 enumeration complete"
+}
+
+# =============================================================================
+# - MRK:11_T22 — T22 SCCM/MECM ATTACK SURFACE
+# =============================================================================
+test_T22_sccm_mecm() {
+    local dc="${AD_DC_IP}"
+    local ev_f; ev_f=$(_ev_file "t22-sccm-mecm")
+    log_inf "T22: SCCM/MECM Attack Surface — ${dc}"
+
+    _check_tool ldapsearch || { log_wrn "T22: ldapsearch not found — skipping"; return; }
+
+    local -a bind_args=("-x" "-H" "ldap://${dc}")
+    [[ "$_HAS_CREDS" -eq 1 ]] && bind_args+=("-D" "${AD_USERNAME}@${AD_DOMAIN}" "-w" "${AD_PASSWORD}")
+    local base_dn="${AD_BASE_DN}"
+    [[ -z "$base_dn" ]] && { log_wrn "T22: AD_BASE_DN not set — skipping"; return; }
+
+    # 1. Discover SCCM Management Point objects in AD
+    log_inf "T22: Querying AD for SCCM/MECM management points..."
+    local sccm_mp
+    sccm_mp=$(ldapsearch "${bind_args[@]}" -b "$base_dn" \
+        "(|(objectClass=mSSMSManagementPoint)(cn=SMS-MP-*)(cn=SMS_MP*))" \
+        dn cn dNSHostName 2>/dev/null | head -40 || true)
+    echo "=== SCCM MP objects ===" >> "$ev_f"
+    echo "$sccm_mp" >> "$ev_f"
+    local mp_count; mp_count=$(echo "$sccm_mp" | grep -c "^dn:" || true)
+
+    # 2. Discover via SPN
+    local sccm_spn
+    sccm_spn=$(ldapsearch "${bind_args[@]}" -b "$base_dn" \
+        "(|(servicePrincipalName=SMS*)(servicePrincipalName=MECM*)(servicePrincipalName=ConfigMgr*))" \
+        dn cn servicePrincipalName 2>/dev/null | head -40 || true)
+    echo "=== SCCM SPN entries ===" >> "$ev_f"
+    echo "$sccm_spn" >> "$ev_f"
+    local spn_count; spn_count=$(echo "$sccm_spn" | grep -c "^dn:" || true)
+
+    # 3. Check msSMSSiteCode (SCCM-registered clients)
+    local sccm_site
+    sccm_site=$(ldapsearch "${bind_args[@]}" -b "$base_dn" \
+        "(msSMSSiteCode=*)" dn cn msSMSSiteCode 2>/dev/null | head -20 || true)
+    echo "=== SCCM site-registered clients ===" >> "$ev_f"
+    echo "$sccm_site" >> "$ev_f"
+    local site_count; site_count=$(echo "$sccm_site" | grep -c "^dn:" || true)
+
+    local sccm_found=0
+    if [[ "${mp_count:-0}" -gt 0 || "${spn_count:-0}" -gt 0 || "${site_count:-0}" -gt 0 ]]; then
+        sccm_found=1
+        local mp_hosts
+        mp_hosts=$(echo "${sccm_mp}${sccm_spn}" | grep -E "^(dNSHostName|cn):" \
+            | awk '{print $2}' | sort -u | head -5 | tr '\n' ' ' || true)
+        emit_finding "medium" \
+            "SCCM/MECM Infrastructure Discovered (${mp_count} MP objects, ${spn_count} SPNs, ${site_count} clients)" \
+            "SCCM/MECM presence confirmed in Active Directory. Hosts: ${mp_hosts:-unknown}. SCCM is a high-value lateral movement target: NAA (Network Access Account) credentials stored in WMI/registry are often over-privileged; PXE boot configurations may expose unattended installation credentials; SCCM coercion attacks enable NTLM relay to obtain privileged material." \
+            "Use least-privilege NAA account (read-only, not Domain Admin). Enable PXE password on all boot images. Disable unused SCCM features. Apply Microsoft SCCM security hardening baseline. Audit SCCM admin group membership." \
+            "ad_sccm_discovery"
+    fi
+
+    # 4. Network: probe SCCM service ports on DC
+    log_inf "T22: Probing SCCM ports (10123/8530/8531) on ${dc}..."
+    for sccm_port in 10123 8530 8531; do
+        local port_state
+        port_state=$(timeout 3 bash -c "echo > /dev/tcp/${dc}/${sccm_port}" 2>&1 && echo "OPEN" || echo "CLOSED")
+        echo "[T22] Port ${sccm_port} on ${dc}: ${port_state}" >> "$ev_f"
+        if [[ "$port_state" == "OPEN" ]]; then
+            emit_finding "medium" \
+                "SCCM/MECM Service Port Open — ${dc}:${sccm_port}" \
+                "SCCM/MECM port ${sccm_port} is open on ${dc}, confirming an active deployment reachable from the test host. Consider PXE credential exposure, NAA extraction (SharpSCCM/sccmhunter), and SCCM relay attack chains." \
+                "Ensure SCCM Management Point uses HTTPS. Audit NAA account privileges. Enable PXE password on all boot images. Review site boundary policies and SCCM client push accounts." \
+                "ad_sccm_port_${sccm_port}"
+        fi
+    done
+
+    # 5. sccmhunter passive discovery (if installed)
+    if [[ "$_HAS_CREDS" -eq 1 ]] && _check_tool sccmhunter; then
+        log_inf "T22: sccmhunter find — passive SCCM enumeration..."
+        if [[ "$DRY_RUN" -eq 0 ]]; then
+            local hunter_out
+            hunter_out=$(timeout "${AD_TIMEOUT}" sccmhunter find \
+                -u "${AD_USERNAME}" -p "${AD_PASSWORD}" \
+                -d "${AD_DOMAIN}" -dc-ip "${dc}" \
+                2>&1 | head -40 || true)
+            echo "$hunter_out" >> "$ev_f"
+            if echo "$hunter_out" | grep -qi "Management Point\|Distribution Point\|Site Server\|NAA"; then
+                emit_finding "medium" \
+                    "SCCM Infrastructure Confirmed by sccmhunter — Manual NAA/PXE Testing Recommended" \
+                    "sccmhunter confirmed SCCM infrastructure. Review evidence for Management Points and Distribution Points. Follow-up: use sccmhunter or SharpSCCM to enumerate NAA credentials and PXE secrets within authorised engagement scope." \
+                    "Review SCCM hardening (MS SCCM security guide). Run sccmhunter show -options naa to check NAA credential exposure. Apply Tier-0 SCCM admin isolation." \
+                    "ad_sccm_hunter"
+            fi
+        fi
+    elif [[ "$sccm_found" -eq 1 ]] && ! _check_tool sccmhunter; then
+        emit_finding "info" \
+            "SCCM Detected — sccmhunter/SharpSCCM Not Installed (Manual Testing Required)" \
+            "SCCM infrastructure was discovered but sccmhunter is not installed. NAA credential extraction, PXE secret enumeration, and task sequence analysis require SharpSCCM or sccmhunter." \
+            "Install sccmhunter (pip install sccmhunter) or deploy SharpSCCM for follow-up SCCM testing in an authorised window. Review SCCM security hardening." \
+            "ad_sccm_no_tool"
+    fi
+
+    log_ok "T22: SCCM/MECM assessment complete"
+}
+
+# =============================================================================
 # - MRK:11_TRUN
 # =============================================================================
 test_dc() {
@@ -1417,6 +1748,10 @@ test_dc() {
     _test_skip T16 || test_T16_password_spray
     _test_skip T17 || test_T17_dcsync_check
     _test_skip T18 || test_T18_kerberos_surface
+    _test_skip T19 || test_T19_shadow_credentials
+    _test_skip T20 || test_T20_rbcd_enum
+    _test_skip T21 || test_T21_adcs_esc9_esc13
+    _test_skip T22 || test_T22_sccm_mecm
 
     local find_delta=$(( _FIND_CTR - find_before ))
     echo "SUMMARY_ROW|${dc}|${AD_DOMAIN}|findings=${find_delta}"

