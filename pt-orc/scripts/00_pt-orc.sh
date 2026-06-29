@@ -296,8 +296,10 @@ done
 # NAV-RULE: no-insert-before
 # =============================================================================
 # Finds the subscript for step N. Prefers unversioned 0N_*.sh (normalised form);
-# falls back to highest-versioned 0N_*_v*.sh if no unversioned variant exists.
+# falls back to highest-versioned 0N_*_v[0-9]*.sh if no unversioned variant exists.
 # Excludes ACTUAL_RUN subdirectory.
+# NOTE: versioned scripts must use _v<digit> suffix (e.g. 08_web_enum_v2.sh) to avoid
+# false matches on script names containing _v (e.g. service_verify, vuln_corpus).
 find_script() {
     local n="$1"
     local prefix
@@ -305,7 +307,7 @@ find_script() {
     local unversioned=()
     local matches=()
     local f
-    for f in "${prefix}"*_v*.sh; do
+    for f in "${prefix}"*_v[0-9]*.sh; do
         [[ -f "$f" ]] || continue
         [[ "$f" == */ACTUAL_RUN/* ]] && continue
         matches+=("$f")
@@ -313,7 +315,7 @@ find_script() {
     for f in "${prefix}"*.sh; do
         [[ -f "$f" ]] || continue
         [[ "$f" == */ACTUAL_RUN/* ]] && continue
-        [[ "$f" == *_v*.sh ]] && continue
+        [[ "${f##*/}" == *_v[0-9]*.sh ]] && continue
         unversioned+=("$f")
     done
     if [[ "${#unversioned[@]}" -gt 0 ]]; then
