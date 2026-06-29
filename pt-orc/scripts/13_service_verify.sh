@@ -47,7 +47,7 @@
 # NAV-LEN: 41 entries | Integrity-hash: 96837cda95c1bb59 | Last-indexed: 2026-06-18T09:08:20Z
 
 # =============================================================================
-# 08_service_verify.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
+# 13_service_verify.sh — TechGuard. [VAPT-Advanced v2.0 — 2026-06-09]
 # Intelligent targeted verification — driven by 03 manual_followup + scan_summary
 # Reads what 01-06 flagged; runs targeted probes in priority order.
 #
@@ -73,7 +73,7 @@
 #   • MS17-010 EternalBlue (SMB), PHP CGI CVE-2024-4577
 # =============================================================================
 # USAGE:
-#   sudo ./08_service_verify.sh [OPTIONS]
+#   sudo ./13_service_verify.sh [OPTIONS]
 #
 # OPTIONS:
 #   --followup <file>    manual_followup MD to parse (default: latest in working/)
@@ -296,7 +296,7 @@ emit_finding() {
     # Include BASHPID to prevent ID collisions when probes run in parallel subshells
     local fid="f-08-${ip_slug}-${BASHPID}-$(printf '%04d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"08_service_verify","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"13_service_verify","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -3507,7 +3507,7 @@ write_verify_summary() {
 
     {
         echo "# Verify Summary — ${PROJECT_NAME:-unknown}"
-        echo "**Generated:** $(_now) | 08_service_verify.sh"
+        echo "**Generated:** $(_now) | 13_service_verify.sh"
         echo "**Mode:** ${MODE} | **Tier:** ${TIER}"
         echo ""
         echo "---"
@@ -3581,7 +3581,7 @@ write_verify_summary() {
         echo "\`\`\`"
         echo ""
         echo "---"
-        echo "*${PROJECT_NAME:-engagement} | 08_service_verify.sh | TechGuard.*"
+        echo "*${PROJECT_NAME:-engagement} | 13_service_verify.sh | TechGuard.*"
     } > "$report_file"
 
     log_ok "Verify summary: ${report_file}"
@@ -3597,7 +3597,7 @@ scope_confirm() {
     [[ "${AUTO_YES}" -eq 1 ]] && return 0
     echo ""
     echo -e "\033[1m\033[1;33m════════════════════════════════════════════════\033[0m"
-    echo -e "\033[1m  SCOPE CONFIRMATION — 08_service_verify.sh\033[0m"
+    echo -e "\033[1m  SCOPE CONFIRMATION — 13_service_verify.sh\033[0m"
     echo -e "\033[1m\033[1;33m════════════════════════════════════════════════\033[0m"
     printf "  %-22s %s\n" "Project:"     "${PROJECT_NAME:-[not set]}"
     printf "  %-22s %s\n" "Mode:"        "${MODE}"
@@ -3622,7 +3622,7 @@ scope_confirm() {
 # =============================================================================
 
 main() {
-    log "=== 08_service_verify.sh | ${MODE} | tier=${TIER} | severity=${SEVERITY_FILTER} ==="
+    log "=== 13_service_verify.sh | ${MODE} | tier=${TIER} | severity=${SEVERITY_FILTER} ==="
 
     parse_db_conf
 

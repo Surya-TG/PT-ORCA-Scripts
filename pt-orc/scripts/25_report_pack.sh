@@ -17,7 +17,7 @@
 # NAV-LEN: 11 entries | Integrity-hash: 8a1b9c0b90a405f7 | Last-indexed: 2026-06-16T15:34:52Z
 
 # =============================================================================
-# 16_report_pack.sh — TechGuard. [VAPT-Enhanced v1.0 — 2026-06-06]
+# 25_report_pack.sh — TechGuard. [VAPT-Enhanced v1.0 — 2026-06-06]
 # Report Pack — reads all scan evidence and produces 4 files for TG Audit Orchestrator
 #
 # Output files (strict Pydantic validation on import):
@@ -27,7 +27,7 @@
 #   report_bundle.json    — counts, residual risk, metadata
 # =============================================================================
 # USAGE:
-#   ./16_report_pack.sh [OPTIONS]
+#   ./25_report_pack.sh [OPTIONS]
 #
 # OPTIONS:
 #   --project-id <uuid>   Override ORCHESTRATOR_PROJECT_ID from conf (required if not in conf)
@@ -161,7 +161,7 @@ if [[ -z "$ORCHESTRATOR_PROJECT_ID" ]]; then
     echo "    2. Pass as argument:      --project-id <uuid>"
     echo ""
     echo "  The UUID is assigned when you create the project in the TG Audit Orchestrator."
-    echo "  Example: ./16_report_pack.sh --project-id a1b2c3d4-1234-5678-abcd-ef0123456789"
+    echo "  Example: ./25_report_pack.sh --project-id a1b2c3d4-1234-5678-abcd-ef0123456789"
     echo ""
     exit 1
 fi
@@ -171,7 +171,7 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
-log "16_report_pack.sh — TechGuard. | Project: ${ORCHESTRATOR_PROJECT_ID}"
+log "25_report_pack.sh — TechGuard. | Project: ${ORCHESTRATOR_PROJECT_ID}"
 log "Evidence base: ${EVIDENCE_BASE}"
 log "Output dir:    ${OUTPUT_DIR}"
 [[ "$DRY_RUN" -eq 1 ]] && log_warn "DRY-RUN mode — no output files will be written"
@@ -309,9 +309,9 @@ build_evidence_manifest() {
         elif [[ "$fname" == service_* ]]; then
             phase="08_service"
         elif [[ "$fname" == app_* ]]; then
-            phase="09_app_api"
+            phase="14_app_api"
         elif [[ "$fname" == llm_* || "$fname" == ai_* ]]; then
-            phase="10_ai_llm"
+            phase="16_ai_llm"
         fi
 
         # Compute sha256
@@ -579,9 +579,9 @@ collect_findings() {
                 local fid; fid="f-$(printf '%03d' "$f_count")"
                 local desc="API authentication bypass candidates detected (${bypass_count} endpoint(s)). These endpoints appear to return successful responses without valid authentication tokens. Evidence: ${fname}"
                 local rec="Enforce authentication on all API endpoints. Implement consistent authorization checks server-side. Review access control design."
-                FINDINGS_LINES+=("$(_make_finding "$fid" "API endpoint accessible without authentication" "high" "08_app_api" "$ev_ids" "$desc" "$rec")")
+                FINDINGS_LINES+=("$(_make_finding "$fid" "API endpoint accessible without authentication" "high" "14_app_api" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("high")
-                log_find "high [08_app_api] API auth bypass candidates (${bypass_count}) — ${fname}"
+                log_find "high [14_app_api] API auth bypass candidates (${bypass_count}) — ${fname}"
             fi
         fi
 
@@ -593,9 +593,9 @@ collect_findings() {
                 local fid; fid="f-$(printf '%03d' "$f_count")"
                 local desc="Rate limiting is absent on ${rl_count} API endpoint(s). Without rate limiting, endpoints are vulnerable to credential stuffing, enumeration, and denial-of-service via request flooding. Evidence: ${fname}"
                 local rec="Implement rate limiting on all API endpoints. Consider token-bucket or sliding-window algorithms. Return HTTP 429 with Retry-After header."
-                FINDINGS_LINES+=("$(_make_finding "$fid" "No rate limiting on API endpoints" "medium" "08_app_api" "$ev_ids" "$desc" "$rec")")
+                FINDINGS_LINES+=("$(_make_finding "$fid" "No rate limiting on API endpoints" "medium" "14_app_api" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("medium")
-                log_find "medium [08_app_api] No rate limiting on API endpoints — ${fname}"
+                log_find "medium [14_app_api] No rate limiting on API endpoints — ${fname}"
             fi
         fi
 
@@ -606,9 +606,9 @@ collect_findings() {
                 local fid; fid="f-$(printf '%03d' "$f_count")"
                 local desc="Prompt injection was confirmed against the AI/LLM endpoint. The model accepted injected instructions that overrode its system prompt or changed its output behaviour. This can lead to data exfiltration, safety bypass, and indirect command execution. Evidence: ${fname}"
                 local rec="Implement robust input sanitisation and output validation for all LLM integrations. Use a separate instruction channel from user data. Apply content filtering and monitoring."
-                FINDINGS_LINES+=("$(_make_finding "$fid" "Prompt injection vulnerability confirmed" "high" "10_ai_llm" "$ev_ids" "$desc" "$rec")")
+                FINDINGS_LINES+=("$(_make_finding "$fid" "Prompt injection vulnerability confirmed" "high" "16_ai_llm" "$ev_ids" "$desc" "$rec")")
                 FINDING_SEVERITIES+=("high")
-                log_find "high [09_ai_llm] Prompt injection confirmed — ${fname}"
+                log_find "high [16_ai_llm] Prompt injection confirmed — ${fname}"
             fi
         fi
 
@@ -732,7 +732,7 @@ write_output() {
         | sort -u | tr '\n' ',' | sed 's/,$//')
 
     {
-        echo "# Session End — 16_report_pack.sh"
+        echo "# Session End — 25_report_pack.sh"
         echo "# Time:        $(_now)"
         echo "# Project:     ${ORCHESTRATOR_PROJECT_ID}"
         echo "# Run dir:     ${run_dir}"
@@ -852,7 +852,7 @@ generate_ai_report() {
 
     cat > "$tmp_py" << 'PYTHON_EOF'
 #!/usr/bin/env python3
-"""AI-Powered VAPT Report — embedded engine for 16_report_pack.sh"""
+"""AI-Powered VAPT Report — embedded engine for 25_report_pack.sh"""
 import json, os, re, sys
 from datetime import datetime
 from pathlib import Path
@@ -3101,7 +3101,7 @@ main() {
 
     echo -e "${GREEN}"
     echo "════════════════════════════════════════════════════════════"
-    echo "  16_report_pack.sh"
+    echo "  25_report_pack.sh"
     echo "  TechGuard."
     echo "  Project:  ${ORCHESTRATOR_PROJECT_ID}"
     echo "  Profile:  ${ENGAGEMENT_PROFILE}"
@@ -3115,7 +3115,7 @@ main() {
     echo -e "${NC}"
 
     {
-        echo "# Session Start — 16_report_pack.sh"
+        echo "# Session Start — 25_report_pack.sh"
         echo "# Time:        $(_now)"
         echo "# Project:     ${ORCHESTRATOR_PROJECT_ID}"
         echo "# Profile:     ${ENGAGEMENT_PROFILE}"
@@ -3143,7 +3143,7 @@ main() {
 
     echo ""
     echo -e "${BOLD}${CYAN}══════════════════════════════════════════════════════════${NC}"
-    echo -e "${BOLD}${CYAN}  16_report_pack.sh — Export complete${NC}"
+    echo -e "${BOLD}${CYAN}  25_report_pack.sh — Export complete${NC}"
     echo -e "${BOLD}${CYAN}══════════════════════════════════════════════════════════${NC}"
     printf "  %-14s %s\n" "Run dir:"     "${RUN_DIR_DISPLAY:-<dry-run>}"
     printf "  %-14s %s\n" "scope.json:"  "${SCOPE_TARGET_COUNT} targets"

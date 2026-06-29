@@ -71,7 +71,7 @@ EV_TS="$(_ev_ts)"
 
 mkdir -p working evidence
 
-LOG_FILE="working/15_attack_chain_${SESSION_TS}.log"
+LOG_FILE="working/24_attack_chain_${SESSION_TS}.log"
 log()      { local m="[$(_now)] $1";     echo -e "${BLUE}${m}${NC}";    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_ok()   { local m="[$(_now)] ✓ $1";  echo -e "${GREEN}${m}${NC}";   echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_warn() { local m="[$(_now)] ⚠ $1";  echo -e "${YELLOW}${m}${NC}";  echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -93,7 +93,7 @@ PROJ_SLUG="${PROJECT_NAME:-PT-Orc}"
 PROJ_SLUG="${PROJ_SLUG//[^a-zA-Z0-9_-]/_}"
 
 FINDINGS_FILE="${SCRIPT_DIR:-$(pwd)}/working/$(ev_fname "15-chain-findings" "jsonl")"
-EVIDENCE_BASE="evidence/${SESSION_TS}/15_attack_chain"
+EVIDENCE_BASE="evidence/${SESSION_TS}/24_attack_chain"
 mkdir -p "$EVIDENCE_BASE"
 FINDING_COUNT=0
 
@@ -147,7 +147,7 @@ emit_chain_finding() {
     [[ -n "$ev_tag" ]] && ev_arr="[\"${ev_tag}\"]"
     local ts; ts="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
     _esc() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr -d '\n\r'; }
-    printf '{"id":"%s","title":"%s","severity":"%s","phase":"15_attack_chain","evidence_ids":%s,"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","discovered_at":"%s","chain_steps":%s,"cve_ids":%s}\n' \
+    printf '{"id":"%s","title":"%s","severity":"%s","phase":"24_attack_chain","evidence_ids":%s,"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","discovered_at":"%s","chain_steps":%s,"cve_ids":%s}\n' \
         "$id" "$(_esc "$title")" "$sev" "$ev_arr" \
         "$(_esc "$desc")" "$(_esc "$rec")" "$ts" \
         "$chain_steps_json" "$cve_ids_json" \
@@ -172,7 +172,7 @@ _load_all_findings() {
     for f in $(ls -t "${SCRIPT_DIR}/working"/*_findings*.jsonl 2>/dev/null | tac); do
         [[ -f "$f" ]] || continue
         # Skip our own output file if it exists from a previous run
-        [[ "$(basename "$f")" == *"15_attack_chain_findings"* ]] && continue
+        [[ "$(basename "$f")" == *"24_attack_chain_findings"* ]] && continue
 
         while IFS= read -r line; do
             [[ -z "$line" ]] && continue
@@ -448,7 +448,7 @@ _emit_ai_chains() {
 # NAV-RULE: no-insert-before
 # =============================================================================
 main() {
-    log_step 15 "Attack Chain AI Synthesis" "$0"
+    log_step 24 "Attack Chain AI Synthesis" "$0"
     log "Project    : ${PROJECT_NAME:-[unset]}"
     log "Dry-run    : ${DRY_RUN}"
     log "No-AI      : ${NO_AI}"
@@ -480,8 +480,8 @@ main() {
         log_warn "Emitting placeholder chain finding"
         emit_chain_finding "info" \
             "No findings to synthesise" \
-            "Step 15 found no JSONL findings in working/. Ensure steps 01-14 have been run and produced findings before running step 15." \
-            "Run the full engagement suite (steps 01-14) then re-run step 15." \
+            "Step 24 found no JSONL findings in working/. Ensure steps 01-14 have been run and produced findings before running step 24." \
+            "Run the full engagement suite (steps 01-14) then re-run step 24." \
             "[]" "[]"
         return 0
     fi
@@ -525,10 +525,10 @@ main() {
     echo -e "  ${GREEN}Attack chains emitted : ${total_findings}${NC}"
     echo -e "  ${GREEN}Findings file         : ${FINDINGS_FILE}${NC}"
     echo -e "  ${GREEN}Evidence dir          : ${EVIDENCE_BASE}${NC}"
-    echo -e "  ${CYAN}Next step             : 12_report_pack.sh${NC}"
+    echo -e "  ${CYAN}Next step             : 25_report_pack.sh${NC}"
     echo ""
 
-    log "Step 15 complete — ${total_findings} chain finding(s) in ${FINDINGS_FILE}"
+    log "Step 24 complete — ${total_findings} chain finding(s) in ${FINDINGS_FILE}"
 }
 
 main "$@"

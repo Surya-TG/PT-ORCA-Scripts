@@ -26,7 +26,7 @@
 # NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
 
 # =============================================================================
-# 23_auth_sso.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
+# 10_auth_sso.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
 # OAuth 2.0 / OIDC / SAML / SSO Attack Surface Testing
 # Coverage: OAuth endpoint discovery, authorization flow attacks, token endpoint
 #   abuse, OIDC probes (JWKS/nonce/issuer), SAML discovery + assertion probes,
@@ -36,7 +36,7 @@
 # Produces: per-host evidence files + JSONL findings + markdown summary
 # =============================================================================
 # USAGE:
-#   ./23_auth_sso.sh [OPTIONS]
+#   ./10_auth_sso.sh [OPTIONS]
 #
 # OPTIONS:
 #   --targets <file>            File with host:port entries (one per line)
@@ -297,7 +297,7 @@ emit_finding() {
     local fid="f-23-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local ev_id="ev-23-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"23_auth_sso","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"10_auth_sso","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -392,7 +392,7 @@ setup_profile() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_23_t01_discovery() {
+test_10_t01_discovery() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t01-discovery" "txt")"
     log "T01: OAuth/OIDC Endpoint Discovery — ${base_url}"
@@ -480,7 +480,7 @@ test_23_t01_discovery() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_23_t02_oauth_flow() {
+test_10_t02_oauth_flow() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t02-flow" "txt")"
     log "T02: OAuth Authorization Flow Attacks — ${base_url}"
@@ -564,7 +564,7 @@ test_23_t02_oauth_flow() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_23_t03_token_abuse() {
+test_10_t03_token_abuse() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t03-token" "txt")"
     log "T03: Token Endpoint Abuse — ${base_url}"
@@ -667,7 +667,7 @@ test_23_t03_token_abuse() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_23_t04_oidc() {
+test_10_t04_oidc() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t04-oidc" "txt")"
     log "T04: OIDC-Specific Probes — ${base_url}"
@@ -755,7 +755,7 @@ test_23_t04_oidc() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_23_t05_saml_discovery() {
+test_10_t05_saml_discovery() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t05-saml-disc" "txt")"
     log "T05: SAML Endpoint Discovery — ${base_url}"
@@ -834,7 +834,7 @@ test_23_t05_saml_discovery() {
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
-test_23_t06_saml_probes() {
+test_10_t06_saml_probes() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t06-saml-probes" "txt")"
     log "T06: SAML Assertion Probes — ${base_url}"
@@ -912,7 +912,7 @@ SAML_EOF2
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_23_t07_session() {
+test_10_t07_session() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t07-session" "txt")"
     log "T07: Session Management Checks — ${base_url}"
@@ -1019,7 +1019,7 @@ test_23_t07_session() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_23_t08_logout() {
+test_10_t08_logout() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "sso-t08-logout" "txt")"
     log "T08: SSO Logout & Token Revocation — ${base_url}"
@@ -1163,15 +1163,15 @@ test_target() {
     _SUMMARY_SAML=0; _SUMMARY_SESSION=0; _SUMMARY_LOGOUT=0
     _FIND_AT_START="${_FIND_CTR}"
 
-    # Dispatch tests — pattern: _test_skip N || test_23_tNN_*()
-    _test_skip 1 || test_23_t01_discovery     "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 2 || test_23_t02_oauth_flow    "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 3 || test_23_t03_token_abuse   "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 4 || test_23_t04_oidc          "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 5 || test_23_t05_saml_discovery "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 6 || test_23_t06_saml_probes   "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 7 || test_23_t07_session       "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 8 || test_23_t08_logout        "$base_url" "$ev_dir" "$ip" "$port"
+    # Dispatch tests — pattern: _test_skip N || test_10_tNN_*()
+    _test_skip 1 || test_10_t01_discovery     "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 2 || test_10_t02_oauth_flow    "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 3 || test_10_t03_token_abuse   "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 4 || test_10_t04_oidc          "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 5 || test_10_t05_saml_discovery "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 6 || test_10_t06_saml_probes   "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 7 || test_10_t07_session       "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 8 || test_10_t08_logout        "$base_url" "$ev_dir" "$ip" "$port"
 
     local target_finds=$(( _FIND_CTR - _FIND_AT_START ))
     log_ok "Target ${base_url} complete — ${target_finds} finding(s)"
@@ -1185,7 +1185,7 @@ test_target() {
 # =============================================================================
 
 main() {
-    log "PT-Orc 23_auth_sso.sh v1.0 — OAuth 2.0 / OIDC / SAML / SSO Attack Surface"
+    log "PT-Orc 10_auth_sso.sh v1.0 — OAuth 2.0 / OIDC / SAML / SSO Attack Surface"
     log "Session: ${SESSION_TS} | Profile: ${PROFILE} | Tier: ${TIER}"
     [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && log_info "Intercept proxy: ${CURL_PROXY_ARGS[*]}"
     [[ -n "${OAUTH_CLIENT_ID:-}" ]] && log_info "OAuth client_id: ${OAUTH_CLIENT_ID}"
@@ -1199,7 +1199,7 @@ main() {
     confirm_scope "${targets[@]}"
 
     if command -v trail_phase_start &>/dev/null; then
-        trail_phase_start "23_auth_sso" "Auth/SSO Review v1.0" "${#targets[@]} targets"
+        trail_phase_start "10_auth_sso" "Auth/SSO Review v1.0" "${#targets[@]} targets"
     fi
 
     local summary_rows=()
@@ -1262,7 +1262,7 @@ main() {
         echo "\`${EVIDENCE_BASE}\`"
         echo ""
         echo "---"
-        echo "*Generated by PT-Orc 23_auth_sso.sh v1.0 — TechGuard Labs*"
+        echo "*Generated by PT-Orc 10_auth_sso.sh v1.0 — TechGuard Labs*"
         echo "*Profile: ${PROFILE} | OAuth 2.0 / OIDC / SAML 2.0 / Session Management*"
     } > "$summary_md"
 
@@ -1271,7 +1271,7 @@ main() {
     log_ok "Evidence: ${EVIDENCE_BASE}"
 
     if command -v trail_phase_end &>/dev/null; then
-        trail_phase_end "23_auth_sso" "${_FIND_CTR} findings" "$summary_md"
+        trail_phase_end "10_auth_sso" "${_FIND_CTR} findings" "$summary_md"
     fi
 
     cat "$summary_md"

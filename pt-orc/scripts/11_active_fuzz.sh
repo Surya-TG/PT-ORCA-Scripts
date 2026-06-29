@@ -25,7 +25,7 @@
 # NAV-LEN: 20 entries | Integrity-hash: d4e9f2a8c1b7 | Last-indexed: 2026-06-18T00:00:00Z
 
 # =============================================================================
-# 13_active_fuzz.sh — Active Fuzzing & Scanning — Step 13 of PT-Orc Suite
+# 13_active_fuzz.sh — Active Fuzzing & Scanning — Step 11 of PT-Orc Suite
 # TechGuard.
 # =============================================================================
 # Runs advanced active fuzzing across all discovered web targets:
@@ -93,7 +93,7 @@ EV_TS="$(_ev_ts)"
 
 mkdir -p working evidence
 
-LOG_FILE="working/13_fuzz_${SESSION_TS}.log"
+LOG_FILE="working/11_fuzz_${SESSION_TS}.log"
 log()      { local m="[$(_now)] $1";     echo -e "${BLUE}${m}${NC}";    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_ok()   { local m="[$(_now)] ✓ $1";  echo -e "${GREEN}${m}${NC}";   echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_warn() { local m="[$(_now)] ⚠ $1";  echo -e "${YELLOW}${m}${NC}";  echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -115,7 +115,7 @@ PROJ_SLUG="${PROJECT_NAME:-PT-Orc}"
 PROJ_SLUG="${PROJ_SLUG//[^a-zA-Z0-9_-]/_}"
 
 FINDINGS_FILE="${SCRIPT_DIR:-$(pwd)}/working/$(ev_fname "13-fuzz-findings" "jsonl")"
-EVIDENCE_BASE="evidence/${SESSION_TS}/13_fuzz"
+EVIDENCE_BASE="evidence/${SESSION_TS}/11_fuzz"
 mkdir -p "$EVIDENCE_BASE"
 FINDING_COUNT=0
 
@@ -265,7 +265,7 @@ emit_finding() {
     # Escape JSON-unsafe characters in text fields
     local _esc
     _esc() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr -d '\n\r'; }
-    printf '{"id":"%s","title":"%s","severity":"%s","phase":"13_active_fuzz","evidence_ids":%s,"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","discovered_at":"%s"}\n' \
+    printf '{"id":"%s","title":"%s","severity":"%s","phase":"11_active_fuzz","evidence_ids":%s,"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","discovered_at":"%s"}\n' \
         "$id" "$(_esc "$title")" "$sev" "$ev_arr" \
         "$(_esc "$desc")" "$(_esc "$rec")" "$ts" \
         >> "$FINDINGS_FILE"
@@ -365,7 +365,7 @@ _test_skip() { [[ "${_T_ENABLED[$1]:-0}" -eq 0 ]]; }
 # =============================================================================
 test_T01_burp_scan() {
     local base_url="$1"
-    log_step "13.T01" "Burp Suite REST API Scan" "13_active_fuzz.sh"
+    log_step "11.T01" "Burp Suite REST API Scan" "11_active_fuzz.sh"
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
         log "[DRY-RUN] Burp REST API scan: ${base_url}"
@@ -540,7 +540,7 @@ PYEOF
 # =============================================================================
 test_T02_sqlmap() {
     local base_url="$1"
-    log_step "13.T02" "sqlmap SQL Injection" "13_active_fuzz.sh"
+    log_step "11.T02" "sqlmap SQL Injection" "11_active_fuzz.sh"
 
     if ! _have sqlmap; then
         log_warn "T02: sqlmap not installed — skipping (install: pip3 install sqlmap)"
@@ -667,7 +667,7 @@ test_T02_sqlmap() {
 # =============================================================================
 test_T03_dalfox() {
     local base_url="$1"
-    log_step "13.T03" "dalfox XSS Fuzzer" "13_active_fuzz.sh"
+    log_step "11.T03" "dalfox XSS Fuzzer" "11_active_fuzz.sh"
 
     if ! _have dalfox; then
         log_warn "T03: dalfox not installed — skipping (install: go install github.com/hahwul/dalfox/v2@latest)"
@@ -760,7 +760,7 @@ PYEOF
 # =============================================================================
 test_T04_nuclei() {
     local base_url="$1"
-    log_step "13.T04" "nuclei Template Scan" "13_active_fuzz.sh"
+    log_step "11.T04" "nuclei Template Scan" "11_active_fuzz.sh"
 
     if ! _have nuclei; then
         log_warn "T04: nuclei not installed — skipping (install: go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest)"
@@ -863,7 +863,7 @@ PYEOF
 # =============================================================================
 test_T05_commix() {
     local base_url="$1"
-    log_step "13.T05" "commix Command Injection" "13_active_fuzz.sh"
+    log_step "11.T05" "commix Command Injection" "11_active_fuzz.sh"
 
     if ! _have commix; then
         log_warn "T05: commix not installed — skipping (install: pip3 install commix)"
@@ -914,7 +914,7 @@ test_T05_commix() {
 # =============================================================================
 test_T06_arjun() {
     local base_url="$1"
-    log_step "13.T06" "arjun Hidden Parameter Discovery" "13_active_fuzz.sh"
+    log_step "11.T06" "arjun Hidden Parameter Discovery" "11_active_fuzz.sh"
 
     if ! _have arjun; then
         log_warn "T06: arjun not installed — skipping (install: pip3 install arjun)"
@@ -966,7 +966,7 @@ test_T06_arjun() {
 # =============================================================================
 test_T07_tplmap() {
     local base_url="$1"
-    log_step "13.T07" "tplmap SSTI" "13_active_fuzz.sh"
+    log_step "11.T07" "tplmap SSTI" "11_active_fuzz.sh"
 
     if ! _have tplmap; then
         log_warn "T07: tplmap not installed — skipping (install: pip3 install tplmap or clone from GitHub)"
@@ -1016,7 +1016,7 @@ test_T07_tplmap() {
 # =============================================================================
 test_T08_ghauri() {
     local base_url="$1"
-    log_step "13.T08" "ghauri Second-Order SQLi" "13_active_fuzz.sh"
+    log_step "11.T08" "ghauri Second-Order SQLi" "11_active_fuzz.sh"
 
     if ! _have ghauri; then
         log_warn "T08: ghauri not installed — skipping (install: pip3 install ghauri)"
@@ -1069,7 +1069,7 @@ test_T08_ghauri() {
 # =============================================================================
 test_T09_ffuf() {
     local base_url="$1"
-    log_step "13.T09" "ffuf Payload Fuzzing (LFI/Traversal)" "13_active_fuzz.sh"
+    log_step "11.T09" "ffuf Payload Fuzzing (LFI/Traversal)" "11_active_fuzz.sh"
 
     if ! _have ffuf; then
         log_warn "T09: ffuf not installed — skipping (install: go install github.com/ffuf/ffuf/v2@latest)"
@@ -1192,7 +1192,7 @@ PYEOF
 # =============================================================================
 test_T10_crlfuzz() {
     local base_url="$1"
-    log_step "13.T10" "CRLFuzz CRLF Injection" "13_active_fuzz.sh"
+    log_step "11.T10" "CRLFuzz CRLF Injection" "11_active_fuzz.sh"
 
     if ! _have crlfuzz; then
         log_warn "T10: crlfuzz not installed — skipping (install: go install github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest)"
@@ -1268,14 +1268,14 @@ main() {
 
     cd "${SCRIPT_DIR}"
 
-    log_step "13" "Active Fuzz — Burp/sqlmap/dalfox/nuclei/commix/arjun/tplmap/ghauri/ffuf/CRLFuzz" "13_active_fuzz.sh"
+    log_step "11" "Active Fuzz — Burp/sqlmap/dalfox/nuclei/commix/arjun/tplmap/ghauri/ffuf/CRLFuzz" "11_active_fuzz.sh"
 
     _setup_profile
 
     assemble_targets
 
     if [[ "${#TARGET_URLS[@]}" -eq 0 ]]; then
-        log_warn "Step 13: No web targets found — nothing to fuzz. Exiting cleanly."
+        log_warn "Step 11: No web targets found — nothing to fuzz. Exiting cleanly."
         exit 0
     fi
 
@@ -1285,7 +1285,7 @@ main() {
     local line; line="$(printf '═%.0s' {1..52})"
     echo -e "${GREEN}"
     echo "${line}"
-    echo "  PT-Orc Step 13 — Active Fuzz"
+    echo "  PT-Orc Step 11 — Active Fuzz"
     echo "  TechGuard."
     printf "  %-20s %s\n" "Project:"     "${PROJECT_NAME:-[see pt-orc.conf]}"
     printf "  %-20s %s\n" "Targets:"     "${#TARGET_URLS[@]} URL(s)"
@@ -1300,7 +1300,7 @@ main() {
     echo -e "${NC}"
 
     {
-        echo "=== Step 13 Active Fuzz Start ==="
+        echo "=== Step 11 Active Fuzz Start ==="
         echo "Project:  ${PROJECT_NAME:-[project]}"
         echo "Profile:  ${DEPTH}"
         echo "Tier:     ${TIER}"
@@ -1319,7 +1319,7 @@ main() {
 
     echo ""
     echo -e "${BOLD}${GREEN}$(printf '━%.0s' {1..52})${NC}"
-    echo -e "${BOLD}${GREEN}  Step 13 Complete${NC}"
+    echo -e "${BOLD}${GREEN}  Step 11 Complete${NC}"
     echo -e "${BOLD}${GREEN}  Targets tested : ${#TARGET_URLS[@]}${NC}"
     echo -e "${BOLD}${GREEN}  Findings emitted: ${FINDING_COUNT}${NC}"
     echo -e "${BOLD}${GREEN}  Elapsed         : ${mm}m${ss}s${NC}"
@@ -1329,7 +1329,7 @@ main() {
     echo ""
 
     {
-        echo "=== Step 13 Active Fuzz Complete ==="
+        echo "=== Step 11 Active Fuzz Complete ==="
         echo "Targets:  ${#TARGET_URLS[@]}"
         echo "Findings: ${FINDING_COUNT}"
         echo "Elapsed:  ${mm}m${ss}s"

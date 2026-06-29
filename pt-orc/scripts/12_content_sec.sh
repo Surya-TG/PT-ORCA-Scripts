@@ -26,7 +26,7 @@
 # NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
 
 # =============================================================================
-# 25_content_sec.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
+# 12_content_sec.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
 # Content Security — Deep quality analysis beyond step 09 header presence sweep
 # Coverage: CSP directive quality (unsafe-inline/eval/wildcard/data:/http: sources,
 #   missing base-uri/form-action/object-src), Subresource Integrity on external
@@ -43,7 +43,7 @@
 # Produces: per-host evidence files + JSONL findings + markdown summary
 # =============================================================================
 # USAGE:
-#   ./25_content_sec.sh [OPTIONS]
+#   ./12_content_sec.sh [OPTIONS]
 #
 # OPTIONS:
 #   --targets <file>              File with host:port entries (one per line)
@@ -286,7 +286,7 @@ emit_finding() {
     local fid="f-25-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local ev_id="ev-25-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"25_content_sec","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"12_content_sec","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -382,7 +382,7 @@ setup_profile() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_25_t01_csp() {
+test_12_t01_csp() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t01-csp" "txt")"
     log "T01: CSP Deep Analysis — ${base_url}"
@@ -514,7 +514,7 @@ test_25_t01_csp() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_25_t02_sri() {
+test_12_t02_sri() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t02-sri" "txt")"
     log "T02: Subresource Integrity — ${base_url}"
@@ -602,7 +602,7 @@ test_25_t02_sri() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_25_t03_clickjack() {
+test_12_t03_clickjack() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t03-clickjack" "txt")"
     log "T03: Clickjacking Deep — ${base_url}"
@@ -682,7 +682,7 @@ test_25_t03_clickjack() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_25_t04_crossorigin() {
+test_12_t04_crossorigin() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t04-crossorigin" "txt")"
     log "T04: Cross-Origin Isolation Policies — ${base_url}"
@@ -744,7 +744,7 @@ test_25_t04_crossorigin() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_25_t05_cache() {
+test_12_t05_cache() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t05-cache" "txt")"
     log "T05: Cache Security — ${base_url}"
@@ -829,7 +829,7 @@ test_25_t05_cache() {
 # Note: deliberately omits Server and X-Powered-By — already covered by step 09 T08.
 # =============================================================================
 
-test_25_t06_hdrinfo() {
+test_12_t06_hdrinfo() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t06-hdrinfo" "txt")"
     log "T06: Header Information Disclosure — ${base_url}"
@@ -921,7 +921,7 @@ test_25_t06_hdrinfo() {
 #   SameSite=None + !Secure combination.
 # =============================================================================
 
-test_25_t07_cookie() {
+test_12_t07_cookie() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t07-cookie" "txt")"
     log "T07: Cookie Security Deep — ${base_url}"
@@ -1045,7 +1045,7 @@ test_25_t07_cookie() {
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
-test_25_t08_mixed() {
+test_12_t08_mixed() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "contentsec-t08-mixed" "txt")"
     log "T08: Mixed Content Detection — ${base_url}"
@@ -1168,14 +1168,14 @@ test_target() {
     _FIND_AT_START="${_FIND_CTR}"
 
     # Dispatch tests
-    _test_skip 1 || test_25_t01_csp         "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 2 || test_25_t02_sri         "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 3 || test_25_t03_clickjack   "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 4 || test_25_t04_crossorigin "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 5 || test_25_t05_cache       "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 6 || test_25_t06_hdrinfo     "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 7 || test_25_t07_cookie      "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 8 || test_25_t08_mixed       "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 1 || test_12_t01_csp         "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 2 || test_12_t02_sri         "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 3 || test_12_t03_clickjack   "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 4 || test_12_t04_crossorigin "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 5 || test_12_t05_cache       "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 6 || test_12_t06_hdrinfo     "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 7 || test_12_t07_cookie      "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 8 || test_12_t08_mixed       "$base_url" "$ev_dir" "$ip" "$port"
 
     local target_finds=$(( _FIND_CTR - _FIND_AT_START ))
     log_ok "Target ${base_url} complete — ${target_finds} finding(s)"
@@ -1189,7 +1189,7 @@ test_target() {
 # =============================================================================
 
 main() {
-    log "PT-Orc 25_content_sec.sh v1.0 — Content Security Deep Analysis"
+    log "PT-Orc 12_content_sec.sh v1.0 — Content Security Deep Analysis"
     log "Session: ${SESSION_TS} | Profile: ${PROFILE} | Tier: ${TIER}"
     [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && log_info "Intercept proxy: ${CURL_PROXY_ARGS[*]}"
     [[ -n "${BEARER_TOKEN:-}"  ]] && log_info "Bearer token provided (cache/cookie probes)"
@@ -1202,7 +1202,7 @@ main() {
     confirm_scope "${targets[@]}"
 
     if command -v trail_phase_start &>/dev/null; then
-        trail_phase_start "25_content_sec" "Content Security v1.0" "${#targets[@]} targets"
+        trail_phase_start "12_content_sec" "Content Security v1.0" "${#targets[@]} targets"
     fi
 
     local summary_rows=()
@@ -1266,7 +1266,7 @@ main() {
         echo "\`${EVIDENCE_BASE}\`"
         echo ""
         echo "---"
-        echo "*Generated by PT-Orc 25_content_sec.sh v1.0 — TechGuard Labs*"
+        echo "*Generated by PT-Orc 12_content_sec.sh v1.0 — TechGuard Labs*"
         echo "*Profile: ${PROFILE} | CSP/SRI/Clickjacking/CORP-COEP-COOP/Cache/Headers/Cookies/MixedContent*"
     } > "$summary_md"
 
@@ -1275,7 +1275,7 @@ main() {
     log_ok "Evidence: ${EVIDENCE_BASE}"
 
     if command -v trail_phase_end &>/dev/null; then
-        trail_phase_end "25_content_sec" "${_FIND_CTR} findings" "$summary_md"
+        trail_phase_end "12_content_sec" "${_FIND_CTR} findings" "$summary_md"
     fi
 
     cat "$summary_md"

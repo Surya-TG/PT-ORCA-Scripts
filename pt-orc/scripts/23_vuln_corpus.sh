@@ -79,7 +79,7 @@ EV_TS="$(_ev_ts)"
 
 mkdir -p working evidence
 
-LOG_FILE="working/14_corpus_${SESSION_TS}.log"
+LOG_FILE="working/23_corpus_${SESSION_TS}.log"
 log()      { local m="[$(_now)] $1";     echo -e "${BLUE}${m}${NC}";    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_ok()   { local m="[$(_now)] ✓ $1";  echo -e "${GREEN}${m}${NC}";   echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 log_warn() { local m="[$(_now)] ⚠ $1";  echo -e "${YELLOW}${m}${NC}";  echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -101,7 +101,7 @@ PROJ_SLUG="${PROJECT_NAME:-PT-Orc}"
 PROJ_SLUG="${PROJ_SLUG//[^a-zA-Z0-9_-]/_}"
 
 FINDINGS_FILE="${SCRIPT_DIR:-$(pwd)}/working/$(ev_fname "14-corpus-findings" "jsonl")"
-EVIDENCE_BASE="evidence/${SESSION_TS}/14_corpus"
+EVIDENCE_BASE="evidence/${SESSION_TS}/23_corpus"
 mkdir -p "$EVIDENCE_BASE"
 FINDING_COUNT=0
 
@@ -278,7 +278,7 @@ emit_corpus_finding() {
     [[ -n "$ev_tag" ]] && ev_arr="[\"${ev_tag}\"]"
     local ts; ts="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
     _esc() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr -d '\n\r'; }
-    printf '{"id":"%s","title":"%s","severity":"%s","phase":"14_vuln_corpus","evidence_ids":%s,"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","discovered_at":"%s","cve_ids":%s}\n' \
+    printf '{"id":"%s","title":"%s","severity":"%s","phase":"23_vuln_corpus","evidence_ids":%s,"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","discovered_at":"%s","cve_ids":%s}\n' \
         "$id" "$(_esc "$title")" "$sev" "$ev_arr" \
         "$(_esc "$desc")" "$(_esc "$rec")" "$ts" "$cve_ids_json" \
         >> "$FINDINGS_FILE"
@@ -359,7 +359,7 @@ _test_skip() { [[ "${_T_ENABLED[$1]:-0}" -eq 0 ]]; }
 # CVE deduplication prevents the same CVE being emitted multiple times
 # when it appears across different services (e.g. OpenSSL on 443 and 993).
 T01_nvd_sweep() {
-    log_step "14/T01" "NVD CVE Sweep" "$0"
+    log_step "23/T01" "NVD CVE Sweep" "$0"
     _test_skip T01 && { log_warn "T01 disabled for profile '${DEPTH}' — skipping"; return 0; }
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -449,7 +449,7 @@ T01_nvd_sweep() {
 # against the local ExploitDB database using searchsploit. A PoC match
 # upgrades the exploitability signal for step 15 chain scoring.
 T02_exploitdb_xref() {
-    log_step "14/T02" "ExploitDB PoC Cross-Reference" "$0"
+    log_step "23/T02" "ExploitDB PoC Cross-Reference" "$0"
     _test_skip T02 && { log_warn "T02 disabled for profile '${DEPTH}' — skipping"; return 0; }
 
     if ! _have searchsploit; then
@@ -532,7 +532,7 @@ T02_exploitdb_xref() {
 # If no such data exists, T03 logs a notice and exits cleanly — it does not
 # fabricate package names from HTTP headers or service banners.
 T03_osv_sweep() {
-    log_step "14/T03" "OSV Package Vulnerability Lookup" "$0"
+    log_step "23/T03" "OSV Package Vulnerability Lookup" "$0"
     _test_skip T03 && { log_warn "T03 disabled for profile '${DEPTH}' — skipping"; return 0; }
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -605,7 +605,7 @@ T03_osv_sweep() {
 # NUCLEI_FULL_SEVERITY (default: critical,high) with the complete template set.
 # Both JSONL outputs are visible to report_pack (step 12) via *_findings*.jsonl glob.
 T04_nuclei_full() {
-    log_step "14/T04" "Nuclei Full Template Suite" "$0"
+    log_step "23/T04" "Nuclei Full Template Suite" "$0"
     _test_skip T04 && { log_warn "T04 disabled for profile '${DEPTH}' — skipping"; return 0; }
 
     if ! _have nuclei; then
@@ -740,10 +740,10 @@ main() {
     echo -e "  ${GREEN}Findings written : ${total_findings}${NC}"
     echo -e "  ${GREEN}Findings file    : ${FINDINGS_FILE}${NC}"
     echo -e "  ${GREEN}Evidence dir     : ${EVIDENCE_BASE}${NC}"
-    echo -e "  ${CYAN}Next step        : 15_attack_chain.sh (AI attack path synthesis)${NC}"
+    echo -e "  ${CYAN}Next step        : 24_attack_chain.sh (AI attack path synthesis)${NC}"
     echo ""
 
-    log "Step 14 complete — ${total_findings} corpus finding(s) in ${FINDINGS_FILE}"
+    log "Step 23 complete — ${total_findings} corpus finding(s) in ${FINDINGS_FILE}"
 }
 
 main "$@"

@@ -44,7 +44,7 @@ LIB_FILE="${SCRIPT_DIR}/orc-common-lib.sh"
 [[ -f "$LIB_FILE" ]] && source "$LIB_FILE"
 
 # Root check — required for airmon-ng, airodump-ng, raw socket operations
-[[ "$EUID" -ne 0 ]] && { echo "[FATAL] 22_wireless.sh must be run as root (EUID=${EUID})"; exit 1; }
+[[ "$EUID" -ne 0 ]] && { echo "[FATAL] 07_wireless.sh must be run as root (EUID=${EUID})"; exit 1; }
 
 PROJ_SLUG="${PROJECT_NAME//[^A-Za-z0-9._-]/_}"
 EVIDENCE_BASE="${SCRIPT_DIR}/evidence/${PROJ_SLUG}"
@@ -67,7 +67,7 @@ _NO_WIRELESS=0
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
-LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_22_wireless_${SESSION_TS}.log"
+LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_07_wireless_${SESSION_TS}.log"
 mkdir -p "${SCRIPT_DIR}/working" "${EVIDENCE_BASE}"
 
 _log()    { local ts; ts="$(date +%H:%M:%S)"; printf "[%s] %s\n" "$ts" "$*" | tee -a "$LOG_FILE"; }
@@ -160,7 +160,7 @@ emit_finding() {
     fid="f-22-wlan-$(printf '%04d' "$_FIND_CTR")"
     local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"22_wireless","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"07_wireless","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -1017,7 +1017,7 @@ _run_tests() {
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"
-    printf "${_W}║  PT-Orc  ·  Step 22: Wireless Security Assessment   ║${_N}\n"
+    printf "${_W}║  PT-Orc  ·  Step 7: Wireless Security Assessment   ║${_N}\n"
     printf "${_W}╚══════════════════════════════════════════════════════╝${_N}\n\n"
 
     log_inf "Project      : ${PROJECT_NAME}"
@@ -1032,14 +1032,14 @@ main() {
     setup_profile "$SCAN_PROFILE"
     _confirm
 
-    command -v trail_phase_start &>/dev/null && trail_phase_start "22_wireless_testing"
+    command -v trail_phase_start &>/dev/null && trail_phase_start "07_wireless_testing"
 
     local row
     row=$(_run_tests)
     local total_findings
     total_findings=$(echo "$row" | grep -oE 'findings=[0-9]+' | grep -oE '[0-9]+' || echo 0)
 
-    command -v trail_phase_end &>/dev/null && trail_phase_end "22_wireless_testing"
+    command -v trail_phase_end &>/dev/null && trail_phase_end "07_wireless_testing"
 
     # Summary report
     local report_f="${SCRIPT_DIR}/working/$(ev_fname "22-wireless-summary" "md")"

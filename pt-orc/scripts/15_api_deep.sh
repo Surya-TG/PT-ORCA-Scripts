@@ -28,7 +28,7 @@
 # NAV-LEN: 24 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
 
 # =============================================================================
-# 24_api_deep.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
+# 15_api_deep.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
 # Deep API Security — Advanced attack patterns beyond OWASP API Top 10 baseline
 # Coverage: NoSQL injection (MongoDB/Elasticsearch/CouchDB), GraphQL alias DoS +
 #   depth/complexity bypass + field suggestion, WebSocket CSWSH + auth bypass,
@@ -42,7 +42,7 @@
 # Produces: per-host evidence files + JSONL findings + markdown summary
 # =============================================================================
 # USAGE:
-#   ./24_api_deep.sh [OPTIONS]
+#   ./15_api_deep.sh [OPTIONS]
 #
 # OPTIONS:
 #   --targets <file>              File with host:port entries (one per line)
@@ -321,7 +321,7 @@ emit_finding() {
     local fid="f-24-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local ev_id="ev-24-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"24_api_deep","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"15_api_deep","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -430,7 +430,7 @@ setup_profile() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t01_nosql() {
+test_15_t01_nosql() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t01-nosql" "txt")"
     log "T01: NoSQL Injection — ${base_url}"
@@ -558,7 +558,7 @@ test_24_t01_nosql() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t02_gql_adv() {
+test_15_t02_gql_adv() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t02-gql" "txt")"
     log "T02: GraphQL Advanced Attacks — ${base_url}"
@@ -694,7 +694,7 @@ test_24_t02_gql_adv() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t03_websocket() {
+test_15_t03_websocket() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t03-websocket" "txt")"
     log "T03: WebSocket Attacks — ${base_url}"
@@ -807,7 +807,7 @@ test_24_t03_websocket() {
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
-test_24_t04_bizlogic() {
+test_15_t04_bizlogic() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t04-bizlogic" "txt")"
     log "T04: Business Logic Deep — ${base_url}"
@@ -965,7 +965,7 @@ test_24_t04_bizlogic() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t05_hpp() {
+test_15_t05_hpp() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t05-hpp" "txt")"
     log "T05: HTTP Parameter Pollution — ${base_url}"
@@ -1058,7 +1058,7 @@ test_24_t05_hpp() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t06_apikey() {
+test_15_t06_apikey() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t06-apikey" "txt")"
     log "T06: API Key Security — ${base_url}"
@@ -1140,7 +1140,7 @@ test_24_t06_apikey() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t07_ctype() {
+test_15_t07_ctype() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t07-ctype" "txt")"
     log "T07: Content-Type Confusion — ${base_url}"
@@ -1235,7 +1235,7 @@ test_24_t07_ctype() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t08_proto() {
+test_15_t08_proto() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t08-proto" "txt")"
     log "T08: Prototype Pollution — ${base_url}"
@@ -1336,7 +1336,7 @@ test_24_t08_proto() {
 # NAV-RULE: read-toc-first
 # =============================================================================
 
-test_24_t09_schema() {
+test_15_t09_schema() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t09-shadow" "txt")"
     log "T09: Schema Drift & Shadow API Discovery — ${base_url}"
@@ -1457,7 +1457,7 @@ test_24_t09_schema() {
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
-test_24_t10_enum() {
+test_15_t10_enum() {
     local base_url="$1" ev_dir="$2" ip="$3" port="$4"
     local evfile="${ev_dir}/$(ev_fname "apideep-t10-enum" "txt")"
     log "T10: Mass Object Enumeration — ${base_url}"
@@ -1599,17 +1599,17 @@ test_target() {
     _SUMMARY_ENUM=0
     _FIND_AT_START="${_FIND_CTR}"
 
-    # Dispatch tests — pattern: _test_skip N || test_24_tNN_*()
-    _test_skip 1  || test_24_t01_nosql     "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 2  || test_24_t02_gql_adv   "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 3  || test_24_t03_websocket "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 4  || test_24_t04_bizlogic  "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 5  || test_24_t05_hpp       "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 6  || test_24_t06_apikey    "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 7  || test_24_t07_ctype     "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 8  || test_24_t08_proto     "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 9  || test_24_t09_schema    "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 10 || test_24_t10_enum      "$base_url" "$ev_dir" "$ip" "$port"
+    # Dispatch tests — pattern: _test_skip N || test_15_tNN_*()
+    _test_skip 1  || test_15_t01_nosql     "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 2  || test_15_t02_gql_adv   "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 3  || test_15_t03_websocket "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 4  || test_15_t04_bizlogic  "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 5  || test_15_t05_hpp       "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 6  || test_15_t06_apikey    "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 7  || test_15_t07_ctype     "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 8  || test_15_t08_proto     "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 9  || test_15_t09_schema    "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 10 || test_15_t10_enum      "$base_url" "$ev_dir" "$ip" "$port"
 
     local target_finds=$(( _FIND_CTR - _FIND_AT_START ))
     log_ok "Target ${base_url} complete — ${target_finds} finding(s)"
@@ -1623,7 +1623,7 @@ test_target() {
 # =============================================================================
 
 main() {
-    log "PT-Orc 24_api_deep.sh v1.0 — Deep API Security"
+    log "PT-Orc 15_api_deep.sh v1.0 — Deep API Security"
     log "Session: ${SESSION_TS} | Profile: ${PROFILE} | Tier: ${TIER}"
     [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && log_info "Intercept proxy: ${CURL_PROXY_ARGS[*]}"
     [[ -n "${API_KEY:-}"       ]] && log_info "API key provided (${#API_KEY} chars)"
@@ -1638,7 +1638,7 @@ main() {
     confirm_scope "${targets[@]}"
 
     if command -v trail_phase_start &>/dev/null; then
-        trail_phase_start "24_api_deep" "Deep API Security v1.0" "${#targets[@]} targets"
+        trail_phase_start "15_api_deep" "Deep API Security v1.0" "${#targets[@]} targets"
     fi
 
     local summary_rows=()
@@ -1707,7 +1707,7 @@ main() {
         echo "\`${EVIDENCE_BASE}\`"
         echo ""
         echo "---"
-        echo "*Generated by PT-Orc 24_api_deep.sh v1.0 — TechGuard Labs*"
+        echo "*Generated by PT-Orc 15_api_deep.sh v1.0 — TechGuard Labs*"
         echo "*Profile: ${PROFILE} | NoSQL/GraphQL/WebSocket/BizLogic/HPP/APIKey/CType/Proto/Shadow/Enum*"
     } > "$summary_md"
 
@@ -1716,7 +1716,7 @@ main() {
     log_ok "Evidence: ${EVIDENCE_BASE}"
 
     if command -v trail_phase_end &>/dev/null; then
-        trail_phase_end "24_api_deep" "${_FIND_CTR} findings" "$summary_md"
+        trail_phase_end "15_api_deep" "${_FIND_CTR} findings" "$summary_md"
     fi
 
     cat "$summary_md"

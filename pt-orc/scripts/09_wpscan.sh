@@ -20,7 +20,7 @@
 # NAV-LEN: 14 entries | Integrity-hash: aa11caa05f43cfa5 | Last-indexed: 2026-06-16T15:36:37Z
 
 # =============================================================================
-# 07_wpscan.sh — WordPress Detection & Security Assessment — TechGuard.
+# 09_wpscan.sh — WordPress Detection & Security Assessment — TechGuard.
 # =============================================================================
 # Purpose:
 #   Two-phase WordPress assessment:
@@ -349,7 +349,7 @@ scope_confirm() {
 
     echo ""
     echo -e "${BOLD}${YELLOW}════════════════════════════════════════════════${NC}"
-    echo -e "${BOLD}  SCOPE CONFIRMATION — 07_wpscan.sh${NC}"
+    echo -e "${BOLD}  SCOPE CONFIRMATION — 09_wpscan.sh${NC}"
     echo -e "${BOLD}${YELLOW}════════════════════════════════════════════════${NC}"
     printf "  %-24s %s\n" "Project:"       "$PROJECT_NAME"
     printf "  %-24s %s\n" "Mode:"          "$MODE"
@@ -408,7 +408,7 @@ emit_finding() {
     local ev_id="ev-07-${tgt_slug}-$(printf '%03d' "${_FIND_CTR}")"
     [[ -n "$FINDINGS_FILE" ]] || return 0
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"07_wpscan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"09_wpscan","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -976,7 +976,7 @@ assess_wordpress() {
 $(ls -1 "${outdir}/" 2>/dev/null | sed "s|^|  - evidence/_wpscan/${label}/|" || true)
 
 ---
-*07_wpscan.sh | TechGuard | ${PROJECT_NAME}*
+*09_wpscan.sh | TechGuard | ${PROJECT_NAME}*
 EOF
         } > "$summary_file" || true
         log_ok "  Per-target summary: ${summary_file}"
@@ -1023,7 +1023,7 @@ write_report() {
 | Date         | $(_now) |
 | Mode         | ${MODE} |
 | Tier         | ${TIER} |
-| Script       | 07_wpscan.sh |
+| Script       | 09_wpscan.sh |
 | Targets      | ${#WP_TARGETS[@]} |
 | API Token    | $([ -n "$WPSCAN_API_TOKEN" ] && echo "configured" || echo "not set") |
 
@@ -1147,7 +1147,7 @@ RECS
 
         echo ""
         echo "---"
-        echo "*07_wpscan.sh | TechGuard | ${PROJECT_NAME}*"
+        echo "*09_wpscan.sh | TechGuard | ${PROJECT_NAME}*"
 
     } > "$report_file" || true
 
@@ -1171,7 +1171,7 @@ main() {
 
     echo -e "${GREEN}"
     echo "════════════════════════════════════════════════"
-    echo "  07_wpscan.sh"
+    echo "  09_wpscan.sh"
     echo "  TechGuard."
     echo "  Project: ${PROJECT_NAME}"
     echo "  Mode:    ${MODE} | Tier: ${TIER}"

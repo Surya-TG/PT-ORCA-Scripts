@@ -80,7 +80,7 @@ AD_TIMEOUT=30
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
-LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_11_ad_${SESSION_TS}.log"
+LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_20_ad_${SESSION_TS}.log"
 mkdir -p "${SCRIPT_DIR}/working" "${EVIDENCE_BASE}"
 
 _log()    { local ts; ts="$(date +%H:%M:%S)"; printf "[%s] %s\n" "$ts" "$*" | tee -a "$LOG_FILE"; }
@@ -202,7 +202,7 @@ emit_finding() {
     fid="f-12-ad-$(printf '%04d' "$_FIND_CTR")"
     local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"12_ad","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"20_ad","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -949,7 +949,7 @@ test_T11_bloodhound() {
 }
 
 # - MRK:20_T12 — T12 GPO ENUMERATION
-test_T12_gpo_enum() {
+test_T20_gpo_enum() {
     local dc="${AD_DC_IP}"
     local ev_f; ev_f="$(_ev_file "gpo_enum")"
 
@@ -1741,7 +1741,7 @@ test_dc() {
     _test_skip T09 || test_T09_llmnr_detection
     _test_skip T10 || test_T10_adcs_enum
     _test_skip T11 || test_T11_bloodhound
-    _test_skip T12 || test_T12_gpo_enum
+    _test_skip T12 || test_T20_gpo_enum
     _test_skip T13 || test_T13_acl_review
     _test_skip T14 || test_T14_delegation
     _test_skip T15 || test_T15_trust_mapping
@@ -1762,7 +1762,7 @@ test_dc() {
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"
-    printf "${_W}║  PT-Orc  ·  Step 11: Active Directory Testing        ║${_N}\n"
+    printf "${_W}║  PT-Orc  ·  Step 20: Active Directory Testing        ║${_N}\n"
     printf "${_W}╚══════════════════════════════════════════════════════╝${_N}\n\n"
 
     log_inf "Project  : ${PROJECT_NAME}"
@@ -1777,14 +1777,14 @@ main() {
     setup_profile "$SCAN_PROFILE"
     _confirm
 
-    command -v trail_phase_start &>/dev/null && trail_phase_start "12_ad_testing"
+    command -v trail_phase_start &>/dev/null && trail_phase_start "20_ad_testing"
 
     local row
     row=$(test_dc)
     local total_findings
     total_findings=$(echo "$row" | grep -oE 'findings=[0-9]+' | grep -oE '[0-9]+' || echo 0)
 
-    command -v trail_phase_end &>/dev/null && trail_phase_end "12_ad_testing"
+    command -v trail_phase_end &>/dev/null && trail_phase_end "20_ad_testing"
 
     # Summary report
     local report_f="${SCRIPT_DIR}/working/$(ev_fname "12-ad-summary" "md")"

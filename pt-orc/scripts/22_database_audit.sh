@@ -57,7 +57,7 @@ DB_TIMEOUT="${DB_TIMEOUT:-20}"
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
-LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_19_db_${SESSION_TS}.log"
+LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_22_db_${SESSION_TS}.log"
 mkdir -p "${SCRIPT_DIR}/working" "${EVIDENCE_BASE}"
 
 _log()    { local ts; ts="$(date +%H:%M:%S)"; printf "[%s] %s\n" "$ts" "$*" | tee -a "$LOG_FILE"; }
@@ -258,7 +258,7 @@ emit_finding() {
     fid="f-19-db-$(printf '%04d' "$_FIND_CTR")"
     local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"19_database_audit","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"22_database_audit","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -1173,7 +1173,7 @@ _run_tests() {
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"
-    printf "${_W}║  PT-Orc  ·  Step 19: Database Service Audit          ║${_N}\n"
+    printf "${_W}║  PT-Orc  ·  Step 22: Database Service Audit          ║${_N}\n"
     printf "${_W}╚══════════════════════════════════════════════════════╝${_N}\n\n"
 
     log_inf "Project      : ${PROJECT_NAME}"
@@ -1189,13 +1189,13 @@ main() {
     setup_profile "$SCAN_PROFILE"
     _confirm
 
-    command -v trail_phase_start &>/dev/null && trail_phase_start "19_database_audit"
+    command -v trail_phase_start &>/dev/null && trail_phase_start "22_database_audit"
 
     _discover_db_ports
 
     _run_tests
 
-    command -v trail_phase_end &>/dev/null && trail_phase_end "19_database_audit"
+    command -v trail_phase_end &>/dev/null && trail_phase_end "22_database_audit"
 
     # Summary report
     local report_f="${SCRIPT_DIR}/working/$(ev_fname "19-db-summary" "md")"
@@ -1210,7 +1210,7 @@ main() {
         for host in "${!_OPEN_PORTS[@]}"; do
             local h_ports="${_OPEN_PORTS[$host]}"
             local h_findings
-            h_findings=$(grep -c "\"phase\":\"19_database_audit\"" "$FINDINGS_FILE" 2>/dev/null || echo 0)
+            h_findings=$(grep -c "\"phase\":\"22_database_audit\"" "$FINDINGS_FILE" 2>/dev/null || echo 0)
             printf "| %s | %s | %s |\n" "$host" "$h_ports" "$h_findings"
             (( grand_total += h_findings )) || true
         done

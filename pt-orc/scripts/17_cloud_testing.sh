@@ -69,7 +69,7 @@ SCAN_PROFILE="${SCAN_PROFILE:-standard}"
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(_ev_ts)"
-LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_10_cloud_${SESSION_TS}.log"
+LOG_FILE="${SCRIPT_DIR}/working/${PROJ_SLUG}_17_cloud_${SESSION_TS}.log"
 mkdir -p "${SCRIPT_DIR}/working" "${EVIDENCE_BASE}"
 
 _log()  { local ts; ts="$(date +%H:%M:%S)"; printf "[%s] %s\n" "$ts" "$*" | tee -a "$LOG_FILE"; }
@@ -189,7 +189,7 @@ emit_finding() {
     fid="f-11-cloud-$(printf '%04d' "$_FIND_CTR")"
     local ev_id="${ev_tag:-${fid}-ev}"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"11_cloud","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"17_cloud","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -832,7 +832,7 @@ test_T10_mgmt_console() {
 }
 
 # - MRK:17_T11 — T11 CDN / ORIGIN IP DISCLOSURE
-test_T11_cdn_origin() {
+test_T17_cdn_origin() {
     local tgt="$1" base_url
     base_url="$(_base_url "$tgt")"
     local ip="${tgt%%:*}"
@@ -1128,7 +1128,7 @@ test_target() {
     _test_skip T08 || test_T08_security_headers  "$tgt"
     _test_skip T09 || test_T09_cors              "$tgt"
     _test_skip T10 || test_T10_mgmt_console      "$tgt"
-    _test_skip T11 || test_T11_cdn_origin        "$tgt"
+    _test_skip T11 || test_T17_cdn_origin        "$tgt"
     _test_skip T12 || test_T12_subdomain_takeover "$tgt"
     _test_skip T13 || test_T13_token_exposure    "$tgt"
     _test_skip T14 || test_T14_storage_acl       "$tgt"
@@ -1143,7 +1143,7 @@ test_target() {
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"
-    printf "${_W}║  PT-Orc  ·  Step 10: Cloud Security Testing          ║${_N}\n"
+    printf "${_W}║  PT-Orc  ·  Step 17: Cloud Security Testing          ║${_N}\n"
     printf "${_W}╚══════════════════════════════════════════════════════╝${_N}\n\n"
 
     log_inf "Project  : ${PROJECT_NAME}"
@@ -1166,7 +1166,7 @@ main() {
     declare -i total_targets=0 total_findings=0
     declare -a summary_rows=()
 
-    command -v trail_phase_start &>/dev/null && trail_phase_start "11_cloud_testing"
+    command -v trail_phase_start &>/dev/null && trail_phase_start "17_cloud_testing"
 
     while IFS= read -r tgt; do
         [[ -z "$tgt" || "$tgt" == "#"* ]] && continue
@@ -1179,7 +1179,7 @@ main() {
         (( total_targets++ )) || true
     done < "$tf"
 
-    command -v trail_phase_end &>/dev/null && trail_phase_end "11_cloud_testing"
+    command -v trail_phase_end &>/dev/null && trail_phase_end "17_cloud_testing"
 
     # Summary report
     local report_f="${SCRIPT_DIR}/working/$(ev_fname "10-cloud-summary" "md")"
