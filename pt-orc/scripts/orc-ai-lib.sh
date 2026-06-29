@@ -9,9 +9,10 @@
 # - MRK:AI_QUERY  — LLM INFERENCE (ollama → Claude)        | query,llm,ollama,anthropic,infer   | L245-393
 # - MRK:AI_NVD    — NVD API v2 CVE LOOKUP                  | nvd,cve,lookup,nist,api,cache      | L394-570
 # - MRK:AI_OSV    — OSV.DEV PACKAGE VULNERABILITY LOOKUP   | osv,package,ecosystem,vuln         | L571-650
-# - MRK:AI_EDB    — EXPLOITDB / SEARCHSPLOIT LOOKUP        | exploitdb,searchsploit,poc,edb     | L651-715
-# - MRK:AI_BANNER — STANDALONE BANNER + USAGE              | banner,standalone,usage,help       | L716-806
-# NAV-LEN: 8 entries | Integrity-hash: 0000000000000000 | Last-indexed: 2026-06-22T00:00:00Z
+# - MRK:AI_EDB       — EXPLOITDB / SEARCHSPLOIT LOOKUP        | exploitdb,searchsploit,poc,edb     | L651-715
+# - MRK:AI_CORRELATE — FINDING CORRELATOR + STEP RECOMMENDER | correlate,findings,recommend,chain | L716-800
+# - MRK:AI_BANNER    — STANDALONE BANNER + USAGE              | banner,standalone,usage,help       | L801-891
+# NAV-LEN: 9 entries | Integrity-hash: 0000000000000000 | Last-indexed: 2026-06-29T00:00:00Z
 
 # =============================================================================
 # orc-ai-lib.sh — PT-Orc AI & Intelligence Library
@@ -709,7 +710,174 @@ exploitdb_search() {
 }
 
 # =============================================================================
-# MRK:AI_BANNER — STANDALONE BANNER + USAGE | banner,standalone,usage,help | L716-806
+# MRK:AI_CORRELATE — FINDING CORRELATOR + STEP RECOMMENDER | correlate,findings,recommend,chain | L716-800
+# NAV-RULE: no-insert-before
+# =============================================================================
+
+# correlate_findings [working_dir] → markdown report on stdout; rc=0 always
+# Reads all *findings*.jsonl files in working_dir, aggregates them, and asks the AI
+# to identify attack chains, finding clusters, quick-win remediations, and risk
+# amplifiers. Returns 0 always; empty output means no findings or no AI backend.
+#
+# Example:
+#   result=$(correlate_findings "./working")
+#   echo "$result" | tee working/chain_analysis.md
+correlate_findings() {
+    local wdir="${1:-${WORKING_DIR:-${_AI_LIB_DIR}/working}}"
+
+    if ! _real_jq --version >/dev/null 2>&1; then
+        log_warn "correlate_findings: jq required — skipping"
+        return 0
+    fi
+
+    # Discover all JSONL findings files
+    local -a jsonl_files
+    while IFS= read -r f; do
+        jsonl_files+=("$f")
+    done < <(find "$wdir" -maxdepth 2 -name "*findings*.jsonl" -type f 2>/dev/null | sort)
+
+    if [[ ${#jsonl_files[@]} -eq 0 ]]; then
+        log_warn "correlate_findings: no findings JSONL files found in ${wdir}"
+        return 0
+    fi
+
+    # Aggregate findings into a single annotated block
+    local all_findings=""
+    local total_count=0
+    local f
+    for f in "${jsonl_files[@]}"; do
+        local count; count=$(wc -l < "$f" 2>/dev/null || echo 0)
+        (( total_count += count ))
+        all_findings+="## Source: $(basename "$f")
+$(cat "$f" 2>/dev/null)
+
+"
+    done
+
+    if [[ -z "$all_findings" || "$total_count" -eq 0 ]]; then
+        log_warn "correlate_findings: all JSONL files are empty — nothing to correlate"
+        return 0
+    fi
+
+    log_info "correlate_findings: ${total_count} finding(s) from ${#jsonl_files[@]} file(s)"
+
+    local sys_prompt="You are a senior penetration testing analyst. Analyse the provided VAPT findings (JSONL format) and identify attack chains, clusters, quick-win remediations, and risk amplifiers. Output structured markdown only — no tool names, no scan dates."
+
+    local usr_prompt="Analyse these penetration testing findings and produce:
+
+1. **Attack Chain Analysis** — identify 2–5 multi-step chains where one finding enables or amplifies another. For each chain: list finding IDs in order, explain the pivot logic, and rate chain risk (Critical/High/Medium).
+
+2. **High-Priority Clusters** — group findings sharing a root cause or remediation owner. Suggest consolidation where multiple findings should be one.
+
+3. **Quick-Win Remediations** — top 3–5 findings with highest severity-to-fix-effort ratio (fixes achievable in under one day preferred).
+
+4. **Risk Amplifiers** — any finding appearing in multiple chains (highest-leverage remediation target).
+
+Findings data (JSONL):
+${all_findings}"
+
+    ai_query "$sys_prompt" "$usr_prompt"
+}
+
+# recommend_steps_ai [working_dir] [profile] → markdown recommendation on stdout; rc=0 always
+# Reads discovered service data and existing findings from working_dir, then asks the AI
+# which remaining PT-Orc steps are most relevant given what has been discovered.
+# profile: external|web|api|internal|hybrid (default: external)
+# Returns 0 always; empty output means no data or no AI backend available.
+#
+# Example:
+#   recommend_steps_ai "./working" "external"
+recommend_steps_ai() {
+    local wdir="${1:-${WORKING_DIR:-${_AI_LIB_DIR}/working}}"
+    local profile="${2:-external}"
+
+    if ! _real_jq --version >/dev/null 2>&1; then
+        log_warn "recommend_steps_ai: jq required — skipping"
+        return 0
+    fi
+
+    # Aggregate available context: findings + service summary files
+    local context=""
+
+    # Findings
+    local findings_data=""
+    local findings_count=0
+    while IFS= read -r f; do
+        local lc; lc=$(wc -l < "$f" 2>/dev/null || echo 0)
+        (( findings_count += lc ))
+        findings_data+="$(cat "$f" 2>/dev/null)
+"
+    done < <(find "$wdir" -maxdepth 2 -name "*findings*.jsonl" -type f 2>/dev/null | sort)
+    [[ -n "$findings_data" ]] && context+="### Current Findings (${findings_count} total, JSONL)
+${findings_data}
+"
+
+    # Service summary files (markdown/txt from nmap/masscan steps)
+    local svc_data=""
+    while IFS= read -r f; do
+        svc_data+="### $(basename "$f")
+$(head -80 "$f" 2>/dev/null)
+"
+    done < <(find "$wdir" -maxdepth 2 \
+        \( -name "*service*" -o -name "*scan*" -o -name "*summary*" \) \
+        -name "*.md" -o -name "*.txt" 2>/dev/null | sort | head -5)
+    [[ -n "$svc_data" ]] && context+="### Discovered Services
+${svc_data}
+"
+
+    if [[ -z "$context" ]]; then
+        log_warn "recommend_steps_ai: no service data or findings found in ${wdir} — cannot recommend steps"
+        return 0
+    fi
+
+    log_info "recommend_steps_ai: building step recommendation for profile '${profile}'"
+
+    # Step catalogue for the AI to choose from
+    local step_catalogue="Available PT-Orc steps:
+  1  DNS Recon         — passive/active DNS, AXFR, subdomain enum
+  2  OSINT Recon       — GitHub, Shodan, WHOIS, certificate transparency
+  3  IP Analysis       — RDAP, ASN, geolocation, reverse DNS
+  4  Comprehensive Scan — nmap/masscan TCP+UDP port sweep
+  5  TLS Scan          — testssl.sh, cipher analysis, certificate review
+  6  Web Enumeration   — gobuster, nikto, technology fingerprinting
+  7  WPScan            — WordPress-specific audit (XML-RPC, user enum, plugins)
+  8  Service Verify    — targeted service probes, auth checks, CVE validation
+  9  App / API Review  — OWASP API Top 10, JWT, CORS, auth, injection
+ 10  AI / LLM Review   — LLM endpoint security, prompt injection, RAG
+ 11  Cloud Testing     — IMDS, bucket exposure, IAM, K8s API
+ 12  AD Testing        — Kerberoasting, ADCS, BloodHound, DCSync
+ 13  Active Fuzz       — Burp/sqlmap/dalfox/nuclei/ffuf
+ 14  Vuln Corpus       — NVD CVE correlation for discovered versions
+ 15  Attack Chain AI   — AI synthesis of attack chains from findings
+ 16  Report Pack       — consolidate findings for reporting
+ 17  Network Infra     — SNMP, network device audit, VLAN, CDP/LLDP
+ 18  CI/CD DevOps      — Jenkins, GitLab CI, ArgoCD, K8s pipeline audit
+ 23  Auth / SSO        — OAuth 2.0, SAML, OIDC, session management
+ 24  API Deep          — GraphQL, REST business logic, BOLA, mass assignment
+ 25  Content Sec       — CSP quality, SRI, clickjacking, mixed content, cookies"
+
+    local sys_prompt="You are a senior penetration tester advising on which test steps to run next. Be specific and concise. Output structured markdown only."
+
+    local usr_prompt="Based on the discovered services and current findings below, recommend which PT-Orc steps to run next (and in what order) for a '${profile}' engagement.
+
+For each recommended step:
+- State the step number and name
+- Explain WHY it is relevant given the specific services or findings discovered
+- Rate priority: Immediate / High / Medium / Low
+- Note any prerequisite (e.g. 'run step 4 first for port list')
+
+Also flag any steps that are NOT relevant to this engagement (so the consultant can skip them).
+
+${step_catalogue}
+
+Current engagement context:
+${context}"
+
+    ai_query "$sys_prompt" "$usr_prompt"
+}
+
+# =============================================================================
+# MRK:AI_BANNER — STANDALONE BANNER + USAGE | banner,standalone,usage,help | L801-891
 # NAV-RULE: no-insert-before
 # =============================================================================
 

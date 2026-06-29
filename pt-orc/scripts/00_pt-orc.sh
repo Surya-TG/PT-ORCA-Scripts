@@ -127,12 +127,13 @@ OPT_RETEST=0
 OPT_API_KEY=""
 OPT_PROJECT_ID=""
 OPT_BURP_KEY=""
+DO_RECOMMEND=0
 
-# Result tracking (steps 1-15)
+# Result tracking (steps 1-25)
 declare -A STEP_STATUS
 declare -A STEP_DURATION
 declare -A STEP_SCRIPT
-for _n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+for _n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25; do
     STEP_STATUS[$_n]="—"
     STEP_DURATION[$_n]="—"
     STEP_SCRIPT[$_n]="—"
@@ -153,7 +154,7 @@ Profile selection (auto-selects which steps to run):
   --list-profiles       Print all profiles with their step lists and exit
 
 Step control (override profile selection):
-  --from <N>            Start from step N (1-9 or 12)
+  --from <N>            Start from step N (1–25)
   --only <N>            Run only step N
   --skip <N>            Skip step N; repeatable: --skip 1 --skip 2
 
@@ -164,6 +165,9 @@ General:
   --tier <t>            ghost|normal|loud|evasion (default: from pt-orc.conf)
   --dry-run             No packets sent; prints what would run
   --continue-on-error   Continue to next step if a step fails
+  --recommend           AI step recommendation: reads working/ for discovered
+                        services and findings, then suggests which steps to run
+                        next (requires orc-ai-lib.sh + an AI backend)
   -h|--help             Show this help and exit
 
 Per-step flags:
@@ -269,6 +273,7 @@ while [[ $# -gt 0 ]]; do
         --fast)              OPT_FAST=1; shift ;;
         --no-wp-detect)      OPT_NO_WP_DETECT=1; shift ;;
         --continue-on-error) CONTINUE_ON_ERROR=1; shift ;;
+        --recommend)         DO_RECOMMEND=1; shift ;;
         --aggressive)        OPT_AGGRESSIVE=1; shift ;;
         --nuclei)            OPT_NUCLEI=1; shift ;;
         --api-key)           OPT_API_KEY="$2"; shift 2 ;;
@@ -401,6 +406,15 @@ print_summary() {
         [14]="Vuln Corpus"
         [15]="Attack Chain AI"
         [16]="Report Pack"
+        [17]="Network Infra"
+        [18]="CI/CD DevOps"
+        [19]="Database Audit"
+        [20]="Secrets Scan"
+        [21]="Lateral Movement"
+        [22]="Wireless"
+        [23]="Auth / SSO"
+        [24]="API Deep"
+        [25]="Content Sec"
     )
     local line; line="$(printf '━%.0s' {1..60})"
 
@@ -416,7 +430,7 @@ print_summary() {
 
     local all_ok=1
     local n
-    for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+    for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25; do
         local status="${STEP_STATUS[$n]:-—}"
         local dur="${STEP_DURATION[$n]:-—}"
         local scr="${STEP_SCRIPT[$n]:-—}"
@@ -442,7 +456,7 @@ print_summary() {
         echo "=== PT-Orc Suite Summary ==="
         echo "Project: ${PROJECT_NAME:-[project]}"
         [[ -n "$total" ]] && echo "Total elapsed: ${total}"
-        for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+        for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25; do
             printf "  Step %-2s  %-22s  %-14s  %s\n" \
                 "$n" "${names[$n]}" "${STEP_STATUS[$n]:-—}" "${STEP_DURATION[$n]:-—}"
         done
@@ -452,7 +466,49 @@ print_summary() {
 }
 
 # =============================================================================
-# MRK:00_MAIN — MAIN | main,banner,run,loop,summary | L441-603
+# MRK:00_RECOMMEND — AI STEP RECOMMENDER | recommend,ai,steps,suggest | L459-510
+# NAV-RULE: no-insert-before
+# =============================================================================
+# recommend_steps — sources orc-ai-lib.sh and calls recommend_steps_ai().
+# Called when --recommend is passed. Does not require root.
+recommend_steps() {
+    local ai_lib="${SCRIPT_DIR}/orc-ai-lib.sh"
+    if [[ ! -f "$ai_lib" ]]; then
+        log_err "--recommend: orc-ai-lib.sh not found at ${ai_lib}"
+        return 1
+    fi
+
+    # shellcheck source=orc-ai-lib.sh
+    source "$ai_lib" || { log_err "--recommend: failed to source orc-ai-lib.sh"; return 1; }
+
+    local line; line="$(printf '═%.0s' {1..52})"
+    echo -e "${CYAN}${line}${NC}"
+    echo -e "${CYAN}  PT-Orc — AI Step Recommendation${NC}"
+    echo -e "${CYAN}  Profile: ${ENGAGEMENT_PROFILE:-external} | Working dir: ${SCRIPT_DIR}/working${NC}"
+    echo -e "${CYAN}${line}${NC}"
+    echo ""
+
+    local result
+    result=$(recommend_steps_ai "${SCRIPT_DIR}/working" "${ENGAGEMENT_PROFILE:-external}") || true
+
+    if [[ -z "$result" ]]; then
+        log_warn "--recommend: AI recommendation unavailable (no data in working/ or no AI backend configured)"
+        log_warn "  Ensure at least one step has run (step 4 recommended) and an AI backend is active."
+        log_warn "  Set ANTHROPIC_API_KEY in pt-orc.conf or start ollama to enable recommendations."
+        return 1
+    fi
+
+    echo -e "$result"
+    echo ""
+
+    # Optionally save to working/
+    local out_file="${SCRIPT_DIR}/working/step_recommendation_${SESSION_TS}.md"
+    echo "$result" > "$out_file" 2>/dev/null && \
+        log_ok "Recommendation saved: ${out_file}"
+}
+
+# =============================================================================
+# MRK:00_MAIN — MAIN | main,banner,run,loop,summary | L511-674
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 main() {
@@ -494,6 +550,12 @@ main() {
 
     [[ "$AUTO_YES" -ne 1 ]] && log_warn "No --yes flag — scripts will pause for scope confirmation prompts"
 
+    # ─── AI step recommendation (--recommend exits after printing) ────────────
+    if [[ "$DO_RECOMMEND" -eq 1 ]]; then
+        recommend_steps
+        exit $?
+    fi
+
     {
         echo "=== PT-Orc Suite Start ==="
         echo "Project:   ${PROJECT_NAME:-[project]}"
@@ -519,7 +581,7 @@ main() {
         if [[ -n "$_psteps" ]]; then
             log "Profile '${ENGAGEMENT_PROFILE}' active — running steps: ${_psteps}"
             local _s
-            for _s in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+            for _s in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25; do
                 [[ " ${_psteps} " == *" ${_s} "* ]] || SKIP_STEPS+=("$_s")
             done
             [[ "${#SKIP_STEPS[@]}" -gt 0 ]] && log "  Auto-skipping: ${SKIP_STEPS[*]}"
@@ -532,7 +594,7 @@ main() {
     local suite_start; suite_start=$(date +%s)
     local n
 
-    for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+    for n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25; do
         if ! should_run "$n"; then
             STEP_STATUS[$n]="SKIP"
             STEP_DURATION[$n]="—"
@@ -634,9 +696,86 @@ main() {
                 [[ -n "$OPT_PROJECT_ID" ]] && flags+=("--project-id" "$OPT_PROJECT_ID")
                 [[ "$OPT_RETEST" -eq 1  ]] && flags+=("--retest")
                 ;;
+            17)
+                # Network Infra (17_network_infra.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${NETINFRA_TARGETS:-}"   ]] && flags+=("--targets"     "$NETINFRA_TARGETS")
+                [[ -n "${NETINFRA_VLAN_IFACE:-}" ]] && flags+=("--iface"      "$NETINFRA_VLAN_IFACE")
+                ;;
+            18)
+                # CI/CD DevOps (18_cicd_devops.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${CICD_JENKINS_URL:-}" ]] && flags+=("--jenkins-url" "$CICD_JENKINS_URL")
+                [[ -n "${CICD_GITLAB_URL:-}"  ]] && flags+=("--gitlab-url"  "$CICD_GITLAB_URL")
+                [[ -n "${CICD_ARGOCD_URL:-}"  ]] && flags+=("--argocd-url"  "$CICD_ARGOCD_URL")
+                [[ -n "${CICD_K8S_API_URL:-}" ]] && flags+=("--k8s-url"     "$CICD_K8S_API_URL")
+                ;;
+            19)
+                # Database Audit (19_database_audit.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${DB_TARGETS:-}"           ]] && flags+=("--targets" "$DB_TARGETS")
+                [[ "${DB_CRED_SPRAY_ENABLED:-0}" -eq 1 ]] && flags+=("--spray")
+                ;;
+            20)
+                # Secrets Scan (20_secrets_scan.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${SECRETS_SMB_TARGETS:-}" ]] && flags+=("--targets"  "$SECRETS_SMB_TARGETS")
+                [[ -n "${SECRETS_SMB_USER:-}"    ]] && flags+=("--smb-user" "$SECRETS_SMB_USER")
+                [[ -n "${SECRETS_SMB_PASS:-}"    ]] && flags+=("--smb-pass" "$SECRETS_SMB_PASS")
+                ;;
+            21)
+                # Lateral Movement (21_lateral_movement.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${LATERAL_TARGETS:-}"  ]] && flags+=("--targets" "$LATERAL_TARGETS")
+                [[ -n "${LATERAL_USERNAME:-}" ]] && flags+=("--user"    "$LATERAL_USERNAME")
+                [[ -n "${LATERAL_PASSWORD:-}" ]] && flags+=("--pass"    "$LATERAL_PASSWORD")
+                [[ -n "${LATERAL_NT_HASH:-}"  ]] && flags+=("--hash"    "$LATERAL_NT_HASH")
+                ;;
+            22)
+                # Wireless (22_wireless.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${WIRELESS_IFACE:-}"          ]] && flags+=("--iface"          "$WIRELESS_IFACE")
+                [[ -n "${WIRELESS_EXPECTED_SSIDS:-}" ]] && flags+=("--expected-ssids" "$WIRELESS_EXPECTED_SSIDS")
+                [[ -n "${WIRELESS_SCAN_TIME:-}"      ]] && flags+=("--scan-time"      "$WIRELESS_SCAN_TIME")
+                [[ -n "${WIRELESS_CHANNEL:-}"        ]] && flags+=("--channel"        "$WIRELESS_CHANNEL")
+                [[ "${WIRELESS_DEAUTH_ENABLED:-0}" -eq 1 ]] && flags+=("--deauth")
+                [[ "${WIRELESS_PMKID_ENABLED:-0}"  -eq 1 ]] && flags+=("--pmkid")
+                ;;
+            23)
+                # Auth / SSO (23_auth_sso.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "${OAUTH_CLIENT_ID:-}"     ]] && flags+=("--oauth-client-id"     "$OAUTH_CLIENT_ID")
+                [[ -n "${OAUTH_CLIENT_SECRET:-}" ]] && flags+=("--oauth-client-secret" "$OAUTH_CLIENT_SECRET")
+                [[ -n "${OAUTH_AUTHORIZE_URL:-}" ]] && flags+=("--oauth-authorize-url" "$OAUTH_AUTHORIZE_URL")
+                [[ -n "${SAML_SSO_URL:-}"        ]] && flags+=("--saml-sso-url"        "$SAML_SSO_URL")
+                [[ -n "${OIDC_DISCOVERY_URL:-}"  ]] && flags+=("--oidc-discovery-url"  "$OIDC_DISCOVERY_URL")
+                [[ -n "${SSO_REDIRECT_URI:-}"    ]] && flags+=("--redirect-uri"         "$SSO_REDIRECT_URI")
+                [[ -n "${SSO_BEARER_TOKEN:-}"    ]] && flags+=("--token"                "$SSO_BEARER_TOKEN")
+                ;;
+            24)
+                # API Deep (24_api_deep.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "${BEARER_TOKEN:-}"             ]] && flags+=("--token"              "$BEARER_TOKEN")
+                [[ -n "${API_KEY:-}"                  ]] && flags+=("--api-key"            "$API_KEY")
+                [[ -n "${API_BASE:-}"                 ]] && flags+=("--api-base"           "$API_BASE")
+                [[ -n "${API_VERSION:-}"              ]] && flags+=("--api-version"        "$API_VERSION")
+                [[ -n "${GRAPHQL_URL:-}"              ]] && flags+=("--graphql-url"        "$GRAPHQL_URL")
+                [[ -n "${API_DEEP_BUSINESS_EP:-}"     ]] && flags+=("--business-endpoint"  "$API_DEEP_BUSINESS_EP")
+                [[ -n "${API_DEEP_ENUM_START:-}"      ]] && flags+=("--enum-start"         "$API_DEEP_ENUM_START")
+                [[ -n "${API_DEEP_ENUM_COUNT:-}"      ]] && flags+=("--enum-count"         "$API_DEEP_ENUM_COUNT")
+                for _p in ${API_DEEP_NOSQL_PARAMS:-}; do
+                    flags+=("--nosql-param" "$_p")
+                done
+                ;;
+            25)
+                # Content Security (25_content_sec.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "${BEARER_TOKEN:-}"    ]] && flags+=("--token"  "$BEARER_TOKEN")
+                [[ -n "${COOKIE_HEADER:-}"   ]] && flags+=("--cookie" "$COOKIE_HEADER")
+                ;;
         esac
 
-        local step_names=([1]="DNS Recon" [2]="OSINT Recon" [3]="IP Analysis" [4]="Comprehensive Scan" [5]="TLS Scan" [6]="Web Enumeration" [7]="WPScan" [8]="Service Verify" [9]="App / API Review" [10]="AI / LLM Review" [11]="Cloud Testing" [12]="AD Testing" [13]="Active Fuzz" [14]="Vuln Corpus" [15]="Attack Chain AI" [16]="Report Pack")
+        local step_names=([1]="DNS Recon" [2]="OSINT Recon" [3]="IP Analysis" [4]="Comprehensive Scan" [5]="TLS Scan" [6]="Web Enumeration" [7]="WPScan" [8]="Service Verify" [9]="App / API Review" [10]="AI / LLM Review" [11]="Cloud Testing" [12]="AD Testing" [13]="Active Fuzz" [14]="Vuln Corpus" [15]="Attack Chain AI" [16]="Report Pack" [17]="Network Infra" [18]="CI/CD DevOps" [19]="Database Audit" [20]="Secrets Scan" [21]="Lateral Movement" [22]="Wireless" [23]="Auth / SSO" [24]="API Deep" [25]="Content Sec")
 
         if ! run_step "$n" "${step_names[$n]}" "${flags[@]+"${flags[@]}"}"; then
             if [[ "$CONTINUE_ON_ERROR" -eq 1 ]]; then

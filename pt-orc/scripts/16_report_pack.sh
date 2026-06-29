@@ -83,6 +83,7 @@ RETEST=0
 AI_REPORT=1             # 0 = skip AI report; disable with --no-ai-report
 AI_NO_PDF=0             # 1 = skip PDF (HTML + JSON only); enable with --no-pdf
 AI_MODEL="${AI_CLAUDE_MODEL:-claude-haiku-4-5-20251001}"
+AI_BACKEND_MODE="${AI_BACKEND_MODE:-auto}"
 BASELINE_RUN_DIR=""     # set via --baseline <prior_run_dir>; enables retest diff
 RUN_DIR_ACTUAL=""       # set by write_output; consumed by generate_ai_report
 
@@ -755,8 +756,13 @@ generate_ai_report() {
 
     local api_key="${ANTHROPIC_API_KEY:-}"
     local gemini_key="${GEMINI_API_KEY:-}"
+    if [[ "${AI_BACKEND_MODE:-auto}" == "ollama_only" ]]; then
+        api_key=""
+        gemini_key=""
+        log "AI mode: ollama_only — cloud backends disabled, using Ollama only"
+    fi
     local ollama_host="${OLLAMA_HOST:-}"
-    local ollama_model="${OLLAMA_MODEL:-qwen:7b}"
+    local ollama_model="${OLLAMA_MODEL:-qwen2.5:14b}"
     local ollama_ok=0
 
     local _try_ollama_hosts=()
@@ -879,7 +885,7 @@ API_KEY      = os.environ.get("TG_API_KEY", "")
 GEMINI_KEY   = os.environ.get("TG_GEMINI_API_KEY", "")
 MODEL        = os.environ.get("TG_MODEL", "claude-haiku-4-5-20251001")
 OLLAMA_HOST  = os.environ.get("TG_OLLAMA_HOST", "")
-OLLAMA_MODEL = os.environ.get("TG_OLLAMA_MODEL", "qwen:7b")
+OLLAMA_MODEL = os.environ.get("TG_OLLAMA_MODEL", "qwen2.5:14b")
 GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
 NO_PDF       = os.environ.get("TG_NO_PDF", "0") == "1"
 DRY_RUN      = os.environ.get("TG_DRY_RUN", "0") == "1"
@@ -907,7 +913,7 @@ if _REPORT_PROMPT_PATH.exists():
     except Exception as _e:
         print(f"[WARN] Could not load REPORT_PROMPT.md: {_e}")
 
-MAX_EVIDENCE_LINES = 120
+MAX_EVIDENCE_LINES = 200
 SEV_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3, "informational": 4}
 OWASP_MAP = {
     "A01": ("Broken Access Control",                     "https://owasp.org/Top10/A01_2021-Broken_Access_Control/"),
@@ -1091,17 +1097,34 @@ def collect_evidence_summaries(config):
             if candidates:
                 seen_labels.add(label)
                 blocks.append(f"=== {label} ({candidates[0].name}) ===\n{_read_truncated(candidates[0], MAX_EVIDENCE_LINES)}")
+        # Per-phase findings JSONL: load ALL phase files (not just first 3) — they contain
+        # phase-specific evidence that the AI needs to write detailed finding narratives.
         jsonl_seen = set()
-        patterns = ([f"{slug}_0*_*findings_*.jsonl"] if slug else []) + ["0*_*findings_*.jsonl"]
-        for pat in patterns:
-            for jf in sorted(WORKING_DIR.glob(pat), reverse=True)[:3]:
-                stem_key = re.sub(r'^.*?_?(\d{2}_\w+_findings)_.*', r'\1', jf.name)
-                if stem_key in jsonl_seen:
+        phase_patterns = (
+            ([f"{slug}-web-*-findings-*.jsonl", f"{slug}_0*_*findings_*.jsonl"] if slug else [])
+            + ["*-findings-*.jsonl", "0*_*findings_*.jsonl"]
+        )
+        for pat in phase_patterns:
+            for jf in sorted(WORKING_DIR.glob(pat), key=lambda f: f.name):
+                stem_key = re.sub(r'[\d-]{10,}', '', jf.stem)  # strip timestamps
+                if stem_key in jsonl_seen or jf.stat().st_size < 10:
                     continue
                 jsonl_seen.add(stem_key)
                 try:
-                    lines = jf.read_text().strip().splitlines()[:25]
-                    blocks.append(f"=== Pre-generated Findings: {jf.name} ===\n" + "\n".join(lines))
+                    raw_lines = jf.read_text().strip().splitlines()
+                    # Parse and format compactly: id | severity | title | description[:120]
+                    compact_lines = []
+                    for rl in raw_lines[:40]:
+                        try:
+                            fj = json.loads(rl)
+                            compact_lines.append(
+                                f"  [{fj.get('id','?')}] {fj.get('severity','?').upper()} | "
+                                f"{fj.get('title','?')} | "
+                                f"{(fj.get('description') or '')[:120].replace(chr(10),' ')}"
+                            )
+                        except Exception:
+                            compact_lines.append(f"  {rl[:200]}")
+                    blocks.append(f"=== Phase Findings: {jf.name} ===\n" + "\n".join(compact_lines))
                 except Exception:
                     pass
     if evidence_dir.exists():
@@ -1116,7 +1139,7 @@ def collect_evidence_summaries(config):
                 if dk in seen:
                     continue
                 seen.add(dk)
-                blocks.append(f"=== Evidence [{host_label}] {ev_file.name} ===\n{_read_truncated(ev_file, 60)}")
+                blocks.append(f"=== Evidence [{host_label}] {ev_file.name} ===\n{_read_truncated(ev_file, 100)}")
         ip_dir = evidence_dir / "_ip_analysis"
         if ip_dir.exists():
             for ip_subdir in ip_dir.iterdir():
@@ -1282,6 +1305,96 @@ def _ollama_context_length(ollama_host, ollama_model):
     except Exception:
         pass
     return 32768
+
+def _compact_findings_text(findings):
+    """Serialise findings to a dense line-per-finding format for small-model prompts.
+    Keeps every field the model needs while staying ~200 chars/finding."""
+    lines = []
+    for f in findings:
+        sev  = (f.get("severity") or "Low").upper()
+        fid  = f.get("id") or f.get("finding_id") or "F-?"
+        title = f.get("title", "Untitled")
+        phase = f.get("phase", "")
+        desc  = (f.get("description") or "")[:300].replace("\n", " ")
+        rec   = (f.get("recommendation") or f.get("remediation") or "")[:200].replace("\n", " ")
+        hosts = ", ".join(f.get("affected_hosts", []) or [])
+        cvss  = f.get("cvss_score", "")
+        owasp = f.get("owasp_id", "")
+        cwe   = f.get("cwe_id", "")
+        impact= (f.get("business_impact") or "")[:200].replace("\n", " ")
+        block = f"[{fid}] {sev} | {title}"
+        if phase:   block += f"\n  Phase: {phase}"
+        if hosts:   block += f"\n  Hosts: {hosts}"
+        if cvss:    block += f"\n  CVSS: {cvss}"
+        if owasp:   block += f"  OWASP: {owasp}"
+        if cwe:     block += f"  CWE: {cwe}"
+        block += f"\n  Evidence/Condition: {desc}"
+        if impact:  block += f"\n  Business Impact: {impact}"
+        block += f"\n  Recommendation: {rec}"
+        lines.append(block)
+    return "\n\n".join(lines)
+
+
+def _build_ollama_company_prompt(config, findings, evidence_block, input_budget):
+    """Compact company-report prompt optimised for local models (qwen2.5:14b, llama3:8b etc.).
+    Puts DATA first, keeps instructions short, never sends REPORT_PROMPT.md."""
+    project   = config.get("PROJECT_NAME", "VAPT Assessment")
+    targets   = config.get("TARGET_IPS", "See scope")
+    atype     = config.get("ASSESSMENT_TYPE", "External Web Application Penetration Test")
+    period    = config.get("TESTING_PERIOD", "")
+    engineer  = config.get("LEAD_ENGINEER", "TechGuard Labs")
+    # Budget split: 60% findings, 35% evidence, 5% frame
+    frame_budget    = 2000
+    findings_budget = int((input_budget - frame_budget) * 0.60)
+    evidence_budget = int((input_budget - frame_budget) * 0.35)
+    compact = _compact_findings_text(findings)
+    if len(compact) > findings_budget:
+        compact = compact[:findings_budget] + "\n...[findings truncated]"
+    ev = evidence_block[:evidence_budget] if evidence_block else "(no evidence summaries available)"
+    n = len(findings)
+    # Count severity breakdown
+    from collections import Counter as _Ctr
+    sev_counts = _Ctr((f.get("severity") or "low").lower() for f in findings)
+    sev_line = "  ".join(f"{k.upper()}: {v}" for k, v in sorted(sev_counts.items()))
+    return f"""TASK: Write a complete professional HTML penetration testing report for TechGuard Labs.
+
+ENGAGEMENT DETAILS:
+  Project       : {project}
+  Targets       : {targets}
+  Assessment    : {atype}
+  Period        : {period}
+  Lead Engineer : {engineer}
+  Total Findings: {n}  ({sev_line})
+
+═══ ALL {n} FINDINGS — INCLUDE EVERY ONE IN THE REPORT ═══
+
+{compact}
+
+═══ EVIDENCE SUMMARIES FROM TESTING ═══
+
+{ev}
+
+═══ OUTPUT INSTRUCTIONS ═══
+
+Write a COMPLETE HTML report. Begin with <!DOCTYPE html>. End with </html>.
+Embed all CSS. Use a professional dark-navy and crimson colour scheme.
+
+Required sections (include all {n} findings — DO NOT skip any):
+  1. Cover / Title Block — project name, targets, date, overall risk rating
+  2. Executive Summary — risk rating, finding counts by severity, 3-4 sentence narrative
+  3. Scope & Methodology — targets table, testing phases, tools
+  4. Assessment Findings — EVERY finding: ID badge, severity, condition observed, evidence, business impact, recommendations
+  5. Risk Matrix — likelihood × impact grid with finding IDs placed in cells
+  6. Remediation Roadmap — priority table: ID | Title | Severity | Effort | Timeframe
+  7. Disclaimer — authorised testing statement
+
+TechGuard style rules:
+  - Formal, evidence-based prose. No speculation. No placeholder text.
+  - Severity labels: Critical | High | Medium | Low | Informational
+  - Every finding must appear with its ID (e.g. f-001), severity, description, and remediation
+  - Observations are Informational; they DO NOT count toward severity totals
+"""
+
 
 def _normalize_ai_result(data):
     """Fix known key-name variations that models sometimes produce."""
@@ -1455,7 +1568,7 @@ def analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_bl
     # Use 3.5 chars/token as a conservative estimate.
     ctx_tokens = _ollama_context_length(ollama_host, ollama_model)
     total_char_budget = int(ctx_tokens * 3.5)
-    output_reserve   = 14000
+    output_reserve   = 21000
     input_budget     = total_char_budget - output_reserve
 
     # Allocate: skill (~15K), template overhead (~5K), findings, then evidence with remainder.
@@ -1477,7 +1590,7 @@ def analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_bl
             "model": ollama_model,
             "messages": [{"role": "user", "content": prompt}],
             "stream": False,
-            "options": {"num_predict": 4000},
+            "options": {"num_predict": 6000},
         }).encode()
         req = _urllib_req.Request(
             f"{ollama_host}/api/chat",
@@ -1485,7 +1598,7 @@ def analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_bl
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with _urllib_req.urlopen(req, timeout=600) as resp:
+        with _urllib_req.urlopen(req, timeout=1800) as resp:
             data = json.loads(resp.read())
         text = data.get("message", {}).get("content", "")
     else:
@@ -1494,7 +1607,7 @@ def analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_bl
             "prompt": prompt,
             "stream": False,
             "format": "json",
-            "options": {"num_predict": 4000},
+            "options": {"num_predict": 6000},
         }).encode()
         req = _urllib_req.Request(
             f"{ollama_host}/api/generate",
@@ -1502,7 +1615,7 @@ def analyze_with_ollama(ollama_host, ollama_model, config, findings, evidence_bl
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with _urllib_req.urlopen(req, timeout=600) as resp:
+        with _urllib_req.urlopen(req, timeout=1800) as resp:
             data = json.loads(resp.read())
         text = data.get("response", "")
 
@@ -1602,170 +1715,359 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="UTF-8"/>
 <title>{{ report_title }}</title>
 <style>
-@page { margin: 20mm 18mm 20mm 18mm; size: A4; }
-@page :first { margin: 0; }
+/* ── PAGE SETUP ──────────────────────────────────────────── */
+@page          { margin: 20mm 18mm 20mm 18mm; size: A4; }
+@page :first   { margin: 0; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; font-size: 10pt; color: #1a1a2e; background: #ffffff; line-height: 1.5; }
-.cover { background: #0f1940; color: #fff; min-height: 297mm; padding: 60px 70px; page-break-after: always; }
-.cover-logo { font-size: 13pt; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #90caf9; margin-bottom: 6px; }
-.cover-logo-sub { font-size: 9pt; color: #7986cb; letter-spacing: 1px; }
-.cover-spacer { height: 80px; }
-.cover-classif { display: inline-block; background: #e53935; color: #fff; font-size: 9pt; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 5px 18px; border-radius: 2px; margin-bottom: 30px; }
-.cover-title { font-size: 28pt; font-weight: 700; line-height: 1.2; margin-bottom: 12px; }
-.cover-subtitle { font-size: 14pt; color: #90caf9; margin-bottom: 44px; }
-.cover-meta { border-top: 1px solid rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.2); padding: 20px 0; display: table; }
-.cover-row { display: table-row; }
-.cover-lbl { display: table-cell; color: #7986cb; font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; padding: 4px 24px 4px 0; font-weight: 600; }
-.cover-val { display: table-cell; color: #e8eaf6; font-size: 10pt; padding: 4px 0; }
-.cover-footer { margin-top: 60px; color: rgba(255,255,255,0.4); font-size: 8pt; text-align: center; }
-h2.sec-hdr { background: #1a237e; color: #fff; padding: 10px 18px; font-size: 13pt; font-weight: 700; margin-bottom: 20px; border-radius: 3px; page-break-before: always; }
-h2.sec-hdr .n { color: #7986cb; margin-right: 8px; }
-.page-section { padding-top: 4px; }
-.risk-banner { border-radius: 6px; padding: 12px 18px; margin-bottom: 18px; }
-.risk-banner.high     { background: #fff3e0; border-left: 6px solid #e64a19; }
-.risk-banner.medium   { background: #fffde7; border-left: 6px solid #f57f17; }
-.risk-banner.low      { background: #e8f5e9; border-left: 6px solid #2e7d32; }
-.risk-banner.critical { background: #ffebee; border-left: 6px solid #c62828; }
-.risk-banner-lbl { font-size: 9pt; color: #546e7a; margin-right: 12px; }
-.risk-banner-val { font-size: 14pt; font-weight: 800; }
-.risk-banner.critical .risk-banner-val { color: #c62828; }
-.risk-banner.high     .risk-banner-val { color: #e64a19; }
-.risk-banner.medium   .risk-banner-val { color: #f57f17; }
-.risk-banner.low      .risk-banner-val { color: #2e7d32; }
-.risk-banner-just { font-size: 9pt; color: #546e7a; margin-left: 14px; }
-.exec-text { background: #f8f9ff; border-left: 4px solid #3f51b5; padding: 14px 18px; margin-bottom: 20px; font-size: 10.5pt; line-height: 1.65; color: #1a1a2e; border-radius: 0 4px 4px 0; }
-.sev-cards { display: table; width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 24px; }
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10pt; color: #1C2340; background: #fff; line-height: 1.55;
+}
+
+/* ── COVER PAGE ──────────────────────────────────────────── */
+.cover {
+  background: #0D1B3E;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: #fff;
+  min-height: 297mm;
+  page-break-after: always;
+  display: block;
+}
+.cover-top-stripe { height: 7px; background: #C41E3A; }
+.cover-body       { padding: 52px 64px 0 64px; }
+.cover-brand      { font-size: 11pt; font-weight: 800; letter-spacing: 5px; text-transform: uppercase; color: #C41E3A; }
+.cover-brand-sub  { font-size: 8pt; color: #7B9EC8; letter-spacing: 2px; margin-top: 3px; text-transform: uppercase; }
+.cover-spacer     { height: 88px; }
+.cover-classif {
+  display: inline-block; background: #C41E3A; color: #fff;
+  font-size: 8pt; font-weight: 800; letter-spacing: 4px; text-transform: uppercase;
+  padding: 5px 20px; margin-bottom: 22px;
+}
+.cover-title    { font-size: 32pt; font-weight: 700; line-height: 1.15; color: #fff; margin-bottom: 10px; }
+.cover-subtitle { font-size: 13pt; color: #6B9BD2; font-weight: 300; letter-spacing: 0.5px; margin-bottom: 44px; }
+.cover-rule     { height: 1px; background: rgba(255,255,255,0.15); margin-bottom: 28px; }
+.cover-meta     { display: table; }
+.cover-row      { display: table-row; }
+.cover-lbl {
+  display: table-cell; color: #7B9EC8; font-size: 8pt; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; padding: 5px 28px 5px 0;
+  white-space: nowrap;
+}
+.cover-val      { display: table-cell; color: #E8EEF8; font-size: 10pt; padding: 5px 0; }
+.cover-risk-pill {
+  display: inline-block; font-size: 9.5pt; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 1px; padding: 3px 16px; border-radius: 3px;
+}
+.cover-risk-pill.critical { background: #7F1D1D; color: #fff; }
+.cover-risk-pill.high     { background: #C41E3A; color: #fff; }
+.cover-risk-pill.medium   { background: #92400E; color: #fff; }
+.cover-risk-pill.low      { background: #1E3A5F; color: #fff; }
+.cover-bottom {
+  padding: 14px 64px; margin-top: 56px;
+  background: rgba(0,0,0,0.35); border-top: 1px solid rgba(255,255,255,0.1);
+  display: table; width: 100%;
+}
+.cover-bottom-l { display: table-cell; color: rgba(255,255,255,0.45); font-size: 8pt; }
+.cover-bottom-r { display: table-cell; color: rgba(255,255,255,0.45); font-size: 8pt; text-align: right; }
+
+/* ── SECTION HEADERS ─────────────────────────────────────── */
+h2.sec-hdr {
+  background: #F4F6FA; border-left: 6px solid #C41E3A;
+  padding: 11px 18px 11px 14px; font-size: 13pt; font-weight: 700;
+  color: #0D1B3E; margin-bottom: 24px; page-break-before: always;
+  display: table; width: 100%;
+}
+h2.sec-hdr .n {
+  display: inline-block; background: #C41E3A; color: #fff;
+  width: 26px; height: 26px; line-height: 26px; text-align: center;
+  border-radius: 50%; font-size: 10pt; font-weight: 800;
+  margin-right: 12px; vertical-align: middle;
+}
+.page-section { padding: 0; }
+.scope-block  { margin-bottom: 24px; }
+.scope-h3 {
+  font-size: 9pt; font-weight: 800; color: #0D1B3E; margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  border-bottom: 2px solid #DDE3EF; padding-bottom: 5px;
+}
+
+/* ── RISK BANNER ─────────────────────────────────────────── */
+.risk-banner {
+  border-radius: 6px; padding: 14px 20px; margin-bottom: 20px; display: table; width: 100%;
+}
+.risk-banner.critical { background: #FEF2F2; border: 1px solid #FECACA; border-left: 7px solid #7F1D1D; }
+.risk-banner.high     { background: #FEF2F2; border: 1px solid #FECACA; border-left: 7px solid #C41E3A; }
+.risk-banner.medium   { background: #FFFBEB; border: 1px solid #FDE68A; border-left: 7px solid #92400E; }
+.risk-banner.low      { background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 7px solid #1E3A5F; }
+.risk-banner-left { display: table-cell; vertical-align: middle; width: 200px; }
+.risk-banner-lbl  { font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #5C6B8A; }
+.risk-banner-val  { font-size: 15pt; font-weight: 800; margin-top: 2px; }
+.risk-banner.critical .risk-banner-val,
+.risk-banner.high     .risk-banner-val { color: #7F1D1D; }
+.risk-banner.medium   .risk-banner-val { color: #92400E; }
+.risk-banner.low      .risk-banner-val { color: #1E3A5F; }
+.risk-banner-just { display: table-cell; vertical-align: middle; font-size: 9.5pt; color: #374151; line-height: 1.6; padding-left: 20px; }
+
+/* ── EXECUTIVE SUMMARY BOX ───────────────────────────────── */
+.exec-text {
+  background: #F4F6FA; border-left: 5px solid #0D1B3E;
+  padding: 16px 20px; margin-bottom: 24px;
+  font-size: 10.5pt; line-height: 1.7; color: #1C2340; border-radius: 0 6px 6px 0;
+}
+
+/* ── SEVERITY DASHBOARD ──────────────────────────────────── */
+.sev-cards { display: table; width: 100%; border-collapse: separate; border-spacing: 10px; margin-bottom: 28px; }
 .sev-row   { display: table-row; }
-.sev-card  { display: table-cell; text-align: center; padding: 16px 8px; border-radius: 8px; width: 20%; }
-.sev-card.critical      { background: #ffebee; }
-.sev-card.high          { background: #fff3e0; }
-.sev-card.medium        { background: #fffde7; }
-.sev-card.low           { background: #e3f2fd; }
-.sev-card.informational { background: #eceff1; }
-.sev-count { font-size: 28pt; font-weight: 800; line-height: 1; margin-bottom: 4px; }
-.sev-card.critical      .sev-count { color: #c62828; }
-.sev-card.high          .sev-count { color: #e64a19; }
-.sev-card.medium        .sev-count { color: #f57f17; }
-.sev-card.low           .sev-count { color: #1565c0; }
-.sev-card.informational .sev-count { color: #546e7a; }
-.sev-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; color: #546e7a; }
+.sev-card  { display: table-cell; text-align: center; padding: 18px 8px 14px; border-radius: 8px; width: 20%; }
+.sev-card.critical      { background: #FEF2F2; border-top: 5px solid #7F1D1D; }
+.sev-card.high          { background: #FEF2F2; border-top: 5px solid #C41E3A; }
+.sev-card.medium        { background: #FFFBEB; border-top: 5px solid #92400E; }
+.sev-card.low           { background: #EFF6FF; border-top: 5px solid #1E3A5F; }
+.sev-card.informational { background: #F1F3F7; border-top: 5px solid #4B5563; }
+.sev-count { font-size: 30pt; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.sev-card.critical      .sev-count { color: #7F1D1D; }
+.sev-card.high          .sev-count { color: #C41E3A; }
+.sev-card.medium        .sev-count { color: #92400E; }
+.sev-card.low           .sev-count { color: #1E3A5F; }
+.sev-card.informational .sev-count { color: #4B5563; }
+.sev-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #5C6B8A; }
+
+/* ── DATA TABLES ─────────────────────────────────────────── */
 table.dt { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9.5pt; }
-table.dt th { background: #283593; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; font-size: 9pt; }
-table.dt td { padding: 8px 12px; border-bottom: 1px solid #e8eaf6; vertical-align: top; }
-table.dt tr:nth-child(even) td { background: #f5f5ff; }
-table.dt tr:last-child td { border-bottom: none; }
-.rm-wrap { margin-bottom: 24px; }
-.rm-wrap h3 { font-size: 10pt; color: #546e7a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+table.dt thead th { background: #0D1B3E; color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; font-size: 9pt; }
+table.dt tbody td { padding: 8px 12px; border-bottom: 1px solid #DDE3EF; vertical-align: top; color: #1C2340; }
+table.dt tbody tr:nth-child(even) td { background: #F4F6FA; }
+table.dt tbody tr:last-child td { border-bottom: none; }
+
+/* ── RISK MATRIX ─────────────────────────────────────────── */
+.rm-wrap { margin-bottom: 28px; }
 table.rm { border-collapse: collapse; width: 100%; font-size: 9pt; }
-table.rm td, table.rm th { border: 2px solid #fff; padding: 10px 8px; text-align: center; vertical-align: middle; }
-table.rm th { background: #37474f; color: #fff; font-weight: 600; }
-table.rm .rh { background: #37474f; color: #fff; font-weight: 600; width: 90px; font-size: 8.5pt; }
-.rm-crit   { background: #ffcdd2; color: #b71c1c; font-weight: 700; }
-.rm-high   { background: #ffe0b2; color: #bf360c; font-weight: 600; }
-.rm-medium { background: #fff9c4; color: #7c5b00; }
-.rm-low    { background: #e3f2fd; color: #1565c0; }
-.rm-info   { background: #eceff1; color: #546e7a; }
-.rm-lbl { font-size: 8pt; font-weight: 700; text-transform: uppercase; }
-.rm-ids { font-size: 7.5pt; margin-top: 4px; color: #455a64; }
+table.rm td, table.rm th { border: 3px solid #fff; padding: 11px 10px; text-align: center; vertical-align: middle; }
+table.rm th { background: #162040; color: #fff; font-weight: 700; font-size: 9pt; }
+table.rm .rh { background: #162040; color: #fff; font-weight: 700; width: 90px; font-size: 8.5pt; }
+.rm-crit   { background: #FECACA; color: #7F1D1D; font-weight: 700; }
+.rm-high   { background: #FED7AA; color: #7C2D12; font-weight: 600; }
+.rm-medium { background: #FEF08A; color: #713F12; }
+.rm-low    { background: #BFDBFE; color: #1E3A5F; }
+.rm-info   { background: #E2E8F0; color: #475569; }
+.rm-lbl { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.rm-ids { font-size: 7.5pt; margin-top: 4px; opacity: 0.75; }
+
+/* ── OWASP TABLE ─────────────────────────────────────────── */
 table.owasp { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9pt; }
-table.owasp th { background: #1a237e; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
-table.owasp td { padding: 7px 12px; border-bottom: 1px solid #e8eaf6; }
-table.owasp tr:nth-child(even) td { background: #f5f5ff; }
-.bar-wrap { background: #e8eaf6; border-radius: 10px; height: 8px; width: 120px; display: inline-block; vertical-align: middle; overflow: hidden; }
-.bar-fill { height: 100%; background: #3f51b5; border-radius: 10px; }
-.cnt { display: inline-block; background: #3f51b5; color: #fff; font-size: 8pt; font-weight: 700; padding: 2px 8px; border-radius: 10px; min-width: 24px; text-align: center; }
-.cnt.zero { background: #cfd8dc; color: #546e7a; }
-.fc { border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 28px; overflow: hidden; page-break-inside: avoid; }
-.fc-hdr { padding: 12px 16px; display: table; width: 100%; }
-.fc-hdr.critical      { background: #ffebee; border-left: 5px solid #c62828; }
-.fc-hdr.high          { background: #fff3e0; border-left: 5px solid #e64a19; }
-.fc-hdr.medium        { background: #fffde7; border-left: 5px solid #f9a825; }
-.fc-hdr.low           { background: #e3f2fd; border-left: 5px solid #1565c0; }
-.fc-hdr.informational { background: #eceff1; border-left: 5px solid #546e7a; }
-.fc-hdr-inner { display: table-row; }
-.fc-id    { display: table-cell; font-size: 9pt; font-weight: 700; color: #546e7a; vertical-align: middle; width: 52px; }
-.fc-title { display: table-cell; font-size: 11pt; font-weight: 700; vertical-align: middle; padding-right: 12px; }
-.fc-hdr.critical      .fc-title { color: #c62828; }
-.fc-hdr.high          .fc-title { color: #bf360c; }
-.fc-hdr.medium        .fc-title { color: #6d4c00; }
-.fc-hdr.low           .fc-title { color: #1565c0; }
-.fc-hdr.informational .fc-title { color: #37474f; }
-.fc-badge-cell { display: table-cell; vertical-align: middle; width: 90px; text-align: right; }
-.sev-badge { display: inline-block; font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 12px; border-radius: 12px; color: #fff; }
-.sev-badge.critical      { background: #c62828; }
-.sev-badge.high          { background: #e64a19; }
-.sev-badge.medium        { background: #f9a825; color: #3e2000; }
-.sev-badge.low           { background: #1565c0; }
-.sev-badge.informational { background: #546e7a; }
-.fc-meta { display: table; width: 100%; background: #fafafa; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; padding: 10px 16px; }
-.fc-meta-row  { display: table-row; }
-.fc-meta-cell { display: table-cell; padding: 3px 20px 3px 0; font-size: 8.5pt; }
-.fc-meta-cell .lbl { color: #78909c; font-weight: 600; text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.5px; display: block; }
-.fc-meta-cell .val { color: #1a1a2e; font-weight: 500; }
+table.owasp thead th { background: #162040; color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; }
+table.owasp tbody td { padding: 7px 12px; border-bottom: 1px solid #DDE3EF; }
+table.owasp tbody tr:nth-child(even) td { background: #F4F6FA; }
+.bar-wrap { background: #DDE3EF; border-radius: 10px; height: 8px; width: 130px; display: inline-block; vertical-align: middle; overflow: hidden; }
+.bar-fill { height: 100%; background: #C41E3A; border-radius: 10px; }
+.cnt { display: inline-block; background: #162040; color: #fff; font-size: 8pt; font-weight: 700; padding: 2px 8px; border-radius: 10px; min-width: 26px; text-align: center; }
+.cnt.zero { background: #CBD5E1; color: #64748B; }
+
+/* ── FINDING CARDS ───────────────────────────────────────── */
+.fc { border: 1px solid #DDE3EF; border-radius: 8px; margin-bottom: 28px; overflow: hidden; page-break-inside: avoid; }
+.fc-hdr { padding: 13px 18px; display: table; width: 100%; }
+.fc-hdr.critical      { background: #FEF2F2; border-left: 7px solid #7F1D1D; }
+.fc-hdr.high          { background: #FEF2F2; border-left: 7px solid #C41E3A; }
+.fc-hdr.medium        { background: #FFFBEB; border-left: 7px solid #92400E; }
+.fc-hdr.low           { background: #EFF6FF; border-left: 7px solid #1E3A5F; }
+.fc-hdr.informational { background: #F1F3F7; border-left: 7px solid #4B5563; }
+.fc-hdr-inner         { display: table-row; }
+.fc-id {
+  display: table-cell; font-size: 8.5pt; font-weight: 800; color: #5C6B8A;
+  vertical-align: middle; width: 54px; font-family: 'Courier New', monospace;
+}
+.fc-title { display: table-cell; font-size: 11.5pt; font-weight: 700; vertical-align: middle; padding-right: 14px; }
+.fc-hdr.critical      .fc-title { color: #7F1D1D; }
+.fc-hdr.high          .fc-title { color: #881337; }
+.fc-hdr.medium        .fc-title { color: #78350F; }
+.fc-hdr.low           .fc-title { color: #1E3A5F; }
+.fc-hdr.informational .fc-title { color: #374151; }
+.fc-badge-cell { display: table-cell; vertical-align: middle; width: 94px; text-align: right; }
+.sev-badge {
+  display: inline-block; font-size: 8pt; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 14px;
+  border-radius: 20px; color: #fff;
+}
+.sev-badge.critical      { background: #7F1D1D; }
+.sev-badge.high          { background: #C41E3A; }
+.sev-badge.medium        { background: #92400E; }
+.sev-badge.low           { background: #1E3A5F; }
+.sev-badge.informational { background: #4B5563; }
+.fc-meta     { display: table; width: 100%; background: #F9FAFB; border-top: 1px solid #DDE3EF; border-bottom: 1px solid #DDE3EF; padding: 10px 18px; }
+.fc-meta-row { display: table-row; }
+.fc-meta-cell { display: table-cell; padding: 4px 22px 4px 0; font-size: 8.5pt; }
+.fc-meta-cell .lbl { color: #5C6B8A; font-weight: 700; text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+.fc-meta-cell .val { color: #1C2340; font-weight: 500; }
 .cvss-score { font-size: 14pt; font-weight: 800; }
-.cvss-score.critical      { color: #c62828; }
-.cvss-score.high          { color: #e64a19; }
-.cvss-score.medium        { color: #f9a825; }
-.cvss-score.low           { color: #1565c0; }
-.cvss-score.informational { color: #546e7a; }
-.fc-body { padding: 16px; }
-.fc-sec { margin-bottom: 14px; }
-.fc-sec-title { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #455a64; margin-bottom: 5px; padding-bottom: 3px; border-bottom: 1px solid #eceff1; }
-.fc-sec p { font-size: 9.5pt; line-height: 1.55; color: #263238; }
-.tag { display: inline-block; font-size: 7.5pt; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin: 2px 2px 2px 0; }
-.tag.cve  { background: #fce4ec; color: #880e4f; }
-.tag.host { background: #e8f5e9; color: #1b5e20; }
-.tag.ref  { background: #e8eaf6; color: #3949ab; }
-ol.steps { margin: 6px 0 0 18px; font-size: 9.5pt; line-height: 1.6; }
-ol.steps li { margin-bottom: 3px; }
-.ref-link { color: #1565c0; font-size: 8.5pt; display: block; margin-bottom: 2px; }
+.cvss-score.critical      { color: #7F1D1D; }
+.cvss-score.high          { color: #C41E3A; }
+.cvss-score.medium        { color: #92400E; }
+.cvss-score.low           { color: #1E3A5F; }
+.cvss-score.informational { color: #4B5563; }
+.fc-body      { padding: 16px 18px; }
+.fc-sec       { margin-bottom: 14px; }
+.fc-sec:last-child { margin-bottom: 0; }
+.fc-sec-title {
+  font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+  color: #5C6B8A; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #EDF0F5;
+}
+.fc-sec p  { font-size: 9.5pt; line-height: 1.6; color: #2D3748; }
+ol.steps   { margin: 6px 0 0 18px; font-size: 9.5pt; line-height: 1.65; }
+ol.steps li { margin-bottom: 4px; color: #2D3748; }
+.tag { display: inline-block; font-size: 7.5pt; font-weight: 700; padding: 2px 9px; border-radius: 12px; margin: 2px 3px 2px 0; }
+.tag.cve  { background: #FEE2E2; color: #991B1B; }
+.tag.host { background: #D1FAE5; color: #065F46; }
+.tag.ref  { background: #E0E7FF; color: #3730A3; }
+.ref-link { color: #1E40AF; font-size: 8.5pt; display: block; margin-bottom: 3px; word-break: break-all; }
+
+/* ── ATTACK PATH CARDS ───────────────────────────────────── */
+.ap-card { border: 1px solid #DDE3EF; border-radius: 8px; margin-bottom: 24px; overflow: hidden; page-break-inside: avoid; }
+.ap-hdr  { padding: 12px 18px; display: table; width: 100%; background: #F4F6FA; border-left: 7px solid #162040; }
+.ap-hdr.critical { border-left-color: #7F1D1D; background: #FEF2F2; }
+.ap-hdr.high     { border-left-color: #C41E3A; background: #FEF2F2; }
+.ap-hdr.medium   { border-left-color: #92400E; background: #FFFBEB; }
+.ap-hdr.low      { border-left-color: #1E3A5F; background: #EFF6FF; }
+.ap-hdr-inner    { display: table-row; }
+.ap-id    { display: table-cell; font-size: 8.5pt; font-weight: 800; color: #5C6B8A; vertical-align: middle; width: 54px; font-family: 'Courier New', monospace; }
+.ap-title { display: table-cell; font-size: 11pt; font-weight: 700; color: #0D1B3E; vertical-align: middle; padding-right: 14px; }
+.ap-cvss  { display: table-cell; font-size: 8.5pt; color: #5C6B8A; vertical-align: middle; width: 110px; text-align: right; white-space: nowrap; }
+.ap-badge-cell { display: table-cell; vertical-align: middle; width: 94px; text-align: right; }
+.ap-body  { padding: 14px 18px; }
+.ap-row   { margin-bottom: 10px; font-size: 9.5pt; }
+.ap-lbl   { font-size: 7.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #5C6B8A; display: block; margin-bottom: 3px; }
+.ap-chain { background: #F4F6FA; border-radius: 6px; padding: 10px 14px; margin-top: 4px; }
+.ap-chain li { font-size: 9pt; line-height: 1.7; color: #2D3748; margin-bottom: 2px; }
+.ap-chain li strong { color: #C41E3A; }
+
+/* ── RETEST BANNER ───────────────────────────────────────── */
+.retest-ok   { background: #F0FDF4; border: 1px solid #BBF7D0; border-left: 7px solid #15803D; border-radius: 6px; padding: 12px 18px; margin-bottom: 18px; font-size: 9.5pt; }
+.retest-warn { background: #FEF2F2; border: 1px solid #FECACA; border-left: 7px solid #C41E3A; border-radius: 6px; padding: 12px 18px; margin-bottom: 18px; font-size: 9.5pt; }
+
+/* ── ROADMAP TABLE ───────────────────────────────────────── */
 table.roadmap { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 20px; }
-table.roadmap th { background: #1a237e; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
-table.roadmap td { padding: 8px 12px; border-bottom: 1px solid #e8eaf6; vertical-align: top; }
-table.roadmap tr:nth-child(even) td { background: #f5f5ff; }
-.effort-Low    { color: #2e7d32; font-weight: 600; }
-.effort-Medium { color: #f57f17; font-weight: 600; }
-.effort-High   { color: #c62828; font-weight: 600; }
-.disc { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 16px 20px; font-size: 9pt; color: #4e3400; line-height: 1.6; }
-.disc h3 { color: #f57f17; font-size: 10pt; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.footer { margin-top: 40px; border-top: 2px solid #1a237e; padding-top: 12px; text-align: center; font-size: 8pt; color: #78909c; }
-.scope-h3 { font-size: 9.5pt; font-weight: 700; color: #283593; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.scope-block { margin-bottom: 20px; }
+table.roadmap thead th { background: #0D1B3E; color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; }
+table.roadmap tbody td { padding: 8px 12px; border-bottom: 1px solid #DDE3EF; vertical-align: top; }
+table.roadmap tbody tr:nth-child(even) td { background: #F4F6FA; }
+.effort-Low    { color: #065F46; font-weight: 700; }
+.effort-Medium { color: #92400E; font-weight: 700; }
+.effort-High   { color: #7F1D1D; font-weight: 700; }
+
+/* ── DISCLAIMER ──────────────────────────────────────────── */
+.disc { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 18px 22px; font-size: 9pt; color: #78350F; line-height: 1.65; }
+.disc h3 { color: #B45309; font-size: 10pt; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+
+/* ── PAGE FOOTER ─────────────────────────────────────────── */
+.footer { margin-top: 40px; border-top: 3px solid #0D1B3E; padding-top: 12px; display: table; width: 100%; font-size: 8pt; color: #5C6B8A; }
+.footer-l { display: table-cell; }
+.footer-r { display: table-cell; text-align: right; }
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════════════════
+     COVER PAGE
+     ══════════════════════════════════════════════════════════ -->
 <div class="cover">
-  <div>
-    <div class="cover-logo">TechGuard Labs</div>
-    <div class="cover-logo-sub">Security Intelligence &amp; Penetration Testing</div>
-  </div>
-  <div class="cover-spacer"></div>
-  <div>
-    <div class="cover-classif">CONFIDENTIAL</div>
-    <div class="cover-title">Security Assessment<br/>Report</div>
-    <div class="cover-subtitle">Web Application Penetration Test</div>
-    <div class="cover-meta">
-      <div class="cover-row"><div class="cover-lbl">Project</div><div class="cover-val">{{ summary.project }}</div></div>
-      <div class="cover-row"><div class="cover-lbl">Target(s)</div><div class="cover-val">{{ summary.targets | join(", ") }}</div></div>
-      <div class="cover-row"><div class="cover-lbl">Assessment Type</div><div class="cover-val">{{ summary.assessment_type }}</div></div>
-      <div class="cover-row"><div class="cover-lbl">Testing Period</div><div class="cover-val">{{ summary.testing_period }}</div></div>
-      <div class="cover-row"><div class="cover-lbl">Report Date</div><div class="cover-val">{{ report_date }}</div></div>
-      <div class="cover-row"><div class="cover-lbl">Overall Risk</div><div class="cover-val"><strong>{{ summary.overall_risk_rating }}</strong></div></div>
+  <div class="cover-top-stripe"></div>
+  <div class="cover-body">
+    <div>
+      <div class="cover-brand">TechGuard Labs</div>
+      <div class="cover-brand-sub">Security Intelligence &nbsp;·&nbsp; Penetration Testing &nbsp;·&nbsp; Red Team</div>
+    </div>
+    <div class="cover-spacer"></div>
+    <div>
+      <div class="cover-classif">Confidential</div>
+      <div class="cover-title">Security Assessment<br/>Report</div>
+      <div class="cover-subtitle">{{ summary.assessment_type }}</div>
+      <div class="cover-rule"></div>
+      <div class="cover-meta">
+        <div class="cover-row">
+          <div class="cover-lbl">Project</div>
+          <div class="cover-val">{{ summary.project }}</div>
+        </div>
+        <div class="cover-row">
+          <div class="cover-lbl">Target(s)</div>
+          <div class="cover-val">{{ summary.targets | join(", ") }}</div>
+        </div>
+        <div class="cover-row">
+          <div class="cover-lbl">Testing Period</div>
+          <div class="cover-val">{{ summary.testing_period }}</div>
+        </div>
+        <div class="cover-row">
+          <div class="cover-lbl">Report Date</div>
+          <div class="cover-val">{{ report_date }}</div>
+        </div>
+        <div class="cover-row">
+          <div class="cover-lbl">Overall Risk</div>
+          <div class="cover-val">
+            <span class="cover-risk-pill {{ summary.overall_risk_rating | lower }}">{{ summary.overall_risk_rating | upper }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="cover-footer">
-    <p>This report contains confidential information. Distribution is restricted to authorized personnel only.</p>
-    <p>TechGuard Labs &bull; hari@techguardlabs.com</p>
+  <div class="cover-bottom">
+    <div class="cover-bottom-l">TechGuard Labs &bull; hari@techguardlabs.com</div>
+    <div class="cover-bottom-r">Confidential — Authorised Recipients Only</div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 01 — ENGAGEMENT OVERVIEW
+     ══════════════════════════════════════════════════════════ -->
 <div class="page-section">
-<h2 class="sec-hdr"><span class="n">01</span>Executive Summary</h2>
-<div class="risk-banner {{ summary.overall_risk_rating | lower }}">
-  <span class="risk-banner-lbl">Overall Risk Rating</span>
-  <span class="risk-banner-val">{{ summary.overall_risk_rating | upper }}</span>
-  <span class="risk-banner-just">{{ summary.risk_justification }}</span>
+<h2 class="sec-hdr"><span class="n">01</span>Engagement Overview</h2>
+<div class="scope-block">
+  <div class="scope-h3">Target Scope</div>
+  <table class="dt">
+    <thead><tr><th>Host / IP</th><th>Port(s)</th><th>Protocol</th><th>Application</th></tr></thead>
+    <tbody>
+    {% for t in scope_targets %}
+    <tr><td>{{ t.host }}</td><td>{{ t.ports }}</td><td>{{ t.protocol }}</td><td>{{ t.application }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
 </div>
-<div class="exec-text">{{ summary.executive_summary }}</div>
+<div class="scope-block">
+  <div class="scope-h3">Testing Phases &amp; Methodology</div>
+  <table class="dt">
+    <thead><tr><th>Phase</th><th>Activity</th><th>Tools</th></tr></thead>
+    <tbody>
+    <tr><td>01 DNS Recon</td><td>Domain enumeration, subdomain discovery, DNS record analysis</td><td>dig, subfinder, dnsx</td></tr>
+    <tr><td>02 IP Analysis</td><td>ASN lookup, geolocation, cloud-provider identification, WHOIS</td><td>whois, ipinfo</td></tr>
+    <tr><td>03 Network Scan</td><td>Port scanning, service fingerprinting, OS detection</td><td>nmap, masscan</td></tr>
+    <tr><td>04 TLS Assessment</td><td>Certificate validation, cipher-suite enumeration, protocol checks</td><td>testssl.sh</td></tr>
+    <tr><td>05 Web Enumeration</td><td>HTTP header analysis, WAF detection, directory/content discovery</td><td>curl, wafw00f, gobuster, nikto</td></tr>
+    <tr><td>06 WordPress Scan</td><td>Plugin/theme enumeration, user harvesting, CVE identification</td><td>wpscan</td></tr>
+    <tr><td>07 Service Verification</td><td>Manual probing and validation of identified open services</td><td>Manual</td></tr>
+    <tr><td>08 Application &amp; API</td><td>Rate-limit testing, authentication bypass, API endpoint enumeration</td><td>curl, python-requests</td></tr>
+    <tr><td>09 AI / LLM Endpoints</td><td>Prompt injection, data exfiltration, model abuse probes</td><td>PT-Orc AI Skill</td></tr>
+    </tbody>
+  </table>
+</div>
+{% if summary.tools_used %}
+<div class="scope-block">
+  <div class="scope-h3">Tools &amp; Frameworks</div>
+  <p style="font-size:9.5pt;line-height:2.2;">{% for t in summary.tools_used %}<span class="tag ref">{{ t }}</span>{% endfor %}</p>
+</div>
+{% endif %}
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 02 — EXECUTIVE SUMMARY
+     ══════════════════════════════════════════════════════════ -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">02</span>Executive Summary</h2>
+<div class="risk-banner {{ summary.overall_risk_rating | lower }}">
+  <div class="risk-banner-left">
+    <div class="risk-banner-lbl">Overall Risk Rating</div>
+    <div class="risk-banner-val">{{ summary.overall_risk_rating | upper }}</div>
+  </div>
+  <div class="risk-banner-just">{{ summary.risk_justification }}</div>
+</div>
 <div class="sev-cards">
   <div class="sev-row">
     <div class="sev-card critical"><div class="sev-count">{{ summary.severity_counts.critical }}</div><div class="sev-label">Critical</div></div>
@@ -1775,83 +2077,14 @@ table.roadmap tr:nth-child(even) td { background: #f5f5ff; }
     <div class="sev-card informational"><div class="sev-count">{{ summary.severity_counts.informational }}</div><div class="sev-label">Info</div></div>
   </div>
 </div>
+<div class="exec-text">{{ summary.executive_summary }}</div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 03 — ASSESSMENT FINDINGS
+     ══════════════════════════════════════════════════════════ -->
 <div class="page-section">
-<h2 class="sec-hdr"><span class="n">02</span>Scope &amp; Methodology</h2>
-<div class="scope-block">
-<div class="scope-h3">Target Scope</div>
-<table class="dt">
-  <tr><th>Host / IP</th><th>Port(s)</th><th>Protocol</th><th>Application</th></tr>
-  {% for t in scope_targets %}
-  <tr><td>{{ t.host }}</td><td>{{ t.ports }}</td><td>{{ t.protocol }}</td><td>{{ t.application }}</td></tr>
-  {% endfor %}
-</table>
-</div>
-<div class="scope-block">
-<div class="scope-h3">Testing Phases</div>
-<table class="dt">
-  <tr><th>Phase</th><th>Activity</th><th>Tools</th></tr>
-  <tr><td>01 DNS Recon</td><td>Domain enumeration, subdomain discovery</td><td>dig, subfinder, dnsx</td></tr>
-  <tr><td>02 IP Analysis</td><td>ASN, geolocation, cloud provider, WHOIS</td><td>whois, ipinfo</td></tr>
-  <tr><td>03 Network Scan</td><td>Port scanning, service fingerprinting</td><td>nmap</td></tr>
-  <tr><td>04 TLS Assessment</td><td>Certificate analysis, cipher enumeration</td><td>testssl.sh</td></tr>
-  <tr><td>05 Web Enumeration</td><td>Header analysis, WAF detection, content discovery</td><td>curl, wafw00f, gobuster, nikto</td></tr>
-  <tr><td>06 WordPress Scan</td><td>Plugin/theme enumeration, CVE checks</td><td>wpscan</td></tr>
-  <tr><td>07 Service Verification</td><td>Manual probing of open services</td><td>Manual</td></tr>
-  <tr><td>08 Application API</td><td>Rate limiting, auth bypass, API enumeration</td><td>curl, python-requests</td></tr>
-  <tr><td>09 AI/LLM Endpoints</td><td>Prompt injection, data exfiltration probes</td><td>PT-Orc AI Skill</td></tr>
-</table>
-</div>
-{% if summary.tools_used %}
-<div class="scope-block">
-<div class="scope-h3">Tools &amp; Frameworks</div>
-<p style="font-size:9.5pt;line-height:1.8;">{% for t in summary.tools_used %}<span class="tag ref">{{ t }}</span>{% endfor %}</p>
-</div>
-{% endif %}
-</div>
-<div class="page-section">
-<h2 class="sec-hdr"><span class="n">03</span>Risk Analysis</h2>
-<div class="rm-wrap">
-<h3>Risk Matrix — Likelihood × Impact</h3>
-<table class="rm">
-  <tr><th class="rh"></th><th>LOW IMPACT</th><th>MEDIUM IMPACT</th><th>HIGH IMPACT</th></tr>
-  <tr>
-    <th class="rh">HIGH<br/>LIKELIHOOD</th>
-    <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids">{{ rm.high_low | join(", ") }}</div></td>
-    <td class="rm-high"><div class="rm-lbl">High</div><div class="rm-ids">{{ rm.high_medium | join(", ") }}</div></td>
-    <td class="rm-crit"><div class="rm-lbl">Critical</div><div class="rm-ids">{{ rm.high_high | join(", ") }}</div></td>
-  </tr>
-  <tr>
-    <th class="rh">MEDIUM<br/>LIKELIHOOD</th>
-    <td class="rm-low"><div class="rm-lbl">Low</div><div class="rm-ids">{{ rm.medium_low | join(", ") }}</div></td>
-    <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids">{{ rm.medium_medium | join(", ") }}</div></td>
-    <td class="rm-high"><div class="rm-lbl">High</div><div class="rm-ids">{{ rm.medium_high | join(", ") }}</div></td>
-  </tr>
-  <tr>
-    <th class="rh">LOW<br/>LIKELIHOOD</th>
-    <td class="rm-info"><div class="rm-lbl">Info</div><div class="rm-ids">{{ rm.low_low | join(", ") }}</div></td>
-    <td class="rm-low"><div class="rm-lbl">Low</div><div class="rm-ids">{{ rm.low_medium | join(", ") }}</div></td>
-    <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids">{{ rm.low_high | join(", ") }}</div></td>
-  </tr>
-</table>
-</div>
-<div class="scope-block">
-<div class="scope-h3">OWASP Top 10 2021 — Coverage Map</div>
-<table class="owasp">
-  <tr><th style="width:60px;">Code</th><th>Category</th><th style="width:160px;">Coverage</th><th style="width:60px;">Count</th></tr>
-  {% for item in owasp_coverage %}
-  <tr>
-    <td><strong>{{ item.id }}</strong></td>
-    <td>{{ item.name }}</td>
-    <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ item.pct }}%;"></div></div></td>
-    <td><span class="cnt {% if item.count == 0 %}zero{% endif %}">{{ item.count }}</span></td>
-  </tr>
-  {% endfor %}
-</table>
-</div>
-</div>
-<div class="page-section">
-<h2 class="sec-hdr"><span class="n">04</span>Detailed Findings</h2>
+<h2 class="sec-hdr"><span class="n">03</span>Assessment Findings</h2>
 {% for f in findings %}
 <div class="fc">
   <div class="fc-hdr {{ f.severity | lower }}">
@@ -1871,111 +2104,178 @@ table.roadmap tr:nth-child(even) td { background: #f5f5ff; }
   </div>
   <div class="fc-body">
     {% if f.cve_ids %}<div class="fc-sec"><div class="fc-sec-title">CVE References</div>{% for cve in f.cve_ids %}<span class="tag cve">{{ cve }}</span>{% endfor %}</div>{% endif %}
-    {% if f.chain_steps %}<div class="fc-sec"><div class="fc-sec-title">Attack Chain Steps</div><ol class="steps">{% for step in f.chain_steps %}<li>{{ step }}</li>{% endfor %}</ol></div>{% endif %}
-    <div class="fc-sec"><div class="fc-sec-title">Affected Hosts</div>{% for h in f.affected_hosts %}<span class="tag host">{{ h }}</span>{% endfor %}{% if not f.affected_hosts %}<span class="tag host">See description</span>{% endif %}</div>
-    <div class="fc-sec"><div class="fc-sec-title">Description</div><p>{{ f.description }}</p></div>
-    <div class="fc-sec"><div class="fc-sec-title">Technical Detail</div><p>{{ f.technical_detail }}</p></div>
+    <div class="fc-sec"><div class="fc-sec-title">Affected Systems</div>{% for h in f.affected_hosts %}<span class="tag host">{{ h }}</span>{% endfor %}{% if not f.affected_hosts %}<span class="tag host">See description</span>{% endif %}</div>
+    <div class="fc-sec"><div class="fc-sec-title">Condition &amp; Evidence</div><p>{{ f.description }}</p></div>
+    {% if f.technical_detail %}<div class="fc-sec"><div class="fc-sec-title">Technical Detail</div><p>{{ f.technical_detail }}</p></div>{% endif %}
     <div class="fc-sec"><div class="fc-sec-title">Business Impact</div><p>{{ f.business_impact }}</p></div>
     <div class="fc-sec">
-      <div class="fc-sec-title">Remediation</div>
-      <p><strong>{{ f.remediation }}</strong></p>
-      {% if f.remediation_steps %}<ol class="steps">{% for step in f.remediation_steps %}<li>{{ step }}</li>{% endfor %}</ol>{% endif %}
+      <div class="fc-sec-title">Recommendations</div>
+      {% if f.remediation_steps %}<ol class="steps">{% for step in f.remediation_steps %}<li>{{ step }}</li>{% endfor %}</ol>
+      {% else %}<p>{{ f.remediation }}</p>{% endif %}
     </div>
+    {% if f.chain_steps %}<div class="fc-sec"><div class="fc-sec-title">Attack Chain</div><ol class="steps">{% for step in f.chain_steps %}<li>{{ step }}</li>{% endfor %}</ol></div>{% endif %}
     {% if f.references %}<div class="fc-sec"><div class="fc-sec-title">References</div>{% for ref in f.references %}<a class="ref-link" href="{{ ref }}">{{ ref }}</a>{% endfor %}</div>{% endif %}
   </div>
 </div>
 {% endfor %}
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 04 — RISK ANALYSIS
+     ══════════════════════════════════════════════════════════ -->
+<div class="page-section">
+<h2 class="sec-hdr"><span class="n">04</span>Risk Analysis</h2>
+<div class="rm-wrap">
+  <div class="scope-h3">Risk Matrix — Likelihood × Impact</div>
+  <table class="rm">
+    <tr><th class="rh"></th><th>LOW IMPACT</th><th>MEDIUM IMPACT</th><th>HIGH IMPACT</th></tr>
+    <tr>
+      <th class="rh">HIGH<br/>LIKELIHOOD</th>
+      <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids">{{ rm.high_low | join(", ") }}</div></td>
+      <td class="rm-high"><div class="rm-lbl">High</div><div class="rm-ids">{{ rm.high_medium | join(", ") }}</div></td>
+      <td class="rm-crit"><div class="rm-lbl">Critical</div><div class="rm-ids">{{ rm.high_high | join(", ") }}</div></td>
+    </tr>
+    <tr>
+      <th class="rh">MEDIUM<br/>LIKELIHOOD</th>
+      <td class="rm-low"><div class="rm-lbl">Low</div><div class="rm-ids">{{ rm.medium_low | join(", ") }}</div></td>
+      <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids">{{ rm.medium_medium | join(", ") }}</div></td>
+      <td class="rm-high"><div class="rm-lbl">High</div><div class="rm-ids">{{ rm.medium_high | join(", ") }}</div></td>
+    </tr>
+    <tr>
+      <th class="rh">LOW<br/>LIKELIHOOD</th>
+      <td class="rm-info"><div class="rm-lbl">Info</div><div class="rm-ids">{{ rm.low_low | join(", ") }}</div></td>
+      <td class="rm-low"><div class="rm-lbl">Low</div><div class="rm-ids">{{ rm.low_medium | join(", ") }}</div></td>
+      <td class="rm-medium"><div class="rm-lbl">Medium</div><div class="rm-ids">{{ rm.low_high | join(", ") }}</div></td>
+    </tr>
+  </table>
+</div>
+<div class="scope-block">
+  <div class="scope-h3">OWASP Top 10 2021 — Coverage Map</div>
+  <table class="owasp">
+    <thead><tr><th style="width:65px;">Code</th><th>Category</th><th style="width:170px;">Coverage</th><th style="width:60px;">Count</th></tr></thead>
+    <tbody>
+    {% for item in owasp_coverage %}
+    <tr>
+      <td><strong>{{ item.id }}</strong></td>
+      <td>{{ item.name }}</td>
+      <td><div class="bar-wrap"><div class="bar-fill" style="width:{{ item.pct }}%;"></div></div></td>
+      <td><span class="cnt {% if item.count == 0 %}zero{% endif %}">{{ item.count }}</span></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 05 — ATTACK PATH ANALYSIS
+     ══════════════════════════════════════════════════════════ -->
 <div class="page-section">
 <h2 class="sec-hdr"><span class="n">05</span>Attack Path Analysis</h2>
 {% if attack_paths %}
 {% for ap in attack_paths %}
-<div class="finding-card sev-{{ ap.combined_severity | lower }}" style="margin-bottom:18px;">
-  <div class="finding-hdr">
-    <span class="finding-id">{{ ap.id }}</span>
-    <span class="finding-title">{{ ap.title }}</span>
-    <span class="sev-badge {{ ap.combined_severity | lower }}" style="margin-left:auto;">{{ ap.combined_severity }}</span>
-    <span style="margin-left:12px;font-size:8.5pt;color:#546e7a;">Combined CVSS {{ ap.combined_cvss_score }}</span>
-  </div>
-  <div class="finding-body">
-    <div class="finding-row"><span class="finding-lbl">Entry Point</span><span>{{ ap.entry_point }}</span></div>
-    <div class="finding-row"><span class="finding-lbl">Finding IDs</span><span>{{ ap.finding_ids | join(', ') }}</span></div>
-    <div class="finding-row"><span class="finding-lbl">Kill Chain</span>
-      <ol style="margin:4px 0 0 16px;padding:0;font-size:9pt;line-height:1.7;">
-        {% for s in ap.steps %}
-        <li><strong>{{ s.finding_id }}</strong> — {{ s.action }} → <em>{{ s.outcome }}</em></li>
-        {% endfor %}
-      </ol>
+<div class="ap-card">
+  <div class="ap-hdr {{ ap.combined_severity | lower }}">
+    <div class="ap-hdr-inner">
+      <div class="ap-id">{{ ap.id }}</div>
+      <div class="ap-title">{{ ap.title }}</div>
+      <div class="ap-cvss">CVSS {{ ap.combined_cvss_score }}</div>
+      <div class="ap-badge-cell"><span class="sev-badge {{ ap.combined_severity | lower }}">{{ ap.combined_severity }}</span></div>
     </div>
-    <div class="finding-row"><span class="finding-lbl">Narrative</span><span>{{ ap.narrative }}</span></div>
-    <div class="finding-row"><span class="finding-lbl">Final Impact</span><span>{{ ap.final_impact }}</span></div>
+  </div>
+  <div class="ap-body">
+    <div class="ap-row"><span class="ap-lbl">Entry Point</span>{{ ap.entry_point }}</div>
+    <div class="ap-row"><span class="ap-lbl">Findings Chained</span>{{ ap.finding_ids | join(", ") }}</div>
+    <div class="ap-row">
+      <span class="ap-lbl">Kill Chain</span>
+      <ol class="ap-chain">{% for s in ap.steps %}<li><strong>{{ s.finding_id }}</strong> — {{ s.action }} → <em>{{ s.outcome }}</em></li>{% endfor %}</ol>
+    </div>
+    <div class="ap-row"><span class="ap-lbl">Narrative</span>{{ ap.narrative }}</div>
+    <div class="ap-row"><span class="ap-lbl">Final Impact</span>{{ ap.final_impact }}</div>
   </div>
 </div>
 {% endfor %}
 {% else %}
-<p style="font-size:9.5pt;color:#546e7a;">No multi-step attack chains identified in this assessment.</p>
+<p style="font-size:9.5pt;color:#5C6B8A;padding:16px 18px;background:#F4F6FA;border-radius:6px;border-left:5px solid #DDE3EF;">No multi-step attack chains were identified in this assessment.</p>
 {% endif %}
 </div>
-<div class="page-section">
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 06 — RETEST COMPARISON (conditional)
+     ══════════════════════════════════════════════════════════ -->
 {% if retest_diff %}
 <div class="page-section">
 <h2 class="sec-hdr"><span class="n">06</span>Retest Comparison</h2>
 {% set c = retest_diff.counts %}
-<div class="risk-banner {{ 'high' if c.regressed > 0 else ('medium' if c.new > 0 else 'low') }}" style="margin-bottom:16px;">
-  <span class="risk-banner-lbl">Baseline:</span> {{ retest_diff.baseline_count }} findings &nbsp;|&nbsp;
-  <span class="risk-banner-lbl">Current:</span> {{ retest_diff.current_count }} findings &nbsp;&nbsp;
-  <strong style="color:#2e7d32;">&#10003; Fixed: {{ c.fixed }}</strong> &nbsp;&nbsp;
-  <strong style="color:#546e7a;">&#8635; Persists: {{ c.persists }}</strong> &nbsp;&nbsp;
-  {% if c.new > 0 %}<strong style="color:#e64a19;">&#43; New: {{ c.new }}</strong> &nbsp;&nbsp;{% endif %}
-  {% if c.regressed > 0 %}<strong style="color:#c62828;">&#8593; Regressed: {{ c.regressed }}</strong>{% endif %}
+<div class="{% if c.regressed > 0 or c.new > 0 %}retest-warn{% else %}retest-ok{% endif %}">
+  <strong>Baseline:</strong> {{ retest_diff.baseline_count }} findings &nbsp;&bull;&nbsp;
+  <strong>Current:</strong> {{ retest_diff.current_count }} findings &nbsp;&nbsp;
+  <span style="color:#15803D;font-weight:700;">&#10003; Fixed: {{ c.fixed }}</span> &nbsp;&nbsp;
+  <span style="color:#4B5563;font-weight:700;">&#8635; Persists: {{ c.persists }}</span> &nbsp;&nbsp;
+  {% if c.new > 0 %}<span style="color:#C41E3A;font-weight:700;">+ New: {{ c.new }}</span> &nbsp;&nbsp;{% endif %}
+  {% if c.regressed > 0 %}<span style="color:#7F1D1D;font-weight:700;">&#8593; Regressed: {{ c.regressed }}</span>{% endif %}
 </div>
 <table class="roadmap">
-  <tr><th>Status</th><th>Finding</th><th style="width:90px;">Severity</th><th style="width:70px;">Was</th></tr>
+  <thead><tr><th>Status</th><th>Finding</th><th style="width:95px;">Severity</th><th style="width:70px;">Was</th></tr></thead>
+  <tbody>
   {% for f in retest_diff.fixed %}
-  <tr><td style="color:#2e7d32;font-weight:700;">Fixed</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
+  <tr><td style="color:#15803D;font-weight:700;">Fixed</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
   {% endfor %}
   {% for f in retest_diff.persists %}
-  <tr><td style="color:#546e7a;">Persists</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
+  <tr><td style="color:#4B5563;">Persists</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
   {% endfor %}
   {% for f in retest_diff.regressed %}
-  <tr><td style="color:#c62828;font-weight:700;">Regressed</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>{{ f.was }}</td></tr>
+  <tr><td style="color:#7F1D1D;font-weight:700;">Regressed</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>{{ f.was }}</td></tr>
   {% endfor %}
   {% for f in retest_diff.new %}
-  <tr><td style="color:#e64a19;font-weight:700;">New</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
+  <tr><td style="color:#C41E3A;font-weight:700;">New</td><td>{{ f.title }}</td><td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td><td>—</td></tr>
   {% endfor %}
+  </tbody>
 </table>
 </div>
 {% endif %}
+
+<!-- ══════════════════════════════════════════════════════════
+     REMEDIATION ROADMAP
+     ══════════════════════════════════════════════════════════ -->
 <div class="page-section">
 <h2 class="sec-hdr"><span class="n">{{ '07' if retest_diff else '06' }}</span>Remediation Roadmap</h2>
 <table class="roadmap">
-  <tr><th style="width:60px;">ID</th><th>Finding</th><th style="width:90px;">Severity</th><th style="width:80px;">Effort</th><th style="width:170px;">Timeframe</th></tr>
+  <thead><tr><th style="width:60px;">ID</th><th>Finding</th><th style="width:95px;">Severity</th><th style="width:82px;">Effort</th><th style="width:180px;">Timeframe</th></tr></thead>
+  <tbody>
   {% for f in findings | sort(attribute='priority') %}
   {% if f.severity | lower != 'informational' %}
   <tr>
-    <td>{{ f.id }}</td><td>{{ f.title }}</td>
+    <td style="font-family:'Courier New',monospace;font-size:9pt;">{{ f.id }}</td>
+    <td>{{ f.title }}</td>
     <td><span class="sev-badge {{ f.severity | lower }}" style="font-size:7.5pt;">{{ f.severity }}</span></td>
     <td><span class="effort-{{ f.effort }}">{{ f.effort }}</span></td>
     <td>{{ f.timeframe }}</td>
   </tr>
   {% endif %}
   {% endfor %}
+  </tbody>
 </table>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     DISCLAIMER & LEGAL
+     ══════════════════════════════════════════════════════════ -->
 <div class="page-section">
 <h2 class="sec-hdr"><span class="n">{{ '08' if retest_diff else '07' }}</span>Disclaimer &amp; Legal</h2>
 <div class="disc"><h3>Important Notice</h3><p>{{ disclaimer }}</p></div>
 {% if methodology_notes %}
 <div style="margin-top:20px;">
-  <div class="scope-h3" style="margin-bottom:8px;">Methodology Notes</div>
-  <p style="font-size:9.5pt;line-height:1.6;">{{ methodology_notes }}</p>
+  <div class="scope-h3">Methodology Notes</div>
+  <p style="font-size:9.5pt;line-height:1.65;color:#2D3748;margin-top:8px;">{{ methodology_notes }}</p>
 </div>
 {% endif %}
-<div class="footer">
-  <strong>TechGuard Labs</strong> &bull; hari@techguardlabs.com &bull;
-  Report generated {{ report_date }} &bull; PT-Orc Suite v1.0
+<div class="footer" style="margin-top:32px;">
+  <div class="footer-l"><strong>TechGuard Labs</strong> &bull; hari@techguardlabs.com</div>
+  <div class="footer-r">Report generated {{ report_date }} &bull; PT-Orc Suite v1.0</div>
 </div>
 </div>
+
 </body>
 </html>"""
 
@@ -2099,7 +2399,15 @@ def _wrap_company_output(raw_text, config):
     """If AI returns Markdown rather than full HTML, wrap it in a styled page."""
     import re as _re
     stripped = raw_text.strip()
+    # Strip markdown code fences that models often wrap HTML in
+    stripped = _re.sub(r'^```(?:html)?\s*\n?', '', stripped, flags=_re.IGNORECASE)
+    stripped = _re.sub(r'\n?```\s*$', '', stripped)
+    stripped = stripped.strip()
     if stripped.lower().startswith("<!doctype") or stripped.lower().startswith("<html"):
+        # Strip any model commentary the model appended after </html>
+        m = _re.search(r'(.*</html>)', stripped, _re.DOTALL | _re.IGNORECASE)
+        if m:
+            stripped = m.group(1)
         return stripped
     project_name = config.get("PROJECT_NAME", "VAPT Assessment")
     lines = stripped.split("\n")
@@ -2138,14 +2446,16 @@ def _wrap_company_output(raw_text, config):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{project_name} — TechGuard Penetration Testing Report</title>
 <style>
-  body {{ font-family: 'Segoe UI', Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 2em; color: #1a1a1a; line-height: 1.6; }}
-  h1 {{ color: #1a3a5c; border-bottom: 3px solid #d4232a; padding-bottom: 0.3em; }}
-  h2 {{ color: #1a3a5c; border-bottom: 1px solid #ccc; padding-bottom: 0.2em; margin-top: 2em; }}
-  h3 {{ color: #2c5f8a; margin-top: 1.5em; }}
-  h4 {{ color: #3a7ab5; }}
-  pre {{ background: #f4f4f4; border: 1px solid #ddd; padding: 1em; border-radius: 4px; overflow-x: auto; font-size: 0.85em; }}
-  li {{ margin: 0.3em 0; }}
-  p {{ margin: 0.5em 0 1em; }}
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 2em; color: #1C2340; line-height: 1.6; background: #fff; }}
+  h1 {{ color: #0D1B3E; border-bottom: 4px solid #C41E3A; padding-bottom: 0.35em; margin: 1.2em 0 0.6em; font-size: 1.6em; }}
+  h2 {{ color: #0D1B3E; background: #F4F6FA; border-left: 5px solid #C41E3A; padding: 0.5em 0.8em; margin: 1.8em 0 0.8em; font-size: 1.2em; }}
+  h3 {{ color: #162040; border-bottom: 1px solid #DDE3EF; padding-bottom: 0.25em; margin: 1.4em 0 0.5em; font-size: 1.05em; }}
+  h4 {{ color: #1E3A5F; margin: 1em 0 0.4em; font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.5px; }}
+  p  {{ margin: 0.5em 0 1em; font-size: 0.95em; }}
+  li {{ margin: 0.35em 0; font-size: 0.95em; }}
+  pre {{ background: #F4F6FA; border: 1px solid #DDE3EF; border-left: 4px solid #162040; padding: 1em; border-radius: 4px; overflow-x: auto; font-size: 0.85em; }}
+  strong {{ color: #0D1B3E; }}
 </style>
 </head>
 <body>
@@ -2155,31 +2465,26 @@ def _wrap_company_output(raw_text, config):
 
 
 def _ollama_company(ollama_host, ollama_model, config, findings, evidence_block, report_prompt):
-    """Company report via Ollama — returns raw text (HTML or Markdown)."""
+    """Company report via Ollama — uses a compact data-first prompt; ignores REPORT_PROMPT.md
+    (81K chars) so findings and evidence fill the context instead of methodology text."""
     import urllib.request as _ur
-    caps = _ollama_capabilities(ollama_host, ollama_model)
-    ctx_tokens = _ollama_context_length(ollama_host, ollama_model)
+    ctx_tokens     = _ollama_context_length(ollama_host, ollama_model)
     total_chars    = int(ctx_tokens * 3.5)
-    # Reserve 40 % of context for the output; cap at 40K chars so small models
-    # (qwen:7b / 32K ctx) don't overflow and regurgitate input instead of writing.
-    output_reserve = min(40000, int(total_chars * 0.40))
+    # Reserve 40% of context for output; floor at 32K so large-context models get decent output
+    output_reserve = max(32000, min(50000, int(total_chars * 0.40)))
     input_budget   = total_chars - output_reserve
-    template_oh    = 2000
-    findings_limit = min(8000,  (input_budget - template_oh) // 4)
-    evidence_limit = min(12000, (input_budget - template_oh - findings_limit) // 3)
-    # Use tail of REPORT_PROMPT.md — most actionable PT prompt sections are at the end
-    prompt_budget  = max(0, input_budget - template_oh - findings_limit - evidence_limit)
-    rp_excerpt     = report_prompt[-prompt_budget:] if len(report_prompt) > prompt_budget else report_prompt
-    prompt = _build_company_prompt(config, findings, evidence_block, rp_excerpt,
-                                   evidence_limit=evidence_limit,
-                                   findings_limit=findings_limit,
-                                   prompt_limit=len(rp_excerpt) + 10)
-    print(f"[INFO] Company prompt: {len(prompt):,} chars (budget {input_budget:,}) → Ollama {ollama_model}")
-    payload = json.dumps({"model": ollama_model, "prompt": prompt, "stream": False}).encode()
+    prompt = _build_ollama_company_prompt(config, findings, evidence_block, input_budget)
+    print(f"[INFO] Company prompt: {len(prompt):,} chars (ctx {ctx_tokens:,} tok, budget {input_budget:,}) → Ollama {ollama_model}")
+    payload = json.dumps({
+        "model": ollama_model,
+        "prompt": prompt,
+        "stream": False,
+        "options": {"num_predict": 8192},
+    }).encode()
     req = _ur.Request(f"{ollama_host}/api/generate", data=payload,
                       headers={"Content-Type": "application/json"}, method="POST")
     try:
-        with _ur.urlopen(req, timeout=600) as resp:
+        with _ur.urlopen(req, timeout=1800) as resp:
             data = json.loads(resp.read().decode())
         return data.get("response", "").strip()
     except Exception as e:
@@ -2262,14 +2567,322 @@ def _is_valid_company_report(raw):
     return not looks_like_echo and (has_html or has_heads)
 
 
+# ── Two-pass company report helpers ──────────────────────────────────────
+
+def _pass1_prompt(config, findings, evidence_block, findings_limit=20000, evidence_limit=30000):
+    """Compact Pass 1 analysis prompt — data + JSON schema only, no REPORT_PROMPT.md."""
+    config_lines = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
+    compact = _compact_findings_text(findings)
+    if len(compact) > findings_limit:
+        compact = compact[:findings_limit] + "\n...[findings truncated for length]"
+    ev = (evidence_block[:evidence_limit] if evidence_block else "(no evidence)").rstrip()
+    n = len(findings)
+    return f"""You are a TechGuard senior penetration testing consultant. Analyse the raw findings below and return ONLY a JSON object matching the schema shown.
+
+ENGAGEMENT
+{config_lines}
+
+RAW FINDINGS ({n} total — analyse every one)
+{compact}
+
+EVIDENCE CONTEXT
+{ev}
+
+OUTPUT SCHEMA — return ONLY this JSON, no markdown fences, no extra text:
+{{
+  "overall_rating": "Critical|High|Medium|Low",
+  "executive_themes": ["<key risk theme, one sentence, max 5>"],
+  "limitations": ["<any testing limitation>"],
+  "totals": {{"high": 0, "medium": 0, "low": 0, "informational": 0, "observations": 0}},
+  "sections": [
+    {{
+      "section_id": "2.2.1",
+      "section_title": "<testing area, e.g. DNS Reconnaissance>",
+      "findings": [
+        {{
+          "id": "F-11",
+          "title": "<concise TechGuard-style title>",
+          "severity": "Critical|High|Medium|Low|Informational",
+          "confidence": "Certain|Firm|Tentative",
+          "affected_systems": "<host:port — description>",
+          "condition": "<observed condition and why it is security-relevant>",
+          "evidence_basis": "<what evidence supports this>",
+          "impact": "<business/operational impact>",
+          "recommendations": ["1. <action>", "2. <action>"],
+          "cwe_id": "CWE-XXX",
+          "cwe_name": "<CWE name>"
+        }}
+      ],
+      "observations": [
+        {{
+          "id": "P-01",
+          "title": "<positive control title>",
+          "narrative": "<validated control description>",
+          "preservation_rec": "<preservation-oriented recommendation>"
+        }}
+      ]
+    }}
+  ]
+}}
+
+RULES:
+- Group findings by testing area into sections (DNS, Network Services, TLS/PKI, Web Headers, Web Application, Authentication, API, etc.)
+- Section IDs start at 2.2.1; section-based finding IDs: F-11 = first in 2.2.1, F-12 = second, F-21 = first in 2.2.2, etc.
+- Separate true findings (corrective action required) from observations (positive controls)
+- Severity reflects actual exploitability and business impact — do not blindly inherit scanner ratings
+- Totals count only findings, not observations; all fields must be populated
+"""
+
+
+def _pass2_prompt(config, pass1_result, report_prompt, prompt_limit=80000):
+    """Pass 2 HTML-writing prompt — REPORT_PROMPT.md + structured Pass 1 JSON."""
+    config_lines = "\n".join(f"{k}: {v}" for k, v in config.items() if v)
+    rp = report_prompt[:prompt_limit] if report_prompt else "(REPORT_PROMPT.md not available)"
+    p1_json = json.dumps(pass1_result, indent=2)
+    n_findings = sum(len(s.get("findings", [])) for s in pass1_result.get("sections", []))
+    n_obs      = sum(len(s.get("observations", [])) for s in pass1_result.get("sections", []))
+    return f"""{rp}
+
+---
+
+# TASK: Generate the Full HTML Penetration Testing Report
+
+## Engagement Configuration
+{config_lines}
+
+## Structured Analysis ({n_findings} findings, {n_obs} observations across {len(pass1_result.get("sections", []))} sections)
+
+The findings below have already been analysed and structured. Write the report FROM this data — do not add new findings, do not change severities or IDs.
+
+{p1_json}
+
+## HTML Output Requirements
+
+- Start with <!DOCTYPE html> and end with </html>
+- Embed ALL CSS in the <head> — professional TechGuard dark-navy (#0D1B3E) + crimson (#C41E3A) palette, print-friendly
+- Follow this exact section structure:
+  Front Matter: Cover page (client name, title, engagement, prepared by, date, version, classification), Confidentiality Notice, Table of Contents
+  Section 1: 1.1 Background, 1.2 Objectives, 1.3 Scope & Boundaries, 1.4 Methodology, 1.5 The Team, 1.6 Special Notes/Assumptions/Limitations, 1.7 Executive Summary (6 paragraphs + Key Findings list)
+  Section 2: 2.1 Severity Grading Table, Findings Summary Table (Section|Finding|Severity), Severity Distribution bar/table, 2.2 Assessment Findings (one subsection per section), 2.3 Observations
+  Section 3: Appendices and Evidence Index
+- Each finding card must show: ID badge, Severity badge, Confidence, Affected Systems, Condition, Evidence Basis, Business Impact, Recommendations (numbered list), CWE reference
+- Observations (P-01 etc.) in 2.3 show: ID, title, narrative, Preservation-Oriented Recommendation
+- Findings Summary table lists only findings (not observations): columns = Section | Finding Title | Severity
+- Write complete professional customer-ready content — no placeholder text
+"""
+
+
+def _call_ai_for_pass1(prompt):
+    """AI fallback chain for Pass 1 (JSON output). Returns raw text or None."""
+    import urllib.request as _ur
+    if OLLAMA_HOST:
+        try:
+            ctx_tokens  = _ollama_context_length(OLLAMA_HOST, OLLAMA_MODEL)
+            total_chars = int(ctx_tokens * 3.5)
+            out_reserve = max(6000, int(total_chars * 0.25))
+            in_budget   = total_chars - out_reserve
+            prompt_o    = prompt[:in_budget] if len(prompt) > in_budget else prompt
+            print(f"[INFO] Pass 1 → Ollama {OLLAMA_MODEL} ({len(prompt_o):,} chars)")
+            payload = json.dumps({
+                "model": OLLAMA_MODEL, "prompt": prompt_o,
+                "stream": False, "format": "json",
+                "options": {"num_predict": 4096},
+            }).encode()
+            req = _ur.Request(f"{OLLAMA_HOST}/api/generate", data=payload,
+                              headers={"Content-Type": "application/json"}, method="POST")
+            with _ur.urlopen(req, timeout=900) as resp:
+                data = json.loads(resp.read().decode())
+            text = data.get("response", "").strip()
+            if text and len(text) > 200:
+                return text
+        except Exception as e:
+            print(f"[WARN] Pass 1 Ollama: {e}")
+    if API_KEY:
+        try:
+            print(f"[INFO] Pass 1 → Claude {MODEL} ({len(prompt):,} chars)")
+            payload = json.dumps({
+                "model": MODEL, "max_tokens": 6000,
+                "messages": [{"role": "user", "content": prompt}]
+            }).encode()
+            req = _ur.Request("https://api.anthropic.com/v1/messages", data=payload,
+                              headers={"Content-Type": "application/json",
+                                       "x-api-key": API_KEY,
+                                       "anthropic-version": "2023-06-01"}, method="POST")
+            with _ur.urlopen(req, timeout=300) as resp:
+                data = json.loads(resp.read().decode())
+            text = data.get("content", [{}])[0].get("text", "").strip()
+            if text:
+                return text
+        except Exception as e:
+            print(f"[WARN] Pass 1 Claude: {e}")
+    if GEMINI_KEY:
+        for gm in GEMINI_MODELS:
+            try:
+                print(f"[INFO] Pass 1 → Gemini {gm} ({len(prompt):,} chars)")
+                url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+                       f"{gm}:generateContent?key={GEMINI_KEY}")
+                payload = json.dumps({
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"maxOutputTokens": 6000}
+                }).encode()
+                req = _ur.Request(url, data=payload,
+                                  headers={"Content-Type": "application/json"}, method="POST")
+                with _ur.urlopen(req, timeout=300) as resp:
+                    data = json.loads(resp.read().decode())
+                candidates = data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    text = "".join(p.get("text", "") for p in parts).strip()
+                    if text:
+                        return text
+            except Exception as e:
+                err = str(e)
+                if any(k in err for k in ("RESOURCE_EXHAUSTED", "429", "quota", "NOT_FOUND", "404")):
+                    continue
+                print(f"[WARN] Pass 1 Gemini {gm}: {e}")
+    return None
+
+
+def _call_ai_for_pass2(prompt):
+    """AI fallback chain for Pass 2 (HTML output). Returns raw text or None."""
+    import urllib.request as _ur
+    # Claude first for Pass 2 — better at long-form structured HTML
+    if API_KEY:
+        try:
+            print(f"[INFO] Pass 2 → Claude {MODEL} ({len(prompt):,} chars)")
+            payload = json.dumps({
+                "model": MODEL, "max_tokens": 8000,
+                "messages": [{"role": "user", "content": prompt}]
+            }).encode()
+            req = _ur.Request("https://api.anthropic.com/v1/messages", data=payload,
+                              headers={"Content-Type": "application/json",
+                                       "x-api-key": API_KEY,
+                                       "anthropic-version": "2023-06-01"}, method="POST")
+            with _ur.urlopen(req, timeout=300) as resp:
+                data = json.loads(resp.read().decode())
+            text = data.get("content", [{}])[0].get("text", "").strip()
+            if text:
+                if not text.rstrip().lower().endswith("</html>"):
+                    print(f"[WARN] Pass 2 Claude output may be truncated (no </html>, {len(text):,} chars) — consider AI_CLAUDE_MODEL=claude-sonnet-4-6 for higher output limit")
+                return text
+        except Exception as e:
+            print(f"[WARN] Pass 2 Claude: {e}")
+    if GEMINI_KEY:
+        for gm in GEMINI_MODELS:
+            try:
+                print(f"[INFO] Pass 2 → Gemini {gm} ({len(prompt):,} chars)")
+                url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+                       f"{gm}:generateContent?key={GEMINI_KEY}")
+                payload = json.dumps({
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"maxOutputTokens": 8192}
+                }).encode()
+                req = _ur.Request(url, data=payload,
+                                  headers={"Content-Type": "application/json"}, method="POST")
+                with _ur.urlopen(req, timeout=300) as resp:
+                    data = json.loads(resp.read().decode())
+                candidates = data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    text = "".join(p.get("text", "") for p in parts).strip()
+                    if text:
+                        if not text.rstrip().lower().endswith("</html>"):
+                            print(f"[WARN] Pass 2 Gemini output may be truncated ({len(text):,} chars)")
+                        return text
+            except Exception as e:
+                err = str(e)
+                if any(k in err for k in ("RESOURCE_EXHAUSTED", "429", "quota", "NOT_FOUND", "404")):
+                    continue
+                print(f"[WARN] Pass 2 Gemini {gm}: {e}")
+    # Ollama last resort for Pass 2
+    if OLLAMA_HOST:
+        try:
+            ctx_tokens  = _ollama_context_length(OLLAMA_HOST, OLLAMA_MODEL)
+            total_chars = int(ctx_tokens * 3.5)
+            out_reserve = max(32000, int(total_chars * 0.45))
+            in_budget   = total_chars - out_reserve
+            prompt_o    = prompt[:in_budget] if len(prompt) > in_budget else prompt
+            print(f"[INFO] Pass 2 → Ollama {OLLAMA_MODEL} ({len(prompt_o):,} chars, last resort)")
+            payload = json.dumps({
+                "model": OLLAMA_MODEL, "prompt": prompt_o,
+                "stream": False,
+                "options": {"num_predict": 10000},
+            }).encode()
+            req = _ur.Request(f"{OLLAMA_HOST}/api/generate", data=payload,
+                              headers={"Content-Type": "application/json"}, method="POST")
+            with _ur.urlopen(req, timeout=1800) as resp:
+                data = json.loads(resp.read().decode())
+            text = data.get("response", "").strip()
+            if text:
+                if not text.rstrip().lower().endswith("</html>"):
+                    print(f"[WARN] Pass 2 Ollama output may be truncated ({len(text):,} chars)")
+                return text
+        except Exception as e:
+            print(f"[WARN] Pass 2 Ollama: {e}")
+    return None
+
+
+def _parse_pass1_json(raw):
+    """Extract and parse JSON from Pass 1 model output. Returns dict or raises."""
+    import re as _re2
+    s = raw.strip()
+    s = _re2.sub(r'^```(?:json)?\s*\n?', '', s, flags=_re2.IGNORECASE)
+    s = _re2.sub(r'\n?```\s*$', '', s)
+    s = s.strip()
+    try:
+        return json.loads(s)
+    except json.JSONDecodeError:
+        m = _re2.search(r'\{.*\}', s, _re2.DOTALL)
+        if m:
+            return json.loads(m.group())
+        raise
+
+
 def run_company_report(config, findings, evidence_block, report_prompt):
-    """Route company report generation to the best available AI backend."""
+    """Two-pass company report: Pass 1 structures findings, Pass 2 writes HTML.
+    Falls back to single-pass on any failure."""
+
+    # ── Pass 1: Analyse & structure findings ─────────────────────────────
+    print("[INFO] Company report Pass 1 — analysing and structuring findings...")
+    p1_raw = _call_ai_for_pass1(_pass1_prompt(config, findings, evidence_block))
+    pass1_result = None
+    if p1_raw:
+        try:
+            pass1_result = _parse_pass1_json(p1_raw)
+            sections = pass1_result.get("sections", [])
+            n_f = sum(len(s.get("findings", [])) for s in sections)
+            n_o = sum(len(s.get("observations", [])) for s in sections)
+            if n_f == 0:
+                print("[WARN] Pass 1 returned 0 findings — skipping to fallback")
+                pass1_result = None
+            else:
+                print(f"[OK]   Pass 1 complete — {n_f} findings, {n_o} observations, {len(sections)} sections")
+                try:
+                    p1_path = RUN_DIR / f"company_pass1_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                    p1_path.write_text(json.dumps(pass1_result, indent=2))
+                    print(f"[INFO] Pass 1 debug saved: {p1_path.name}")
+                except Exception:
+                    pass
+        except Exception as e:
+            print(f"[WARN] Pass 1 JSON parse failed: {str(e)[:200]} — skipping to fallback")
+            pass1_result = None
+
+    if pass1_result:
+        # ── Pass 2: Write HTML from structured analysis ───────────────────
+        print("[INFO] Company report Pass 2 — writing HTML from structured analysis...")
+        raw = _call_ai_for_pass2(_pass2_prompt(config, pass1_result, report_prompt))
+        if raw:
+            return raw
+        print("[WARN] Pass 2 HTML writing failed — falling back to single-pass")
+
+    # ── Fallback: single-pass (original behaviour) ────────────────────────
+    print("[INFO] Company report fallback — single-pass generation...")
     if OLLAMA_HOST:
         raw = _ollama_company(OLLAMA_HOST, OLLAMA_MODEL, config, findings, evidence_block, report_prompt)
         if _is_valid_company_report(raw):
             return raw
         if raw:
-            print(f"[WARN] Ollama company report looks invalid ({len(raw):,} chars) — falling back to cloud AI")
+            print(f"[WARN] Ollama fallback invalid ({len(raw):,} chars)")
     if API_KEY:
         raw = _claude_company(API_KEY, MODEL, config, findings, evidence_block, report_prompt)
         if raw:
@@ -2416,17 +3029,18 @@ def main():
     # -----------------------------------------------------------------------
     # Company-standard report: second AI pass using REPORT_PROMPT.md
     # -----------------------------------------------------------------------
-    if _REPORT_PROMPT_MD and not DRY_RUN and evidence_block:
+    # Use enriched AI-analysis findings for the company report (they have CVSS, OWASP,
+    # business impact etc.). Fall back to raw findings only if AI produced nothing.
+    enriched_findings = analysis.get("findings") or findings
+
+    if not DRY_RUN and evidence_block:
         print("")
-        print("[INFO] ── Company-standard report pass (REPORT_PROMPT.md) ──")
-        company_html_out = OUTPUT_DIR / f"ai_report_{safe}_{ts}_company.html"
+        print("[INFO] ── Company-standard report pass ──")
         company_pdf_out  = OUTPUT_DIR / f"ai_report_{safe}_{ts}_company.pdf"
         try:
-            raw_report = run_company_report(config, findings, evidence_block, _REPORT_PROMPT_MD)
+            raw_report = run_company_report(config, enriched_findings, evidence_block, _REPORT_PROMPT_MD)
             if raw_report:
                 company_html = _wrap_company_output(raw_report, config)
-                company_html_out.write_text(company_html, encoding="utf-8")
-                print(f"[OK]   Company HTML: {company_html_out}")
                 if not NO_PDF:
                     if generate_pdf(company_html, company_pdf_out):
                         print(f"[OK]   Company PDF : {company_pdf_out}")
@@ -2438,8 +3052,8 @@ def main():
             print(f"[WARN] Company report generation failed: {_ce}")
     elif DRY_RUN:
         print("[INFO] Company report: skipped (dry run)")
-    elif not _REPORT_PROMPT_MD:
-        print(f"[WARN] Company report: REPORT_PROMPT.md not found at {_REPORT_PROMPT_PATH} — skipped")
+    elif not evidence_block:
+        print("[WARN] Company report: no evidence block collected — skipped")
 
 if __name__ == "__main__":
     main()
