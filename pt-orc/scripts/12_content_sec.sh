@@ -2,27 +2,27 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:25_NAV_TOC — Section index | nav,toc,index | L5-53
-# - MRK:25_ROOT    — ROOT CHECK                    | root,check,euid                    | L54-63   | ⚠ no-insert-before
-# - MRK:25_CONF    — ENGAGEMENT CONFIGURATION      | conf,engagement,configuration      | L64-133  | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:25_LOG     — COLOURS AND LOGGING           | log,colours,logging                | L134-156 | ⚠ no-insert-before
-# - MRK:25_ARGS    — ARGUMENT PARSING              | args,argument,parsing              | L157-196 | ⚠ no-insert-before
-# - MRK:25_DB      — MSF DB HELPERS                | db,msf,helpers,web,ports           | L197-251 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:25_CONFIRM — SCOPE CONFIRMATION            | confirm,scope,confirmation         | L252-266 | ⚠ no-insert-before; propose-before-edit
-# - MRK:25_TARGETS — TARGET ASSEMBLY               | targets,target,assembly            | L267-301 | ⚠ no-insert-before; read-toc-first
-# - MRK:25_FIND    — FINDING WRITER                | find,finding,writer,jsonl,jq       | L302-326 | ⚠ no-insert-before; read-toc-first
-# - MRK:25_UTILS   — SHARED UTILITIES              | utils,shared,utilities,curl,proxy  | L327-392 | ⚠ no-insert-before
-# - MRK:25_PROF    — PROFILE SETUP                 | prof,profile,setup,quick,deep      | L393-430 | ⚠ no-insert-before
-# - MRK:25_T01     — T01 CSP DEEP ANALYSIS         | t01,csp,policy,unsafe,directive    | L431-545 | ⚠ read-toc-first
-# - MRK:25_T02     — T02 SUBRESOURCE INTEGRITY     | t02,sri,integrity,cdn,script       | L546-625 | ⚠ read-toc-first
-# - MRK:25_T03     — T03 CLICKJACKING DEEP         | t03,clickjack,frame,ancestors,xfo  | L626-700 | ⚠ read-toc-first
-# - MRK:25_T04     — T04 CROSS-ORIGIN POLICIES     | t04,corp,coep,coop,crossorigin     | L701-780 | ⚠ read-toc-first
-# - MRK:25_T05     — T05 CACHE SECURITY            | t05,cache,no-store,private,cdn     | L781-865 | ⚠ read-toc-first
-# - MRK:25_T06     — T06 HEADER INFO DISCLOSURE    | t06,header,debug,xaspnet,runtime   | L866-945 | ⚠ read-toc-first
-# - MRK:25_T07     — T07 COOKIE SECURITY DEEP      | t07,cookie,samesite,host,domain    | L946-1045|⚠ read-toc-first
-# - MRK:25_T08     — T08 MIXED CONTENT             | t08,mixed,http,active,passive      | L1046-1120|⚠ read-toc-first; deep-only
-# - MRK:25_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1121-1175|⚠ no-insert-before; read-toc-first
-# - MRK:25_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1176-1320|⚠ no-insert-before; read-toc-first
+# MRK:12_NAV_TOC — Section index | nav,toc,index | L5-53
+# - MRK:12_ROOT    — ROOT CHECK                    | root,check,euid                    | L54-63   | ⚠ no-insert-before
+# - MRK:12_CONF    — ENGAGEMENT CONFIGURATION      | conf,engagement,configuration      | L64-133  | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:12_LOG     — COLOURS AND LOGGING           | log,colours,logging                | L134-156 | ⚠ no-insert-before
+# - MRK:12_ARGS    — ARGUMENT PARSING              | args,argument,parsing              | L157-196 | ⚠ no-insert-before
+# - MRK:12_DB      — MSF DB HELPERS                | db,msf,helpers,web,ports           | L197-251 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:12_CONFIRM — SCOPE CONFIRMATION            | confirm,scope,confirmation         | L252-266 | ⚠ no-insert-before; propose-before-edit
+# - MRK:12_TARGETS — TARGET ASSEMBLY               | targets,target,assembly            | L267-301 | ⚠ no-insert-before; read-toc-first
+# - MRK:12_FIND    — FINDING WRITER                | find,finding,writer,jsonl,jq       | L302-326 | ⚠ no-insert-before; read-toc-first
+# - MRK:12_UTILS   — SHARED UTILITIES              | utils,shared,utilities,curl,proxy  | L327-392 | ⚠ no-insert-before
+# - MRK:12_PROF    — PROFILE SETUP                 | prof,profile,setup,quick,deep      | L393-430 | ⚠ no-insert-before
+# - MRK:12_T01     — T01 CSP DEEP ANALYSIS         | t01,csp,policy,unsafe,directive    | L431-545 | ⚠ read-toc-first
+# - MRK:12_T02     — T02 SUBRESOURCE INTEGRITY     | t02,sri,integrity,cdn,script       | L546-625 | ⚠ read-toc-first
+# - MRK:12_T03     — T03 CLICKJACKING DEEP         | t03,clickjack,frame,ancestors,xfo  | L626-700 | ⚠ read-toc-first
+# - MRK:12_T04     — T04 CROSS-ORIGIN POLICIES     | t04,corp,coep,coop,crossorigin     | L701-780 | ⚠ read-toc-first
+# - MRK:12_T05     — T05 CACHE SECURITY            | t05,cache,no-store,private,cdn     | L781-865 | ⚠ read-toc-first
+# - MRK:12_T06     — T06 HEADER INFO DISCLOSURE    | t06,header,debug,xaspnet,runtime   | L866-945 | ⚠ read-toc-first
+# - MRK:12_T07     — T07 COOKIE SECURITY DEEP      | t07,cookie,samesite,host,domain    | L946-1045|⚠ read-toc-first
+# - MRK:12_T08     — T08 MIXED CONTENT             | t08,mixed,http,active,passive      | L1046-1120|⚠ read-toc-first; deep-only
+# - MRK:12_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1121-1175|⚠ no-insert-before; read-toc-first
+# - MRK:12_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1176-1320|⚠ no-insert-before; read-toc-first
 # NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
 
 # =============================================================================
@@ -63,7 +63,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:25_ROOT — ROOT CHECK | root,check,euid | L54-63
+# MRK:12_ROOT — ROOT CHECK | root,check,euid | L54-63
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -73,7 +73,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:25_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration | L64-133
+# MRK:12_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration | L64-133
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -118,7 +118,7 @@ tier_delay() { case "$1" in ghost) echo 2;; evasion) echo 3;; normal) echo 0;; l
 TLS_PORTS="443 8443 4443 9443 10443"
 
 # =============================================================================
-# MRK:25_LOG — COLOURS AND LOGGING | log,colours,logging | L134-156
+# MRK:12_LOG — COLOURS AND LOGGING | log,colours,logging | L134-156
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -144,7 +144,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:25_ARGS — ARGUMENT PARSING | args,argument,parsing | L157-196
+# MRK:12_ARGS — ARGUMENT PARSING | args,argument,parsing | L157-196
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -167,7 +167,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:25_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L197-251
+# MRK:12_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L197-251
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -223,7 +223,7 @@ _get_web_hosts_csv() {
 }
 
 # =============================================================================
-# MRK:25_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L252-266
+# MRK:12_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L252-266
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -240,7 +240,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:25_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L267-301
+# MRK:12_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L267-301
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -273,7 +273,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:25_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L302-326
+# MRK:12_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L302-326
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -298,7 +298,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:25_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L327-392
+# MRK:12_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L327-392
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -351,7 +351,7 @@ _test_skip() {
 }
 
 # =============================================================================
-# MRK:25_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L393-430
+# MRK:12_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L393-430
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -378,7 +378,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:25_T01 — T01 CSP DEEP ANALYSIS | t01,csp,policy,unsafe,directive | L431-545
+# MRK:12_T01 — T01 CSP DEEP ANALYSIS | t01,csp,policy,unsafe,directive | L431-545
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -510,7 +510,7 @@ test_25_t01_csp() {
 }
 
 # =============================================================================
-# MRK:25_T02 — T02 SUBRESOURCE INTEGRITY | t02,sri,integrity,cdn,script | L546-625
+# MRK:12_T02 — T02 SUBRESOURCE INTEGRITY | t02,sri,integrity,cdn,script | L546-625
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -598,7 +598,7 @@ test_25_t02_sri() {
 }
 
 # =============================================================================
-# MRK:25_T03 — T03 CLICKJACKING DEEP | t03,clickjack,frame,ancestors,xfo | L626-700
+# MRK:12_T03 — T03 CLICKJACKING DEEP | t03,clickjack,frame,ancestors,xfo | L626-700
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -678,7 +678,7 @@ test_25_t03_clickjack() {
 }
 
 # =============================================================================
-# MRK:25_T04 — T04 CROSS-ORIGIN POLICIES | t04,corp,coep,coop,crossorigin | L701-780
+# MRK:12_T04 — T04 CROSS-ORIGIN POLICIES | t04,corp,coep,coop,crossorigin | L701-780
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -740,7 +740,7 @@ test_25_t04_crossorigin() {
 }
 
 # =============================================================================
-# MRK:25_T05 — T05 CACHE SECURITY | t05,cache,no-store,private,cdn | L781-865
+# MRK:12_T05 — T05 CACHE SECURITY | t05,cache,no-store,private,cdn | L781-865
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -824,7 +824,7 @@ test_25_t05_cache() {
 }
 
 # =============================================================================
-# MRK:25_T06 — T06 HEADER INFO DISCLOSURE | t06,header,debug,xaspnet,runtime | L866-945
+# MRK:12_T06 — T06 HEADER INFO DISCLOSURE | t06,header,debug,xaspnet,runtime | L866-945
 # NAV-RULE: read-toc-first
 # Note: deliberately omits Server and X-Powered-By — already covered by step 09 T08.
 # =============================================================================
@@ -914,7 +914,7 @@ test_25_t06_hdrinfo() {
 }
 
 # =============================================================================
-# MRK:25_T07 — T07 COOKIE SECURITY DEEP | t07,cookie,samesite,host,domain | L946-1045
+# MRK:12_T07 — T07 COOKIE SECURITY DEEP | t07,cookie,samesite,host,domain | L946-1045
 # NAV-RULE: read-toc-first
 # Note: avoids duplicating step 23 T07 (Secure/HttpOnly/SameSite presence checks).
 #   Focuses on: __Secure-/__Host- prefix enforcement, Domain= scope, Max-Age bounds,
@@ -1041,7 +1041,7 @@ test_25_t07_cookie() {
 }
 
 # =============================================================================
-# MRK:25_T08 — T08 MIXED CONTENT | t08,mixed,http,active,passive | L1046-1120
+# MRK:12_T08 — T08 MIXED CONTENT | t08,mixed,http,active,passive | L1046-1120
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
@@ -1132,7 +1132,7 @@ test_25_t08_mixed() {
 }
 
 # =============================================================================
-# MRK:25_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1121-1175
+# MRK:12_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1121-1175
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1184,7 +1184,7 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:25_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1176-1320
+# MRK:12_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1176-1320
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 

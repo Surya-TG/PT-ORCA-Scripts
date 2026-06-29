@@ -2,26 +2,26 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:13_NAV_TOC — Section index | nav,toc,index | L5-43
-# - MRK:13_CONF   — CONF + LOG                   | conf,log,colors,session  | L44-130
-# - MRK:13_ARGS   — ARGUMENT PARSING              | args,cli,flags,depth     | L131-215
-# - MRK:13_DB     — MSF DB HELPERS                | db,msf,web,targets       | L216-265
-# - MRK:13_SCOPE  — SCOPE CONFIRM + TARGETS       | scope,targets,assembly   | L266-335
-# - MRK:13_FIND   — EMIT FINDING                  | finding,jsonl,emit       | L336-375
-# - MRK:13_UTILS  — SHARED UTILITIES              | utils,curl,proxy,tools   | L376-445
-# - MRK:13_PROF   — PROFILE / TEST ENABLE         | profile,enable,skip,tier | L446-490
-# - MRK:13_T01    — T01 BURP SUITE REST API       | burp,active,scan,rest    | L491-730
-# - MRK:13_T02    — T02 SQLMAP SQL INJECTION       | sqlmap,sqli,injection    | L731-920
-# - MRK:13_T03    — T03 DALFOX XSS FUZZER         | dalfox,xss,blind,dom     | L921-1060
-# - MRK:13_T04    — T04 NUCLEI TEMPLATE SCAN      | nuclei,template,cve      | L1061-1220
-# - MRK:13_T05    — T05 COMMIX COMMAND INJECTION   | commix,cmdi,os           | L1221-1330
-# - MRK:13_T06    — T06 ARJUN HIDDEN PARAMS       | arjun,hidden,params      | L1331-1440
-# - MRK:13_T07    — T07 TPLMAP SSTI               | tplmap,ssti,template     | L1441-1530
-# - MRK:13_T08    — T08 GHAURI ADVANCED SQLI      | ghauri,sqli,second-order | L1531-1640
-# - MRK:13_T09    — T09 FFUF PAYLOAD FUZZING      | ffuf,lfi,rfi,traversal   | L1641-1770
-# - MRK:13_T10    — T10 CRLFUZZ CRLF INJECTION    | crlf,header,injection    | L1771-1860
-# - MRK:13_TRUN   — PER-TARGET DISPATCHER         | dispatch,run,test        | L1861-1930
-# - MRK:13_MAIN   — MAIN                          | main,entry,loop          | L1931-2060
+# MRK:11_NAV_TOC — Section index | nav,toc,index | L5-43
+# - MRK:11_CONF   — CONF + LOG                   | conf,log,colors,session  | L44-130
+# - MRK:11_ARGS   — ARGUMENT PARSING              | args,cli,flags,depth     | L131-215
+# - MRK:11_DB     — MSF DB HELPERS                | db,msf,web,targets       | L216-265
+# - MRK:11_SCOPE  — SCOPE CONFIRM + TARGETS       | scope,targets,assembly   | L266-335
+# - MRK:11_FIND   — EMIT FINDING                  | finding,jsonl,emit       | L336-375
+# - MRK:11_UTILS  — SHARED UTILITIES              | utils,curl,proxy,tools   | L376-445
+# - MRK:11_PROF   — PROFILE / TEST ENABLE         | profile,enable,skip,tier | L446-490
+# - MRK:11_T01    — T01 BURP SUITE REST API       | burp,active,scan,rest    | L491-730
+# - MRK:11_T02    — T02 SQLMAP SQL INJECTION       | sqlmap,sqli,injection    | L731-920
+# - MRK:11_T03    — T03 DALFOX XSS FUZZER         | dalfox,xss,blind,dom     | L921-1060
+# - MRK:11_T04    — T04 NUCLEI TEMPLATE SCAN      | nuclei,template,cve      | L1061-1220
+# - MRK:11_T05    — T05 COMMIX COMMAND INJECTION   | commix,cmdi,os           | L1221-1330
+# - MRK:11_T06    — T06 ARJUN HIDDEN PARAMS       | arjun,hidden,params      | L1331-1440
+# - MRK:11_T07    — T07 TPLMAP SSTI               | tplmap,ssti,template     | L1441-1530
+# - MRK:11_T08    — T08 GHAURI ADVANCED SQLI      | ghauri,sqli,second-order | L1531-1640
+# - MRK:11_T09    — T09 FFUF PAYLOAD FUZZING      | ffuf,lfi,rfi,traversal   | L1641-1770
+# - MRK:11_T10    — T10 CRLFUZZ CRLF INJECTION    | crlf,header,injection    | L1771-1860
+# - MRK:11_TRUN   — PER-TARGET DISPATCHER         | dispatch,run,test        | L1861-1930
+# - MRK:11_MAIN   — MAIN                          | main,entry,loop          | L1931-2060
 # NAV-LEN: 20 entries | Integrity-hash: d4e9f2a8c1b7 | Last-indexed: 2026-06-18T00:00:00Z
 
 # =============================================================================
@@ -58,7 +58,7 @@
 set -uo pipefail
 
 # =============================================================================
-# MRK:13_CONF — CONF + LOG | conf,log,colors,session | L44-130
+# MRK:11_CONF — CONF + LOG | conf,log,colors,session | L44-130
 # NAV-RULE: no-insert-before
 # =============================================================================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -120,7 +120,7 @@ mkdir -p "$EVIDENCE_BASE"
 FINDING_COUNT=0
 
 # =============================================================================
-# MRK:13_ARGS — ARGUMENT PARSING | args,cli,flags,depth | L131-215
+# MRK:11_ARGS — ARGUMENT PARSING | args,cli,flags,depth | L131-215
 # NAV-RULE: no-insert-before
 # =============================================================================
 usage() {
@@ -163,7 +163,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:13_DB — MSF DB HELPERS | db,msf,web,targets | L216-265
+# MRK:11_DB — MSF DB HELPERS | db,msf,web,targets | L216-265
 # NAV-RULE: no-insert-before
 # =============================================================================
 _msf_query() {
@@ -193,7 +193,7 @@ _web_urls_from_db() {
 }
 
 # =============================================================================
-# MRK:13_SCOPE — SCOPE CONFIRM + TARGETS | scope,targets,assembly | L266-335
+# MRK:11_SCOPE — SCOPE CONFIRM + TARGETS | scope,targets,assembly | L266-335
 # NAV-RULE: no-insert-before
 # =============================================================================
 assemble_targets() {
@@ -252,7 +252,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:13_FIND — EMIT FINDING | finding,jsonl,emit | L336-375
+# MRK:11_FIND — EMIT FINDING | finding,jsonl,emit | L336-375
 # NAV-RULE: no-insert-before
 # =============================================================================
 emit_finding() {
@@ -273,7 +273,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:13_UTILS — SHARED UTILITIES | utils,curl,proxy,tools | L376-445
+# MRK:11_UTILS — SHARED UTILITIES | utils,curl,proxy,tools | L376-445
 # NAV-RULE: no-insert-before
 # =============================================================================
 _have() { command -v "$1" > /dev/null 2>&1; }
@@ -322,7 +322,7 @@ _save_evidence() {
 }
 
 # =============================================================================
-# MRK:13_PROF — PROFILE / TEST ENABLE | profile,enable,skip,tier | L446-490
+# MRK:11_PROF — PROFILE / TEST ENABLE | profile,enable,skip,tier | L446-490
 # NAV-RULE: no-insert-before
 # =============================================================================
 declare -A _T_ENABLED
@@ -355,7 +355,7 @@ _setup_profile() {
 _test_skip() { [[ "${_T_ENABLED[$1]:-0}" -eq 0 ]]; }
 
 # =============================================================================
-# MRK:13_T01 — T01 BURP SUITE REST API | burp,active,scan,rest | L491-730
+# MRK:11_T01 — T01 BURP SUITE REST API | burp,active,scan,rest | L491-730
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 # Burp Suite Professional REST API active crawl-and-audit.
@@ -531,7 +531,7 @@ PYEOF
 }
 
 # =============================================================================
-# MRK:13_T02 — T02 SQLMAP SQL INJECTION | sqlmap,sqli,injection | L731-920
+# MRK:11_T02 — T02 SQLMAP SQL INJECTION | sqlmap,sqli,injection | L731-920
 # NAV-RULE: no-insert-before
 # =============================================================================
 # Multi-vector SQLi: GET params, POST forms, Cookie values, HTTP headers.
@@ -659,7 +659,7 @@ test_T02_sqlmap() {
 }
 
 # =============================================================================
-# MRK:13_T03 — T03 DALFOX XSS FUZZER | dalfox,xss,blind,dom | L921-1060
+# MRK:11_T03 — T03 DALFOX XSS FUZZER | dalfox,xss,blind,dom | L921-1060
 # NAV-RULE: no-insert-before
 # =============================================================================
 # Reflected, DOM, stored, and blind XSS via dalfox.
@@ -752,7 +752,7 @@ PYEOF
 }
 
 # =============================================================================
-# MRK:13_T04 — T04 NUCLEI TEMPLATE SCAN | nuclei,template,cve | L1061-1220
+# MRK:11_T04 — T04 NUCLEI TEMPLATE SCAN | nuclei,template,cve | L1061-1220
 # NAV-RULE: no-insert-before
 # =============================================================================
 # Community-template scanning for CVEs, misconfigs, exposures, and tech-specific
@@ -858,7 +858,7 @@ PYEOF
 }
 
 # =============================================================================
-# MRK:13_T05 — T05 COMMIX COMMAND INJECTION | commix,cmdi,os | L1221-1330
+# MRK:11_T05 — T05 COMMIX COMMAND INJECTION | commix,cmdi,os | L1221-1330
 # NAV-RULE: no-insert-before
 # =============================================================================
 test_T05_commix() {
@@ -909,7 +909,7 @@ test_T05_commix() {
 }
 
 # =============================================================================
-# MRK:13_T06 — T06 ARJUN HIDDEN PARAMS | arjun,hidden,params | L1331-1440
+# MRK:11_T06 — T06 ARJUN HIDDEN PARAMS | arjun,hidden,params | L1331-1440
 # NAV-RULE: no-insert-before
 # =============================================================================
 test_T06_arjun() {
@@ -961,7 +961,7 @@ test_T06_arjun() {
 }
 
 # =============================================================================
-# MRK:13_T07 — T07 TPLMAP SSTI | tplmap,ssti,template | L1441-1530
+# MRK:11_T07 — T07 TPLMAP SSTI | tplmap,ssti,template | L1441-1530
 # NAV-RULE: no-insert-before
 # =============================================================================
 test_T07_tplmap() {
@@ -1008,7 +1008,7 @@ test_T07_tplmap() {
 }
 
 # =============================================================================
-# MRK:13_T08 — T08 GHAURI ADVANCED SQLI | ghauri,sqli,second-order | L1531-1640
+# MRK:11_T08 — T08 GHAURI ADVANCED SQLI | ghauri,sqli,second-order | L1531-1640
 # NAV-RULE: no-insert-before
 # =============================================================================
 # ghauri focuses on second-order SQLi and advanced blind injection techniques
@@ -1061,7 +1061,7 @@ test_T08_ghauri() {
 }
 
 # =============================================================================
-# MRK:13_T09 — T09 FFUF PAYLOAD FUZZING | ffuf,lfi,rfi,traversal | L1641-1770
+# MRK:11_T09 — T09 FFUF PAYLOAD FUZZING | ffuf,lfi,rfi,traversal | L1641-1770
 # NAV-RULE: no-insert-before
 # =============================================================================
 # ffuf payload fuzzing for LFI, path traversal, and RFI.
@@ -1187,7 +1187,7 @@ PYEOF
 }
 
 # =============================================================================
-# MRK:13_T10 — T10 CRLFUZZ CRLF INJECTION | crlf,header,injection | L1771-1860
+# MRK:11_T10 — T10 CRLFUZZ CRLF INJECTION | crlf,header,injection | L1771-1860
 # NAV-RULE: no-insert-before
 # =============================================================================
 test_T10_crlfuzz() {
@@ -1228,7 +1228,7 @@ test_T10_crlfuzz() {
 }
 
 # =============================================================================
-# MRK:13_TRUN — PER-TARGET DISPATCHER | dispatch,run,test | L1861-1930
+# MRK:11_TRUN — PER-TARGET DISPATCHER | dispatch,run,test | L1861-1930
 # NAV-RULE: no-insert-before
 # =============================================================================
 per_target() {
@@ -1256,7 +1256,7 @@ per_target() {
 }
 
 # =============================================================================
-# MRK:13_MAIN — MAIN | main,entry,loop | L1931-2060
+# MRK:11_MAIN — MAIN | main,entry,loop | L1931-2060
 # NAV-RULE: no-insert-before
 # =============================================================================
 main() {

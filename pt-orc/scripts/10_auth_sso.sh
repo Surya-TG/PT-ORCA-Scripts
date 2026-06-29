@@ -2,27 +2,27 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:23_NAV_TOC — Section index | nav,toc,index | L5-57
-# - MRK:23_ROOT    — ROOT CHECK                    | root,check,euid                    | L58-67  | ⚠ no-insert-before
-# - MRK:23_CONF    — ENGAGEMENT CONFIGURATION      | conf,engagement,configuration      | L68-136 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:23_LOG     — COLOURS AND LOGGING           | log,colours,logging                | L137-158| ⚠ no-insert-before
-# - MRK:23_ARGS    — ARGUMENT PARSING              | args,argument,parsing              | L159-204| ⚠ no-insert-before
-# - MRK:23_DB      — MSF DB HELPERS                | db,msf,helpers,web,ports           | L205-260| ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:23_CONFIRM — SCOPE CONFIRMATION            | confirm,scope,confirmation         | L261-276| ⚠ no-insert-before; propose-before-edit
-# - MRK:23_TARGETS — TARGET ASSEMBLY               | targets,target,assembly            | L277-313| ⚠ no-insert-before; read-toc-first
-# - MRK:23_FIND    — FINDING WRITER                | find,finding,writer,jsonl,jq       | L314-339| ⚠ no-insert-before; read-toc-first
-# - MRK:23_UTILS   — SHARED UTILITIES              | utils,shared,utilities,curl,proxy  | L340-400| ⚠ no-insert-before
-# - MRK:23_PROF    — PROFILE SETUP                 | prof,profile,setup,quick,deep      | L401-436| ⚠ no-insert-before
-# - MRK:23_T01     — T01 OAUTH/OIDC DISCOVERY      | t01,oauth,oidc,discovery,wellknown | L437-524| ⚠ read-toc-first
-# - MRK:23_T02     — T02 OAUTH FLOW ATTACKS        | t02,oauth,flow,redirect,state,pkce | L525-630| ⚠ read-toc-first
-# - MRK:23_T03     — T03 TOKEN ENDPOINT ABUSE      | t03,token,endpoint,introspect,scope| L631-722| ⚠ read-toc-first
-# - MRK:23_T04     — T04 OIDC PROBES               | t04,oidc,jwks,nonce,issuer         | L723-804| ⚠ read-toc-first
-# - MRK:23_T05     — T05 SAML DISCOVERY            | t05,saml,metadata,acs,sso          | L805-874| ⚠ read-toc-first
-# - MRK:23_T06     — T06 SAML ASSERTION PROBES     | t06,saml,assertion,signature,wrap  | L875-972| ⚠ read-toc-first; deep-only
-# - MRK:23_T07     — T07 SESSION MANAGEMENT        | t07,session,cookie,fixation,entropy| L973-1064|⚠ read-toc-first
-# - MRK:23_T08     — T08 SSO LOGOUT & REVOCATION   | t08,logout,revoke,signout,redirect | L1065-1148|⚠ read-toc-first
-# - MRK:23_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1149-1205|⚠ no-insert-before; read-toc-first
-# - MRK:23_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1206-1330|⚠ no-insert-before; read-toc-first
+# MRK:10_NAV_TOC — Section index | nav,toc,index | L5-57
+# - MRK:10_ROOT    — ROOT CHECK                    | root,check,euid                    | L58-67  | ⚠ no-insert-before
+# - MRK:10_CONF    — ENGAGEMENT CONFIGURATION      | conf,engagement,configuration      | L68-136 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:10_LOG     — COLOURS AND LOGGING           | log,colours,logging                | L137-158| ⚠ no-insert-before
+# - MRK:10_ARGS    — ARGUMENT PARSING              | args,argument,parsing              | L159-204| ⚠ no-insert-before
+# - MRK:10_DB      — MSF DB HELPERS                | db,msf,helpers,web,ports           | L205-260| ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:10_CONFIRM — SCOPE CONFIRMATION            | confirm,scope,confirmation         | L261-276| ⚠ no-insert-before; propose-before-edit
+# - MRK:10_TARGETS — TARGET ASSEMBLY               | targets,target,assembly            | L277-313| ⚠ no-insert-before; read-toc-first
+# - MRK:10_FIND    — FINDING WRITER                | find,finding,writer,jsonl,jq       | L314-339| ⚠ no-insert-before; read-toc-first
+# - MRK:10_UTILS   — SHARED UTILITIES              | utils,shared,utilities,curl,proxy  | L340-400| ⚠ no-insert-before
+# - MRK:10_PROF    — PROFILE SETUP                 | prof,profile,setup,quick,deep      | L401-436| ⚠ no-insert-before
+# - MRK:10_T01     — T01 OAUTH/OIDC DISCOVERY      | t01,oauth,oidc,discovery,wellknown | L437-524| ⚠ read-toc-first
+# - MRK:10_T02     — T02 OAUTH FLOW ATTACKS        | t02,oauth,flow,redirect,state,pkce | L525-630| ⚠ read-toc-first
+# - MRK:10_T03     — T03 TOKEN ENDPOINT ABUSE      | t03,token,endpoint,introspect,scope| L631-722| ⚠ read-toc-first
+# - MRK:10_T04     — T04 OIDC PROBES               | t04,oidc,jwks,nonce,issuer         | L723-804| ⚠ read-toc-first
+# - MRK:10_T05     — T05 SAML DISCOVERY            | t05,saml,metadata,acs,sso          | L805-874| ⚠ read-toc-first
+# - MRK:10_T06     — T06 SAML ASSERTION PROBES     | t06,saml,assertion,signature,wrap  | L875-972| ⚠ read-toc-first; deep-only
+# - MRK:10_T07     — T07 SESSION MANAGEMENT        | t07,session,cookie,fixation,entropy| L973-1064|⚠ read-toc-first
+# - MRK:10_T08     — T08 SSO LOGOUT & REVOCATION   | t08,logout,revoke,signout,redirect | L1065-1148|⚠ read-toc-first
+# - MRK:10_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1149-1205|⚠ no-insert-before; read-toc-first
+# - MRK:10_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1206-1330|⚠ no-insert-before; read-toc-first
 # NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
 
 # =============================================================================
@@ -62,7 +62,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:23_ROOT — ROOT CHECK | root,check,euid | L58-67
+# MRK:10_ROOT — ROOT CHECK | root,check,euid | L58-67
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -72,7 +72,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:23_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration | L68-136
+# MRK:10_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration | L68-136
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -129,7 +129,7 @@ tier_delay() { case "$1" in ghost) echo 2;; evasion) echo 3;; normal) echo 0;; l
 TLS_PORTS="443 8443 4443 9443 10443"
 
 # =============================================================================
-# MRK:23_LOG — COLOURS AND LOGGING | log,colours,logging | L137-158
+# MRK:10_LOG — COLOURS AND LOGGING | log,colours,logging | L137-158
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -155,7 +155,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:23_ARGS — ARGUMENT PARSING | args,argument,parsing | L159-204
+# MRK:10_ARGS — ARGUMENT PARSING | args,argument,parsing | L159-204
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -184,7 +184,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:23_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L205-260
+# MRK:10_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L205-260
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -239,7 +239,7 @@ get_web_hosts_from_db() {
 }
 
 # =============================================================================
-# MRK:23_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L261-276
+# MRK:10_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L261-276
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -256,7 +256,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:23_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L277-313
+# MRK:10_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L277-313
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -284,7 +284,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:23_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L314-339
+# MRK:10_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L314-339
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -309,7 +309,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:23_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L340-400
+# MRK:10_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L340-400
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -361,7 +361,7 @@ _test_skip() {
 }
 
 # =============================================================================
-# MRK:23_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L401-436
+# MRK:10_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L401-436
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -388,7 +388,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:23_T01 — T01 OAUTH/OIDC DISCOVERY | t01,oauth,oidc,discovery,wellknown | L437-524
+# MRK:10_T01 — T01 OAUTH/OIDC DISCOVERY | t01,oauth,oidc,discovery,wellknown | L437-524
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -476,7 +476,7 @@ test_23_t01_discovery() {
 }
 
 # =============================================================================
-# MRK:23_T02 — T02 OAUTH FLOW ATTACKS | t02,oauth,flow,redirect,state,pkce | L525-630
+# MRK:10_T02 — T02 OAUTH FLOW ATTACKS | t02,oauth,flow,redirect,state,pkce | L525-630
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -560,7 +560,7 @@ test_23_t02_oauth_flow() {
 }
 
 # =============================================================================
-# MRK:23_T03 — T03 TOKEN ENDPOINT ABUSE | t03,token,endpoint,introspect,scope | L631-722
+# MRK:10_T03 — T03 TOKEN ENDPOINT ABUSE | t03,token,endpoint,introspect,scope | L631-722
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -663,7 +663,7 @@ test_23_t03_token_abuse() {
 }
 
 # =============================================================================
-# MRK:23_T04 — T04 OIDC PROBES | t04,oidc,jwks,nonce,issuer | L723-804
+# MRK:10_T04 — T04 OIDC PROBES | t04,oidc,jwks,nonce,issuer | L723-804
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -751,7 +751,7 @@ test_23_t04_oidc() {
 }
 
 # =============================================================================
-# MRK:23_T05 — T05 SAML DISCOVERY | t05,saml,metadata,acs,sso | L805-874
+# MRK:10_T05 — T05 SAML DISCOVERY | t05,saml,metadata,acs,sso | L805-874
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -830,7 +830,7 @@ test_23_t05_saml_discovery() {
 }
 
 # =============================================================================
-# MRK:23_T06 — T06 SAML ASSERTION PROBES | t06,saml,assertion,signature,wrap | L875-972
+# MRK:10_T06 — T06 SAML ASSERTION PROBES | t06,saml,assertion,signature,wrap | L875-972
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
@@ -908,7 +908,7 @@ SAML_EOF2
 }
 
 # =============================================================================
-# MRK:23_T07 — T07 SESSION MANAGEMENT | t07,session,cookie,fixation,entropy | L973-1064
+# MRK:10_T07 — T07 SESSION MANAGEMENT | t07,session,cookie,fixation,entropy | L973-1064
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1015,7 +1015,7 @@ test_23_t07_session() {
 }
 
 # =============================================================================
-# MRK:23_T08 — T08 SSO LOGOUT & REVOCATION | t08,logout,revoke,signout,redirect | L1065-1148
+# MRK:10_T08 — T08 SSO LOGOUT & REVOCATION | t08,logout,revoke,signout,redirect | L1065-1148
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1125,7 +1125,7 @@ test_23_t08_logout() {
 }
 
 # =============================================================================
-# MRK:23_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1149-1205
+# MRK:10_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1149-1205
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1180,7 +1180,7 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:23_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1206-1330
+# MRK:10_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1206-1330
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 

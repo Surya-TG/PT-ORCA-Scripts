@@ -890,7 +890,7 @@ _orc_ai_banner() {
     cat <<'EOF' >&2
 
 Purpose: shared AI inference and threat-intelligence API helpers for
-  steps 14 (14_vuln_corpus.sh) and 15 (15_attack_chain.sh).
+  steps 23 (23_vuln_corpus.sh) and 24 (24_attack_chain.sh).
 
 Usage (from a script):
   source "$(dirname "$0")/orc-ai-lib.sh"

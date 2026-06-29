@@ -2,18 +2,18 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:14_NAV_TOC — Section index | nav,toc,index | L5-44
-# - MRK:14_CONF   — CONF + LOG + AI-LIB SOURCE         | conf,log,colors,session,lib  | L45-135
-# - MRK:14_ARGS   — ARGUMENT PARSING                   | args,cli,flags,depth         | L136-205
-# - MRK:14_DB     — SERVICE EXTRACTION + TARGETS        | db,msf,services,targets      | L206-310
-# - MRK:14_FIND   — EMIT CORPUS FINDING                 | finding,jsonl,emit,cve_ids   | L311-355
-# - MRK:14_UTILS  — SHARED UTILITIES                    | utils,banner,keyword,tools   | L356-420
-# - MRK:14_PROF   — PROFILE / TEST ENABLE               | profile,enable,skip,depth    | L421-465
-# - MRK:14_T01    — T01 NVD CVE SWEEP                   | nvd,cve,sweep,correlate      | L466-600
-# - MRK:14_T02    — T02 EXPLOITDB PoC CROSS-REFERENCE   | exploitdb,poc,searchsploit   | L601-680
-# - MRK:14_T03    — T03 OSV PACKAGE LOOKUP              | osv,package,ecosystem,vuln   | L681-750
-# - MRK:14_T04    — T04 NUCLEI FULL TEMPLATE SUITE      | nuclei,template,full,cve     | L751-870
-# - MRK:14_MAIN   — MAIN                                | main,entry,loop,summary      | L871-980
+# MRK:23_NAV_TOC — Section index | nav,toc,index | L5-44
+# - MRK:23_CONF   — CONF + LOG + AI-LIB SOURCE         | conf,log,colors,session,lib  | L45-135
+# - MRK:23_ARGS   — ARGUMENT PARSING                   | args,cli,flags,depth         | L136-205
+# - MRK:23_DB     — SERVICE EXTRACTION + TARGETS        | db,msf,services,targets      | L206-310
+# - MRK:23_FIND   — EMIT CORPUS FINDING                 | finding,jsonl,emit,cve_ids   | L311-355
+# - MRK:23_UTILS  — SHARED UTILITIES                    | utils,banner,keyword,tools   | L356-420
+# - MRK:23_PROF   — PROFILE / TEST ENABLE               | profile,enable,skip,depth    | L421-465
+# - MRK:23_T01    — T01 NVD CVE SWEEP                   | nvd,cve,sweep,correlate      | L466-600
+# - MRK:23_T02    — T02 EXPLOITDB PoC CROSS-REFERENCE   | exploitdb,poc,searchsploit   | L601-680
+# - MRK:23_T03    — T03 OSV PACKAGE LOOKUP              | osv,package,ecosystem,vuln   | L681-750
+# - MRK:23_T04    — T04 NUCLEI FULL TEMPLATE SUITE      | nuclei,template,full,cve     | L751-870
+# - MRK:23_MAIN   — MAIN                                | main,entry,loop,summary      | L871-980
 # NAV-LEN: 11 entries | Integrity-hash: 0000000000000000 | Last-indexed: 2026-06-22T00:00:00Z
 
 # =============================================================================
@@ -26,7 +26,7 @@
 #
 #   T01  NVD API v2 CVE sweep  — correlate services to known CVEs
 #   T02  ExploitDB cross-ref   — match CVE IDs to public PoC exploits
-#   T03  OSV package lookup    — package-level vulns from step 8 findings
+#   T03  OSV package lookup    — package-level vulns from step 14 findings
 #   T04  Nuclei full suite     — 9,500+ template scan at NUCLEI_FULL_SEVERITY
 #
 # USAGE:
@@ -44,7 +44,7 @@
 set -uo pipefail
 
 # =============================================================================
-# MRK:14_CONF — CONF + LOG + AI-LIB SOURCE | conf,log,colors,session,lib | L45-135
+# MRK:23_CONF — CONF + LOG + AI-LIB SOURCE | conf,log,colors,session,lib | L45-135
 # NAV-RULE: no-insert-before
 # =============================================================================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -121,7 +121,7 @@ else
 fi
 
 # =============================================================================
-# MRK:14_ARGS — ARGUMENT PARSING | args,cli,flags,depth | L136-205
+# MRK:23_ARGS — ARGUMENT PARSING | args,cli,flags,depth | L136-205
 # NAV-RULE: no-insert-before
 # =============================================================================
 usage() {
@@ -147,7 +147,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:14_DB — SERVICE EXTRACTION + TARGETS | db,msf,services,targets | L206-310
+# MRK:23_DB — SERVICE EXTRACTION + TARGETS | db,msf,services,targets | L206-310
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -165,7 +165,7 @@ _msf_query() {
 
 # _get_services — emit tab-separated rows: port TAB name TAB info TAB address
 # Primary: MSF DB services table (with workspace filter)
-# Fallback: parse step 7 JSONL findings for service info
+# Fallback: parse step 13 JSONL findings for service info
 _get_services() {
     local rows
     rows="$(_msf_query "
@@ -185,9 +185,9 @@ _get_services() {
         return 0
     fi
 
-    log_warn "MSF DB unavailable or empty — falling back to step 7 JSONL findings"
+    log_warn "MSF DB unavailable or empty — falling back to step 13 JSONL findings"
     local f
-    for f in "${SCRIPT_DIR}/working"/*_07_service_findings*.jsonl; do
+    for f in "${SCRIPT_DIR}/working"/*13-svcverify-findings*.jsonl; do
         [[ -f "$f" ]] || continue
         _real_jq -r '
             select(.title != null and .description != null) |
@@ -196,7 +196,7 @@ _get_services() {
         return 0
     done
 
-    log_warn "No service data found (MSF DB empty and no step 7 JSONL) — NVD/EDB sweep will be empty"
+    log_warn "No service data found (MSF DB empty and no step 13 JSONL) — NVD/EDB sweep will be empty"
 }
 
 # _web_urls_from_db — read web URLs from MSF DB (for T04 nuclei targeting)
@@ -262,7 +262,7 @@ scope_confirm() {
 }
 
 # =============================================================================
-# MRK:14_FIND — EMIT CORPUS FINDING | finding,jsonl,emit,cve_ids | L311-355
+# MRK:23_FIND — EMIT CORPUS FINDING | finding,jsonl,emit,cve_ids | L311-355
 # NAV-RULE: no-insert-before
 # =============================================================================
 # emit_corpus_finding — write one JSONL record to FINDINGS_FILE.
@@ -286,7 +286,7 @@ emit_corpus_finding() {
 }
 
 # =============================================================================
-# MRK:14_UTILS — SHARED UTILITIES | utils,banner,keyword,tools | L356-420
+# MRK:23_UTILS — SHARED UTILITIES | utils,banner,keyword,tools | L356-420
 # NAV-RULE: no-insert-before
 # =============================================================================
 _have() { command -v "$1" >/dev/null 2>&1; }
@@ -321,7 +321,7 @@ _cvss_passes() {
 }
 
 # =============================================================================
-# MRK:14_PROF — PROFILE / TEST ENABLE | profile,enable,skip,depth | L421-465
+# MRK:23_PROF — PROFILE / TEST ENABLE | profile,enable,skip,depth | L421-465
 # NAV-RULE: no-insert-before
 # =============================================================================
 declare -A _T_ENABLED
@@ -350,10 +350,10 @@ _setup_profile() {
 _test_skip() { [[ "${_T_ENABLED[$1]:-0}" -eq 0 ]]; }
 
 # =============================================================================
-# MRK:14_T01 — T01 NVD CVE SWEEP | nvd,cve,sweep,correlate | L466-600
+# MRK:23_T01 — T01 NVD CVE SWEEP | nvd,cve,sweep,correlate | L466-600
 # NAV-RULE: no-insert-before
 # =============================================================================
-# Reads service banners from MSF DB (or step 7 JSONL fallback),
+# Reads service banners from MSF DB (or step 13 JSONL fallback),
 # normalises them to NVD-safe keywords, queries NVD API v2, and emits
 # JSONL findings for CVEs scoring >= CORPUS_MIN_CVSS.
 # CVE deduplication prevents the same CVE being emitted multiple times
@@ -442,7 +442,7 @@ T01_nvd_sweep() {
 }
 
 # =============================================================================
-# MRK:14_T02 — T02 EXPLOITDB PoC CROSS-REFERENCE | exploitdb,poc,searchsploit | L601-680
+# MRK:23_T02 — T02 EXPLOITDB PoC CROSS-REFERENCE | exploitdb,poc,searchsploit | L601-680
 # NAV-RULE: no-insert-before
 # =============================================================================
 # Reads CVE IDs emitted by T01 from FINDINGS_FILE and cross-references each
@@ -524,10 +524,10 @@ T02_exploitdb_xref() {
 }
 
 # =============================================================================
-# MRK:14_T03 — T03 OSV PACKAGE LOOKUP | osv,package,ecosystem,vuln | L681-750
+# MRK:23_T03 — T03 OSV PACKAGE LOOKUP | osv,package,ecosystem,vuln | L681-750
 # NAV-RULE: no-insert-before
 # =============================================================================
-# Reads package/ecosystem pairs from step 8 (App/API Review) JSONL findings.
+# Reads package/ecosystem pairs from step 14 (App/API Review) JSONL findings.
 # Step 8 may emit findings with extra fields: package_name and ecosystem.
 # If no such data exists, T03 logs a notice and exits cleanly — it does not
 # fabricate package names from HTTP headers or service banners.
@@ -540,10 +540,10 @@ T03_osv_sweep() {
         return 0
     fi
 
-    # Collect package/ecosystem pairs from step 8 JSONL
+    # Collect package/ecosystem pairs from step 14 JSONL
     local pkg_data=()
     local f
-    for f in "${SCRIPT_DIR}/working"/*_08_*findings*.jsonl; do
+    for f in "${SCRIPT_DIR}/working"/*14-appapi-findings*.jsonl; do
         [[ -f "$f" ]] || continue
         while IFS='|' read -r pkg eco; do
             [[ -z "$pkg" || -z "$eco" ]] && continue
@@ -555,8 +555,8 @@ T03_osv_sweep() {
     done
 
     if [[ "${#pkg_data[@]}" -eq 0 ]]; then
-        log_warn "T03: no package_name/ecosystem data in step 8 findings — OSV sweep skipped"
-        log_warn "     (Step 8 must emit findings with package_name and ecosystem fields to enable T03)"
+        log_warn "T03: no package_name/ecosystem data in step 14 findings — OSV sweep skipped"
+        log_warn "     (Step 14 must emit findings with package_name and ecosystem fields to enable T03)"
         return 0
     fi
 
@@ -597,7 +597,7 @@ T03_osv_sweep() {
 }
 
 # =============================================================================
-# MRK:14_T04 — T04 NUCLEI FULL TEMPLATE SUITE | nuclei,template,full,cve | L751-870
+# MRK:23_T04 — T04 NUCLEI FULL TEMPLATE SUITE | nuclei,template,full,cve | L751-870
 # NAV-RULE: no-insert-before
 # =============================================================================
 # Runs the full Nuclei template library against web targets.
@@ -698,11 +698,11 @@ T04_nuclei_full() {
 }
 
 # =============================================================================
-# MRK:14_MAIN — MAIN | main,entry,loop,summary | L871-980
+# MRK:23_MAIN — MAIN | main,entry,loop,summary | L871-980
 # NAV-RULE: no-insert-before
 # =============================================================================
 main() {
-    log_step 14 "Vulnerability Corpus Correlation" "$0"
+    log_step 23 "Vulnerability Corpus Correlation" "$0"
     log "Project    : ${PROJECT_NAME:-[unset]}"
     log "Depth      : ${DEPTH}"
     log "Tier       : ${TIER}"

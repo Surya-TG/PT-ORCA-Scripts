@@ -2,41 +2,41 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:10_NAV_TOC — Section index | nav,toc,index | L5-68
-# - MRK:10_ROOT — ROOT CHECK | root,check,euid | L81-90 | ⚠ no-insert-before
-# - MRK:10_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L91-150 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:10_LOG — COLOURS AND LOGGING | log,colours,logging | L151-173 | ⚠ no-insert-before
-# - MRK:10_ARGS — ARGUMENT PARSING | args,argument,parsing | L174-197 | ⚠ no-insert-before
-# - MRK:10_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L198-249 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:10_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L250-266 | ⚠ no-insert-before; propose-before-edit
-# - MRK:10_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L267-296 | ⚠ no-insert-before; read-toc-first
-# - MRK:10_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L297-322 | ⚠ no-insert-before; read-toc-first
-# - MRK:10_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L323-381 | ⚠ no-insert-before
-# - MRK:10_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L382-410 | ⚠ no-insert-before
-# - MRK:10_T00 — PRIOR SCAN HARVEST + CHATBOT FINGERPRINT | t00,prior,harvest,chatbot,widget | L411-601 | ⚠ read-toc-first
-# - MRK:10_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L602-707 | ⚠ read-toc-first
-# - MRK:10_T02 — T02 AUTHENTICATION | t02,authentication,auth,apikey,bypass | L708-771 | ⚠ read-toc-first
-# - MRK:10_T03 — T03 RATE LIMITING | t03,rate,limiting,limit,burst | L772-813 | ⚠ read-toc-first
-# - MRK:10_T04 — T04 PROMPT INJECTION | t04,prompt,injection,direct | L814-899 | ⚠ read-toc-first
-# - MRK:10_T05 — T05 INDIRECT INJECTION | t05,indirect,injection,rag,tool | L900-948 | ⚠ read-toc-first
-# - MRK:10_T06 — T06 SYSTEM PROMPT LEAKAGE | t06,system,prompt,leakage,disc | L949-1006 | ⚠ read-toc-first
-# - MRK:10_T07 — T07 JAILBREAKING | t07,jailbreaking,jailbreak,dan,roleplay | L1007-1079 | ⚠ read-toc-first
-# - MRK:10_T08 — T08 EXCESSIVE AGENCY | t08,excessive,agency,tool,function | L1080-1138 | ⚠ read-toc-first
-# - MRK:10_T09 — T09 SENSITIVE DATA | t09,sensitive,data,pii,extraction | L1139-1197 | ⚠ read-toc-first
-# - MRK:10_T10 — T10 MODEL DOS | t10,model,dos,token,flood | L1198-1258 | ⚠ read-toc-first; deep-only
-# - MRK:10_T11 — T11 OUTPUT HANDLING | t11,output,handling,xss,markdown | L1259-1318 | ⚠ read-toc-first
-# - MRK:10_T12 — T12 KEY/SECRET EXPOSURE | t12,key,secret,exposure,credential | L1319-1376 | ⚠ read-toc-first
-# - MRK:10_T13 — T13 MODEL FINGERPRINTING | t13,model,fingerprinting,fingerprint,version | L1377-1415 | ⚠ read-toc-first
-# - MRK:10_T14 — T14 CORS AND HEADERS | t14,cors,headers,origin,api | L1416-1458 | ⚠ read-toc-first
-# - MRK:10_T15 — T15 PLUGIN/TOOL ENUM | t15,plugin,tool,enum,function | L1459-1507 | ⚠ read-toc-first
-# - MRK:10_T16 — T16 TRAINING DATA EXTRACTION | t16,training,memorization,membership,inference | L1508-1579 | ⚠ read-toc-first
-# - MRK:10_T17 — T17 RAG/VECTOR STORE EXPOSURE | t17,rag,vector,embedding,retrieval | L1580-1657 | ⚠ read-toc-first
-# - MRK:10_T18 — T18 AGENTIC SSRF / FILE-READ | t18,agentic,ssrf,tool,imds | L1658-1722 | ⚠ read-toc-first; deep-only; agent-gated
-# - MRK:10_T19 — T19 CONVERSATION/THREAD IDOR | t19,thread,idor,conversation,isolation | L1723-1798 | ⚠ read-toc-first; threads-gated
-# - MRK:10_T20 — T20 SUPPLY CHAIN / MODEL FILE EXPOSURE | t20,supply,chain,model,gguf,safetensors | L1799-1876 | ⚠ read-toc-first
-# - MRK:10_T21 — T21 CONTEXT WINDOW MANIPULATION | t21,context,shadow,prompt,zero-width | L1877-1937 | ⚠ read-toc-first
-# - MRK:10_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1938-2024 | ⚠ no-insert-before; read-toc-first
-# - MRK:10_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L2025-2132 | ⚠ no-insert-before; read-toc-first
+# MRK:16_NAV_TOC — Section index | nav,toc,index | L5-68
+# - MRK:16_ROOT — ROOT CHECK | root,check,euid | L81-90 | ⚠ no-insert-before
+# - MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L91-150 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:16_LOG — COLOURS AND LOGGING | log,colours,logging | L151-173 | ⚠ no-insert-before
+# - MRK:16_ARGS — ARGUMENT PARSING | args,argument,parsing | L174-197 | ⚠ no-insert-before
+# - MRK:16_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L198-249 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:16_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L250-266 | ⚠ no-insert-before; propose-before-edit
+# - MRK:16_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L267-296 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L297-322 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L323-381 | ⚠ no-insert-before
+# - MRK:16_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L382-410 | ⚠ no-insert-before
+# - MRK:16_T00 — PRIOR SCAN HARVEST + CHATBOT FINGERPRINT | t00,prior,harvest,chatbot,widget | L411-601 | ⚠ read-toc-first
+# - MRK:16_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L602-707 | ⚠ read-toc-first
+# - MRK:16_T02 — T02 AUTHENTICATION | t02,authentication,auth,apikey,bypass | L708-771 | ⚠ read-toc-first
+# - MRK:16_T03 — T03 RATE LIMITING | t03,rate,limiting,limit,burst | L772-813 | ⚠ read-toc-first
+# - MRK:16_T04 — T04 PROMPT INJECTION | t04,prompt,injection,direct | L814-899 | ⚠ read-toc-first
+# - MRK:16_T05 — T05 INDIRECT INJECTION | t05,indirect,injection,rag,tool | L900-948 | ⚠ read-toc-first
+# - MRK:16_T06 — T06 SYSTEM PROMPT LEAKAGE | t06,system,prompt,leakage,disc | L949-1006 | ⚠ read-toc-first
+# - MRK:16_T07 — T07 JAILBREAKING | t07,jailbreaking,jailbreak,dan,roleplay | L1007-1079 | ⚠ read-toc-first
+# - MRK:16_T08 — T08 EXCESSIVE AGENCY | t08,excessive,agency,tool,function | L1080-1138 | ⚠ read-toc-first
+# - MRK:16_T09 — T09 SENSITIVE DATA | t09,sensitive,data,pii,extraction | L1139-1197 | ⚠ read-toc-first
+# - MRK:16_T10 — T10 MODEL DOS | t10,model,dos,token,flood | L1198-1258 | ⚠ read-toc-first; deep-only
+# - MRK:16_T11 — T11 OUTPUT HANDLING | t11,output,handling,xss,markdown | L1259-1318 | ⚠ read-toc-first
+# - MRK:16_T12 — T12 KEY/SECRET EXPOSURE | t12,key,secret,exposure,credential | L1319-1376 | ⚠ read-toc-first
+# - MRK:16_T13 — T13 MODEL FINGERPRINTING | t13,model,fingerprinting,fingerprint,version | L1377-1415 | ⚠ read-toc-first
+# - MRK:16_T14 — T14 CORS AND HEADERS | t14,cors,headers,origin,api | L1416-1458 | ⚠ read-toc-first
+# - MRK:16_T15 — T15 PLUGIN/TOOL ENUM | t15,plugin,tool,enum,function | L1459-1507 | ⚠ read-toc-first
+# - MRK:16_T16 — T16 TRAINING DATA EXTRACTION | t16,training,memorization,membership,inference | L1508-1579 | ⚠ read-toc-first
+# - MRK:16_T17 — T17 RAG/VECTOR STORE EXPOSURE | t17,rag,vector,embedding,retrieval | L1580-1657 | ⚠ read-toc-first
+# - MRK:16_T18 — T18 AGENTIC SSRF / FILE-READ | t18,agentic,ssrf,tool,imds | L1658-1722 | ⚠ read-toc-first; deep-only; agent-gated
+# - MRK:16_T19 — T19 CONVERSATION/THREAD IDOR | t19,thread,idor,conversation,isolation | L1723-1798 | ⚠ read-toc-first; threads-gated
+# - MRK:16_T20 — T20 SUPPLY CHAIN / MODEL FILE EXPOSURE | t20,supply,chain,model,gguf,safetensors | L1799-1876 | ⚠ read-toc-first
+# - MRK:16_T21 — T21 CONTEXT WINDOW MANIPULATION | t21,context,shadow,prompt,zero-width | L1877-1937 | ⚠ read-toc-first
+# - MRK:16_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1938-2024 | ⚠ no-insert-before; read-toc-first
+# - MRK:16_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L2025-2132 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 34 entries | Integrity-hash: 0000000000000000 | Last-indexed: 2026-06-16T12:00:00Z
 
 # =============================================================================
@@ -79,7 +79,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:10_ROOT — ROOT CHECK | root,check,euid | L67-76
+# MRK:16_ROOT — ROOT CHECK | root,check,euid | L67-76
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -89,7 +89,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:10_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L77-122
+# MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L77-122
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -149,7 +149,7 @@ TLS_PORTS="443 8443 4443 9443 10443"
 INJECT_MARKER="TG_VAPT_$(date +%s)_MARKER"
 
 # =============================================================================
-# MRK:10_LOG — COLOURS AND LOGGING | log,colours,logging | L123-145
+# MRK:16_LOG — COLOURS AND LOGGING | log,colours,logging | L123-145
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -175,7 +175,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:10_ARGS — ARGUMENT PARSING | args,argument,parsing | L146-168
+# MRK:16_ARGS — ARGUMENT PARSING | args,argument,parsing | L146-168
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -199,7 +199,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:10_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L169-220
+# MRK:16_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L169-220
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -251,7 +251,7 @@ _get_web_hosts_csv() {
 }
 
 # =============================================================================
-# MRK:10_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L221-237
+# MRK:16_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L221-237
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -268,7 +268,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:10_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L238-267
+# MRK:16_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L238-267
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -298,7 +298,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:10_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L268-293
+# MRK:16_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L268-293
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -323,7 +323,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:10_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L294-352
+# MRK:16_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L294-352
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -382,7 +382,7 @@ _test_skip() {
 }
 
 # =============================================================================
-# MRK:10_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L353-379
+# MRK:16_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L353-379
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -411,7 +411,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:10_T00 — PRIOR SCAN HARVEST + CHATBOT FINGERPRINT | t00,prior,harvest,chatbot,widget | L411-601 | ⚠ read-toc-first
+# MRK:16_T00 — PRIOR SCAN HARVEST + CHATBOT FINGERPRINT | t00,prior,harvest,chatbot,widget | L411-601 | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -602,7 +602,7 @@ detect_chatbot_widgets() {
 }
 
 # =============================================================================
-# MRK:10_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L602-707 | ⚠ read-toc-first
+# MRK:16_T01 — T01 ENDPOINT DISCOVERY | t01,endpoint,discovery,endpoints,llm | L602-707 | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -708,7 +708,7 @@ test_01_endpoint_discovery() {
 }
 
 # =============================================================================
-# MRK:10_T02 — T02 AUTHENTICATION | t02,authentication,auth,apikey,bypass | L471-534
+# MRK:16_T02 — T02 AUTHENTICATION | t02,authentication,auth,apikey,bypass | L471-534
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -772,7 +772,7 @@ test_02_authentication() {
 }
 
 # =============================================================================
-# MRK:10_T03 — T03 RATE LIMITING | t03,rate,limiting,limit,burst | L535-576
+# MRK:16_T03 — T03 RATE LIMITING | t03,rate,limiting,limit,burst | L535-576
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -814,7 +814,7 @@ test_03_rate_limiting() {
 }
 
 # =============================================================================
-# MRK:10_T04 — T04 PROMPT INJECTION | t04,prompt,injection,direct | L577-646
+# MRK:16_T04 — T04 PROMPT INJECTION | t04,prompt,injection,direct | L577-646
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -900,7 +900,7 @@ test_04_prompt_injection() {
 }
 
 # =============================================================================
-# MRK:10_T05 — T05 INDIRECT INJECTION | t05,indirect,injection,rag,tool | L647-695
+# MRK:16_T05 — T05 INDIRECT INJECTION | t05,indirect,injection,rag,tool | L647-695
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -949,7 +949,7 @@ test_05_indirect_injection() {
 }
 
 # =============================================================================
-# MRK:10_T06 — T06 SYSTEM PROMPT LEAKAGE | t06,system,prompt,leakage,disc | L696-753
+# MRK:16_T06 — T06 SYSTEM PROMPT LEAKAGE | t06,system,prompt,leakage,disc | L696-753
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1007,7 +1007,7 @@ test_06_system_prompt_leakage() {
 }
 
 # =============================================================================
-# MRK:10_T07 — T07 JAILBREAKING | t07,jailbreaking,jailbreak,dan,roleplay | L754-812
+# MRK:16_T07 — T07 JAILBREAKING | t07,jailbreaking,jailbreak,dan,roleplay | L754-812
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1080,7 +1080,7 @@ test_07_jailbreak() {
 }
 
 # =============================================================================
-# MRK:10_T08 — T08 EXCESSIVE AGENCY | t08,excessive,agency,tool,function | L813-869
+# MRK:16_T08 — T08 EXCESSIVE AGENCY | t08,excessive,agency,tool,function | L813-869
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1139,7 +1139,7 @@ test_08_excessive_agency() {
 }
 
 # =============================================================================
-# MRK:10_T09 — T09 SENSITIVE DATA | t09,sensitive,data,pii,extraction | L870-928
+# MRK:16_T09 — T09 SENSITIVE DATA | t09,sensitive,data,pii,extraction | L870-928
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1198,7 +1198,7 @@ test_09_sensitive_data() {
 }
 
 # =============================================================================
-# MRK:10_T10 — T10 MODEL DOS | t10,model,dos,token,flood | L929-989
+# MRK:16_T10 — T10 MODEL DOS | t10,model,dos,token,flood | L929-989
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
@@ -1259,7 +1259,7 @@ test_10_model_dos() {
 }
 
 # =============================================================================
-# MRK:10_T11 — T11 OUTPUT HANDLING | t11,output,handling,xss,markdown | L990-1049
+# MRK:16_T11 — T11 OUTPUT HANDLING | t11,output,handling,xss,markdown | L990-1049
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1319,7 +1319,7 @@ test_11_output_handling() {
 }
 
 # =============================================================================
-# MRK:10_T12 — T12 KEY/SECRET EXPOSURE | t12,key,secret,exposure,credential | L1050-1107
+# MRK:16_T12 — T12 KEY/SECRET EXPOSURE | t12,key,secret,exposure,credential | L1050-1107
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1377,7 +1377,7 @@ test_12_key_exposure() {
 }
 
 # =============================================================================
-# MRK:10_T13 — T13 MODEL FINGERPRINTING | t13,model,fingerprinting,fingerprint,version | L1108-1146
+# MRK:16_T13 — T13 MODEL FINGERPRINTING | t13,model,fingerprinting,fingerprint,version | L1108-1146
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1416,7 +1416,7 @@ test_13_fingerprinting() {
 }
 
 # =============================================================================
-# MRK:10_T14 — T14 CORS AND HEADERS | t14,cors,headers,origin,api | L1147-1189
+# MRK:16_T14 — T14 CORS AND HEADERS | t14,cors,headers,origin,api | L1147-1189
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1459,7 +1459,7 @@ test_14_cors_headers() {
 }
 
 # =============================================================================
-# MRK:10_T15 — T15 PLUGIN/TOOL ENUM | t15,plugin,tool,enum,function | L1190-1238
+# MRK:16_T15 — T15 PLUGIN/TOOL ENUM | t15,plugin,tool,enum,function | L1190-1238
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1508,7 +1508,7 @@ EOF
 }
 
 # =============================================================================
-# MRK:10_T16 — T16 TRAINING DATA EXTRACTION | t16,training,memorization,membership,inference | L1279-1350 | ⚠ read-toc-first
+# MRK:16_T16 — T16 TRAINING DATA EXTRACTION | t16,training,memorization,membership,inference | L1279-1350 | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1580,7 +1580,7 @@ test_16_training_extraction() {
 }
 
 # =============================================================================
-# MRK:10_T17 — T17 RAG/VECTOR STORE EXPOSURE | t17,rag,vector,embedding,retrieval | L1351-1428 | ⚠ read-toc-first
+# MRK:16_T17 — T17 RAG/VECTOR STORE EXPOSURE | t17,rag,vector,embedding,retrieval | L1351-1428 | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1658,7 +1658,7 @@ test_17_rag_vector_store() {
 }
 
 # =============================================================================
-# MRK:10_T18 — T18 AGENTIC SSRF / FILE-READ | t18,agentic,ssrf,tool,imds | L1429-1493 | ⚠ read-toc-first; deep-only; agent-gated
+# MRK:16_T18 — T18 AGENTIC SSRF / FILE-READ | t18,agentic,ssrf,tool,imds | L1429-1493 | ⚠ read-toc-first; deep-only; agent-gated
 # NAV-RULE: read-toc-first; deep-only; requires _AGENT_ENDPOINTS_FOUND set by T08
 # =============================================================================
 
@@ -1723,7 +1723,7 @@ test_18_agentic_ssrf() {
 }
 
 # =============================================================================
-# MRK:10_T19 — T19 CONVERSATION/THREAD IDOR | t19,thread,idor,conversation,isolation | L1494-1569 | ⚠ read-toc-first; threads-gated
+# MRK:16_T19 — T19 CONVERSATION/THREAD IDOR | t19,thread,idor,conversation,isolation | L1494-1569 | ⚠ read-toc-first; threads-gated
 # NAV-RULE: read-toc-first; threads-gated; requires _THREADS_EP set by T01
 # =============================================================================
 
@@ -1799,7 +1799,7 @@ test_19_thread_idor() {
 }
 
 # =============================================================================
-# MRK:10_T20 — T20 SUPPLY CHAIN / MODEL FILE EXPOSURE | t20,supply,chain,model,gguf,safetensors | L1570-1647 | ⚠ read-toc-first
+# MRK:16_T20 — T20 SUPPLY CHAIN / MODEL FILE EXPOSURE | t20,supply,chain,model,gguf,safetensors | L1570-1647 | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1877,7 +1877,7 @@ test_20_supply_chain() {
 }
 
 # =============================================================================
-# MRK:10_T21 — T21 CONTEXT WINDOW MANIPULATION | t21,context,shadow,prompt,zero-width | L1648-1708 | ⚠ read-toc-first
+# MRK:16_T21 — T21 CONTEXT WINDOW MANIPULATION | t21,context,shadow,prompt,zero-width | L1648-1708 | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1938,7 +1938,7 @@ test_21_context_manipulation() {
 }
 
 # =============================================================================
-# MRK:10_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1709-1786
+# MRK:16_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1709-1786
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -2025,7 +2025,7 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:10_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1787-1899
+# MRK:16_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1787-1899
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 

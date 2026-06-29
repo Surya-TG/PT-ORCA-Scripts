@@ -2,39 +2,39 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:22_NAV_TOC — Section index | nav,toc,index | L5-20
-# - MRK:22_T01 — T01 WIRELESS INTERFACE SETUP | t01,wireless,interface,monitor | L21-21
-# - MRK:22_T02 — T02 BEACON AND PROBE SCAN (PASSIVE) | t02,beacon,probe,passive,scan | L22-22
-# - MRK:22_T03 — T03 WPA/WPA2 HANDSHAKE CAPTURE | t03,wpa,handshake,capture,deauth | L23-23
-# - MRK:22_T04 — T04 PMKID ATTACK SURFACE | t04,pmkid,hcxdumptool,attack | L24-24
-# - MRK:22_T05 — T05 ROGUE AP AND EVIL TWIN DETECTION | t05,rogue,ap,evil,twin | L25-25
-# - MRK:22_T06 — T06 EAP/PEAP CERTIFICATE VALIDATION | t06,eap,peap,certificate,wps | L26-26
-# - MRK:22_T07 — T07 WPS ENUMERATION | t07,wps,pixie,reaver,enumeration | L27-27
+# MRK:07_NAV_TOC — Section index | nav,toc,index | L5-20
+# - MRK:07_T01 — T01 WIRELESS INTERFACE SETUP | t01,wireless,interface,monitor | L21-21
+# - MRK:07_T02 — T02 BEACON AND PROBE SCAN (PASSIVE) | t02,beacon,probe,passive,scan | L22-22
+# - MRK:07_T03 — T03 WPA/WPA2 HANDSHAKE CAPTURE | t03,wpa,handshake,capture,deauth | L23-23
+# - MRK:07_T04 — T04 PMKID ATTACK SURFACE | t04,pmkid,hcxdumptool,attack | L24-24
+# - MRK:07_T05 — T05 ROGUE AP AND EVIL TWIN DETECTION | t05,rogue,ap,evil,twin | L25-25
+# - MRK:07_T06 — T06 EAP/PEAP CERTIFICATE VALIDATION | t06,eap,peap,certificate,wps | L26-26
+# - MRK:07_T07 — T07 WPS ENUMERATION | t07,wps,pixie,reaver,enumeration | L27-27
 # NAV-LEN: 7 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-25
 
 # =============================================================================
 # 22_wireless.sh — Wireless Security Assessment
 # TechGuard Labs | PT-Orc Suite v0.8
 # =============================================================================
-# NAV: MRK:22_TOC (this block) | MRK:22_ROOT | MRK:22_CONF | MRK:22_LOG
-#      MRK:22_ARGS | MRK:22_CONFIRM
-#      MRK:22_FIND | MRK:22_UTILS | MRK:22_PROF
-#      MRK:22_T01 — T01 WIRELESS INTERFACE SETUP | t01,wireless,interface,monitor | L21-21
-#      MRK:22_T02 — T02 BEACON AND PROBE SCAN (PASSIVE) | t02,beacon,probe,passive,scan | L22-22
-#      MRK:22_T03 — T03 WPA/WPA2 HANDSHAKE CAPTURE | t03,wpa,handshake,capture,deauth | L23-23
-#      MRK:22_T04 — T04 PMKID ATTACK SURFACE | t04,pmkid,hcxdumptool,attack | L24-24
-#      MRK:22_T05 — T05 ROGUE AP AND EVIL TWIN DETECTION | t05,rogue,ap,evil,twin | L25-25
-#      MRK:22_T06 — T06 EAP/PEAP CERTIFICATE VALIDATION | t06,eap,peap,certificate,wps | L26-26
-#      MRK:22_T07 — T07 WPS ENUMERATION | t07,wps,pixie,reaver,enumeration | L27-27
-#      MRK:22_TRUN | MRK:22_MAIN
+# NAV: MRK:07_TOC (this block) | MRK:07_ROOT | MRK:07_CONF | MRK:07_LOG
+#      MRK:07_ARGS | MRK:07_CONFIRM
+#      MRK:07_FIND | MRK:07_UTILS | MRK:07_PROF
+#      MRK:07_T01 — T01 WIRELESS INTERFACE SETUP | t01,wireless,interface,monitor | L21-21
+#      MRK:07_T02 — T02 BEACON AND PROBE SCAN (PASSIVE) | t02,beacon,probe,passive,scan | L22-22
+#      MRK:07_T03 — T03 WPA/WPA2 HANDSHAKE CAPTURE | t03,wpa,handshake,capture,deauth | L23-23
+#      MRK:07_T04 — T04 PMKID ATTACK SURFACE | t04,pmkid,hcxdumptool,attack | L24-24
+#      MRK:07_T05 — T05 ROGUE AP AND EVIL TWIN DETECTION | t05,rogue,ap,evil,twin | L25-25
+#      MRK:07_T06 — T06 EAP/PEAP CERTIFICATE VALIDATION | t06,eap,peap,certificate,wps | L26-26
+#      MRK:07_T07 — T07 WPS ENUMERATION | t07,wps,pixie,reaver,enumeration | L27-27
+#      MRK:07_TRUN | MRK:07_MAIN
 # =============================================================================
 
-# - MRK:22_ROOT
+# - MRK:07_ROOT
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# - MRK:22_CONF
+# - MRK:07_CONF
 CONF_FILE="${SCRIPT_DIR}/pt-orc.conf"
 [[ -f "$CONF_FILE" ]] || { echo "[FATAL] pt-orc.conf not found at ${CONF_FILE}"; exit 1; }
 # shellcheck source=pt-orc.conf
@@ -63,7 +63,7 @@ WIRELESS_CHANNEL="${WIRELESS_CHANNEL:-}"
 # Internal state flag — set to 1 by T01 if no wireless interface is available
 _NO_WIRELESS=0
 
-# - MRK:22_LOG
+# - MRK:07_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
@@ -77,7 +77,7 @@ log_wrn() { printf "${_Y}[!]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_err() { printf "${_R}[-]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_dry() { printf "${_C}[DRY]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 
-# - MRK:22_ARGS
+# - MRK:07_ARGS
 _SKIP_CONFIRM=0
 _ONLY_TESTS=()
 _SKIP_TESTS=()
@@ -132,7 +132,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# - MRK:22_CONFIRM
+# - MRK:07_CONFIRM
 _confirm() {
     [[ "$_SKIP_CONFIRM" -eq 1 ]] && return 0
     printf "\n${_Y}[CONFIRM]${_N} Wireless security assessment. Profile: ${_W}%s${_N}\n" "$SCAN_PROFILE"
@@ -148,7 +148,7 @@ _confirm() {
     [[ "${_ans,,}" == "y" ]] || { log_err "Aborted by user."; exit 0; }
 }
 
-# - MRK:22_FIND
+# - MRK:07_FIND
 FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "22-wireless-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
@@ -171,7 +171,7 @@ emit_finding() {
     log_wrn "FINDING [${sev^^}] ${title}"
 }
 
-# - MRK:22_UTILS
+# - MRK:07_UTILS
 _check_tool() {
     local tool="$1"
     command -v "$tool" &>/dev/null
@@ -199,7 +199,7 @@ _apply_cli_filters() {
     done
 }
 
-# - MRK:22_PROF
+# - MRK:07_PROF
 setup_profile() {
     local prof="${1:-standard}"
     for n in T01 T02 T03 T04 T05 T06 T07; do
@@ -226,7 +226,7 @@ setup_profile() {
 # TESTS
 # =============================================================================
 
-# - MRK:22_T01 — T01 WIRELESS INTERFACE SETUP
+# - MRK:07_T01 — T01 WIRELESS INTERFACE SETUP
 test_T01_interface_setup() {
     local ev_f; ev_f="$(_ev_file "t01-iface-setup")"
     log_inf "[T01] Wireless interface setup"
@@ -312,7 +312,7 @@ test_T01_interface_setup() {
     fi
 }
 
-# - MRK:22_T02 — T02 BEACON AND PROBE SCAN (PASSIVE)
+# - MRK:07_T02 — T02 BEACON AND PROBE SCAN (PASSIVE)
 test_T02_beacon_scan() {
     local ev_f; ev_f="$(_ev_file "t02-beacon-scan")"
     log_inf "[T02] Beacon and probe scan (passive) — ${WIRELESS_SCAN_TIME}s"
@@ -448,7 +448,7 @@ test_T02_beacon_scan() {
     log_ok "  [T02] Open: ${open_count}, WEP: ${wep_count}, WPA/WPA2: ${wpa_count}, Hidden: ${hidden_count}"
 }
 
-# - MRK:22_T03 — T03 WPA/WPA2 HANDSHAKE CAPTURE (OPT-IN)
+# - MRK:07_T03 — T03 WPA/WPA2 HANDSHAKE CAPTURE (OPT-IN)
 test_T03_handshake_capture() {
     local ev_f; ev_f="$(_ev_file "t03-handshake-capture")"
     log_inf "[T03] WPA/WPA2 handshake capture (opt-in)"
@@ -559,7 +559,7 @@ test_T03_handshake_capture() {
     log_ok "  [T03] Handshake capture complete — ${handshake_count} handshake(s) captured"
 }
 
-# - MRK:22_T04 — T04 PMKID ATTACK SURFACE (OPT-IN)
+# - MRK:07_T04 — T04 PMKID ATTACK SURFACE (OPT-IN)
 test_T04_pmkid_capture() {
     local ev_f; ev_f="$(_ev_file "t04-pmkid")"
     log_inf "[T04] PMKID attack surface (opt-in)"
@@ -640,7 +640,7 @@ test_T04_pmkid_capture() {
     fi
 }
 
-# - MRK:22_T05 — T05 ROGUE AP AND EVIL TWIN DETECTION
+# - MRK:07_T05 — T05 ROGUE AP AND EVIL TWIN DETECTION
 test_T05_rogue_ap_detection() {
     local ev_f; ev_f="$(_ev_file "t05-rogue-ap")"
     log_inf "[T05] Rogue AP and evil twin detection"
@@ -750,7 +750,7 @@ test_T05_rogue_ap_detection() {
     log_ok "  [T05] Rogue AP / evil twin detection complete"
 }
 
-# - MRK:22_T06 — T06 EAP/PEAP CERTIFICATE VALIDATION
+# - MRK:07_T06 — T06 EAP/PEAP CERTIFICATE VALIDATION
 test_T06_eap_cert_validation() {
     local ev_f; ev_f="$(_ev_file "t06-eap-cert")"
     log_inf "[T06] EAP/PEAP certificate validation and WPS discovery"
@@ -901,7 +901,7 @@ test_T06_eap_cert_validation() {
     log_ok "  [T06] EAP/PEAP and WPS assessment complete"
 }
 
-# - MRK:22_T07 — T07 WPS ENUMERATION
+# - MRK:07_T07 — T07 WPS ENUMERATION
 test_T07_wps_enum() {
     local ev_f; ev_f="$(_ev_file "t07-wps-enum")"
     log_inf "[T07] WPS enumeration"
@@ -993,7 +993,7 @@ test_T07_wps_enum() {
 }
 
 # =============================================================================
-# - MRK:22_TRUN
+# - MRK:07_TRUN
 # =============================================================================
 _run_tests() {
     local find_before="$_FIND_CTR"
@@ -1013,7 +1013,7 @@ _run_tests() {
 }
 
 # =============================================================================
-# - MRK:22_MAIN
+# - MRK:07_MAIN
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"

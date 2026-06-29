@@ -129,6 +129,11 @@ OPT_PROJECT_ID=""
 OPT_BURP_KEY=""
 DO_RECOMMEND=0
 
+# Steps that continue after failure regardless of --continue-on-error.
+# These are opportunistic scans only relevant when a specific condition is met
+# (e.g., WPScan only matters if WordPress is present on a target).
+SOFT_STEPS=(7)
+
 # Result tracking (steps 1-25)
 declare -A STEP_STATUS
 declare -A STEP_DURATION
@@ -172,33 +177,30 @@ General:
 
 Per-step flags:
   --skip-active         01: skip AXFR and DNS brute-force
-  --phase <name>        03: tcp|udp|enum|report|all
-  --continue            03: continue subsequent phases after --phase
-  --masscan-only        03: stop after Pass 1 fast scan
-  --reuse-workspace     03: reuse existing MSF workspace
-  --fast                04+05: headers/tech detection only; skip gobuster+nikto
-  --skip-gobuster       05: skip directory brute-force
-  --skip-nikto          05: skip Nikto scan
-  --no-wp-detect        06: skip WP detection sweep
-  --aggressive          07: aggressive probe mode (more CVE checks)
-  --nuclei              07: run nuclei templates after service probes
-  --api-key <key>       09: bearer/API key for authenticated LLM testing
-  --burp-key <key>      13: override BURP_API_KEY from pt-orc.conf
-  --project-id <uuid>   12: override ORCHESTRATOR_PROJECT_ID from pt-orc.conf
-  --retest              12: set retest_status=pending in report_bundle
+  --phase <name>        04: tcp|udp|enum|report|all
+  --continue            04: continue subsequent phases after --phase
+  --masscan-only        04: stop after Pass 1 fast scan
+  --reuse-workspace     04: reuse existing MSF workspace
+  --fast                05+08: headers/tech detection only; skip gobuster+nikto
+  --skip-gobuster       08: skip directory brute-force
+  --skip-nikto          08: skip Nikto scan
+  --no-wp-detect        09: skip WP detection sweep
+  --aggressive          13: aggressive probe mode (more CVE checks)
+  --nuclei              13: run nuclei templates after service probes
+  --api-key <key>       16: bearer/API key for authenticated LLM testing
+  --burp-key <key>      11: override BURP_API_KEY from pt-orc.conf
+  --project-id <uuid>   25: override ORCHESTRATOR_PROJECT_ID from pt-orc.conf
+  --retest              25: set retest_status=pending in report_bundle
 
 Steps:
-  1  DNS Recon          (01_dns_recon)
-  2  IP Analysis        (02_ip_analysis)
-  3  Comprehensive Scan (03_comp_scan)
-  4  TLS Scan           (04_tls_scan)
-  5  Web Enumeration    (05_web_enum)
-  6  WPScan             (06_wpscan)
-  7  Service Verify     (07_service_verify)
-  8  App / API Review   (08_app_api_review)
-  9  AI / LLM Review    (09_ai_llm_review)
- 13  Active Fuzz        (13_active_fuzz)   ← Burp/sqlmap/dalfox/nuclei/commix/ffuf
- 12  Report Pack        (12_report_pack)   ← exports to TG Audit Orchestrator
+  Recon:    1  DNS Recon       2  OSINT Recon    3  IP Analysis
+  Network:  4  Comp Scan       5  TLS Scan       6  Network Infra   7  Wireless
+  Web:      8  Web Enum        9  WPScan        10  Auth/SSO       11  Active Fuzz  12  Content Sec
+  App/API: 13  Svc Verify     14  App/API       15  API Deep       16  AI/LLM
+  Cloud:   17  Cloud Testing  18  CI/CD DevOps  19  Secrets Scan
+  AD/Infra:20  AD Testing     21  Lateral Move  22  DB Audit
+  Analysis:23  Vuln Corpus    24  Attack Chain
+  Report:  25  Report Pack    ← exports to TG Audit Orchestrator
 
 Examples:
   sudo ./00_pt-orc.sh --profile web --yes
@@ -234,9 +236,13 @@ list_profiles() {
   ─────────────────────────────────────────────────────────
 
   Step reference:
-    1  DNS Recon       3  Comp Scan     5  Web Enum    7  Svc Verify   9  AI/LLM     13  Active Fuzz
-    2  IP Analysis     4  TLS Scan      6  WPScan      8  App/API     10  Cloud       12  Report Pack
-                                                       11 AD Testing
+    Recon:   1 DNS Recon    2 OSINT       3 IP Analysis
+    Network: 4 Comp Scan    5 TLS Scan    6 Net Infra   7 Wireless
+    Web:     8 Web Enum     9 WPScan     10 Auth/SSO   11 Active Fuzz  12 Content Sec
+    App:    13 Svc Verify  14 App/API    15 API Deep   16 AI/LLM
+    Cloud:  17 Cloud       18 CI/CD      19 Secrets
+    AD:     20 AD Testing  21 Lateral    22 DB Audit
+    Finish: 23 Vuln Corpus 24 Atk Chain  25 Report Pack
 
   Usage:
     sudo ./00_pt-orc.sh --profile web --yes
@@ -321,6 +327,14 @@ find_script() {
 # MRK:00_CONTROL — STEP CONTROL | control,step,should,run,skip | L311-330
 # NAV-RULE: no-insert-before
 # =============================================================================
+is_soft_step() {
+    local n="$1" s
+    for s in "${SOFT_STEPS[@]+"${SOFT_STEPS[@]}"}"; do
+        [[ "$n" -eq "$s" ]] && return 0
+    done
+    return 1
+}
+
 should_run() {
     local n="$1"
     # --only: run only that step
@@ -332,9 +346,9 @@ should_run() {
     for s in "${SKIP_STEPS[@]+"${SKIP_STEPS[@]}"}"; do
         [[ "$n" -eq "$s" ]] && return 1
     done
-    # Step 12 (Report Pack) is intentionally last in the run loop regardless of its number.
-    # Never filter it by --from; only an explicit --skip 12 can suppress it.
-    [[ "$n" -eq 12 ]] && return 0
+    # Step 25 (Report Pack) is intentionally last in the run loop regardless of its number.
+    # Never filter it by --from; only an explicit --skip 25 can suppress it.
+    [[ "$n" -eq 25 ]] && return 0
     # --from: skip steps whose number is below the start point
     [[ "$n" -lt "$FROM_STEP" ]] && return 1
     return 0
@@ -634,73 +648,92 @@ main() {
                 [[ "$OPT_FAST" -eq 1 ]] && flags+=("--fast")
                 ;;
             6)
-                # Web Enumeration (06_web_enum.sh)
+                # Network Infra (06_network_infra.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${NETINFRA_TARGETS:-}"    ]] && flags+=("--targets" "$NETINFRA_TARGETS")
+                [[ -n "${NETINFRA_VLAN_IFACE:-}" ]] && flags+=("--iface"   "$NETINFRA_VLAN_IFACE")
+                ;;
+            7)
+                # Wireless (07_wireless.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${WIRELESS_IFACE:-}"          ]] && flags+=("--iface"          "$WIRELESS_IFACE")
+                [[ -n "${WIRELESS_EXPECTED_SSIDS:-}" ]] && flags+=("--expected-ssids" "$WIRELESS_EXPECTED_SSIDS")
+                [[ -n "${WIRELESS_SCAN_TIME:-}"      ]] && flags+=("--scan-time"      "$WIRELESS_SCAN_TIME")
+                [[ -n "${WIRELESS_CHANNEL:-}"        ]] && flags+=("--channel"        "$WIRELESS_CHANNEL")
+                [[ "${WIRELESS_DEAUTH_ENABLED:-0}" -eq 1 ]] && flags+=("--deauth")
+                [[ "${WIRELESS_PMKID_ENABLED:-0}"  -eq 1 ]] && flags+=("--pmkid")
+                ;;
+            8)
+                # Web Enumeration (08_web_enum.sh)
                 flags+=("--tier" "$GLOBAL_TIER")
                 [[ "$OPT_SKIP_GOBUSTER" -eq 1 ]] && flags+=("--skip-gobuster")
                 [[ "$OPT_SKIP_NIKTO"    -eq 1 ]] && flags+=("--skip-nikto")
                 [[ "$OPT_FAST"          -eq 1 ]] && flags+=("--fast")
                 ;;
-            7)
-                # WPScan (07_wpscan.sh)
+            9)
+                # WPScan (09_wpscan.sh)
                 flags+=("--mode" "$MODE" "--tier" "$GLOBAL_TIER")
                 [[ "$OPT_NO_WP_DETECT" -eq 0 ]] && flags+=("--detect")
                 ;;
-            8)
-                # Service Verify (08_service_verify.sh)
+            10)
+                # Auth / SSO (10_auth_sso.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "${OAUTH_CLIENT_ID:-}"     ]] && flags+=("--oauth-client-id"     "$OAUTH_CLIENT_ID")
+                [[ -n "${OAUTH_CLIENT_SECRET:-}" ]] && flags+=("--oauth-client-secret" "$OAUTH_CLIENT_SECRET")
+                [[ -n "${OAUTH_AUTHORIZE_URL:-}" ]] && flags+=("--oauth-authorize-url" "$OAUTH_AUTHORIZE_URL")
+                [[ -n "${SAML_SSO_URL:-}"        ]] && flags+=("--saml-sso-url"        "$SAML_SSO_URL")
+                [[ -n "${OIDC_DISCOVERY_URL:-}"  ]] && flags+=("--oidc-discovery-url"  "$OIDC_DISCOVERY_URL")
+                [[ -n "${SSO_REDIRECT_URI:-}"    ]] && flags+=("--redirect-uri"         "$SSO_REDIRECT_URI")
+                [[ -n "${SSO_BEARER_TOKEN:-}"    ]] && flags+=("--token"                "$SSO_BEARER_TOKEN")
+                ;;
+            11)
+                # Active Fuzz (11_active_fuzz.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "$OPT_BURP_KEY" ]] && flags+=("--burp-key" "$OPT_BURP_KEY")
+                ;;
+            12)
+                # Content Security (12_content_sec.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "${BEARER_TOKEN:-}"  ]] && flags+=("--token"  "$BEARER_TOKEN")
+                [[ -n "${COOKIE_HEADER:-}" ]] && flags+=("--cookie" "$COOKIE_HEADER")
+                ;;
+            13)
+                # Service Verify (13_service_verify.sh)
                 flags+=("--mode" "$MODE")
                 [[ "$OPT_AGGRESSIVE" -eq 1 ]] && flags+=("--aggressive")
                 [[ "$OPT_NUCLEI"     -eq 1 ]] && flags+=("--nuclei")
                 ;;
-            9)
-                # App / API Review (09_app_api_review.sh)
+            14)
+                # App / API Review (14_app_api_review.sh)
                 flags+=("--tier" "$GLOBAL_TIER")
                 [[ "$OPT_FAST" -eq 1 ]] && flags+=("--fast")
                 ;;
-            10)
-                # AI / LLM Review (10_ai_llm_review.sh)
+            15)
+                # API Deep (15_api_deep.sh)
+                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
+                [[ -n "${BEARER_TOKEN:-}"         ]] && flags+=("--token"             "$BEARER_TOKEN")
+                [[ -n "${API_KEY:-}"              ]] && flags+=("--api-key"           "$API_KEY")
+                [[ -n "${API_BASE:-}"             ]] && flags+=("--api-base"          "$API_BASE")
+                [[ -n "${API_VERSION:-}"          ]] && flags+=("--api-version"       "$API_VERSION")
+                [[ -n "${GRAPHQL_URL:-}"          ]] && flags+=("--graphql-url"       "$GRAPHQL_URL")
+                [[ -n "${API_DEEP_BUSINESS_EP:-}" ]] && flags+=("--business-endpoint" "$API_DEEP_BUSINESS_EP")
+                [[ -n "${API_DEEP_ENUM_START:-}"  ]] && flags+=("--enum-start"        "$API_DEEP_ENUM_START")
+                [[ -n "${API_DEEP_ENUM_COUNT:-}"  ]] && flags+=("--enum-count"        "$API_DEEP_ENUM_COUNT")
+                for _p in ${API_DEEP_NOSQL_PARAMS:-}; do
+                    flags+=("--nosql-param" "$_p")
+                done
+                ;;
+            16)
+                # AI / LLM Review (16_ai_llm_review.sh)
                 flags+=("--tier" "$GLOBAL_TIER")
                 [[ -n "$OPT_API_KEY" ]] && flags+=("--api-key" "$OPT_API_KEY")
                 ;;
-            11)
-                # Cloud Testing (11_cloud_testing.sh)
+            17)
+                # Cloud Testing (17_cloud_testing.sh)
                 flags+=("--profile" "$TESTING_DEPTH")
-                [[ -n "${CLOUD_PROVIDER:-}" ]] && flags+=("--provider" "$CLOUD_PROVIDER")
+                [[ -n "${CLOUD_PROVIDER:-}"      ]] && flags+=("--provider"      "$CLOUD_PROVIDER")
                 [[ -n "${CLOUD_BUCKET_PREFIX:-}" ]] && flags+=("--bucket-prefix" "$CLOUD_BUCKET_PREFIX")
                 [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
-                ;;
-            12)
-                # Active Directory Testing (12_active_directory.sh)
-                flags+=("--profile" "$TESTING_DEPTH")
-                [[ -n "${AD_DOMAIN:-}"    ]] && flags+=("--domain"  "$AD_DOMAIN")
-                [[ -n "${AD_DC_IP:-}"     ]] && flags+=("--dc"      "$AD_DC_IP")
-                [[ -n "${AD_USERNAME:-}"  ]] && flags+=("--user"    "$AD_USERNAME")
-                [[ -n "${AD_PASSWORD:-}"  ]] && flags+=("--pass"    "$AD_PASSWORD")
-                [[ -n "${AD_NT_HASH:-}"   ]] && flags+=("--hash"    "$AD_NT_HASH")
-                ;;
-            13)
-                # Active Fuzz (13_active_fuzz.sh)
-                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ -n "$OPT_BURP_KEY" ]] && flags+=("--burp-key" "$OPT_BURP_KEY")
-                ;;
-            14)
-                # Vuln Corpus (14_vuln_corpus.sh)
-                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
-                ;;
-            15)
-                # Attack Chain AI (15_attack_chain.sh)
-                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
-                ;;
-            16)
-                # Report Pack (16_report_pack.sh)
-                [[ -n "$OPT_PROJECT_ID" ]] && flags+=("--project-id" "$OPT_PROJECT_ID")
-                [[ "$OPT_RETEST" -eq 1  ]] && flags+=("--retest")
-                ;;
-            17)
-                # Network Infra (17_network_infra.sh)
-                flags+=("--profile" "$TESTING_DEPTH")
-                [[ -n "${NETINFRA_TARGETS:-}"   ]] && flags+=("--targets"     "$NETINFRA_TARGETS")
-                [[ -n "${NETINFRA_VLAN_IFACE:-}" ]] && flags+=("--iface"      "$NETINFRA_VLAN_IFACE")
                 ;;
             18)
                 # CI/CD DevOps (18_cicd_devops.sh)
@@ -711,17 +744,20 @@ main() {
                 [[ -n "${CICD_K8S_API_URL:-}" ]] && flags+=("--k8s-url"     "$CICD_K8S_API_URL")
                 ;;
             19)
-                # Database Audit (19_database_audit.sh)
-                flags+=("--profile" "$TESTING_DEPTH")
-                [[ -n "${DB_TARGETS:-}"           ]] && flags+=("--targets" "$DB_TARGETS")
-                [[ "${DB_CRED_SPRAY_ENABLED:-0}" -eq 1 ]] && flags+=("--spray")
-                ;;
-            20)
-                # Secrets Scan (20_secrets_scan.sh)
+                # Secrets Scan (19_secrets_scan.sh)
                 flags+=("--profile" "$TESTING_DEPTH")
                 [[ -n "${SECRETS_SMB_TARGETS:-}" ]] && flags+=("--targets"  "$SECRETS_SMB_TARGETS")
                 [[ -n "${SECRETS_SMB_USER:-}"    ]] && flags+=("--smb-user" "$SECRETS_SMB_USER")
                 [[ -n "${SECRETS_SMB_PASS:-}"    ]] && flags+=("--smb-pass" "$SECRETS_SMB_PASS")
+                ;;
+            20)
+                # Active Directory Testing (20_active_directory.sh)
+                flags+=("--profile" "$TESTING_DEPTH")
+                [[ -n "${AD_DOMAIN:-}"   ]] && flags+=("--domain" "$AD_DOMAIN")
+                [[ -n "${AD_DC_IP:-}"    ]] && flags+=("--dc"     "$AD_DC_IP")
+                [[ -n "${AD_USERNAME:-}" ]] && flags+=("--user"   "$AD_USERNAME")
+                [[ -n "${AD_PASSWORD:-}" ]] && flags+=("--pass"   "$AD_PASSWORD")
+                [[ -n "${AD_NT_HASH:-}"  ]] && flags+=("--hash"   "$AD_NT_HASH")
                 ;;
             21)
                 # Lateral Movement (21_lateral_movement.sh)
@@ -732,53 +768,33 @@ main() {
                 [[ -n "${LATERAL_NT_HASH:-}"  ]] && flags+=("--hash"    "$LATERAL_NT_HASH")
                 ;;
             22)
-                # Wireless (22_wireless.sh)
+                # Database Audit (22_database_audit.sh)
                 flags+=("--profile" "$TESTING_DEPTH")
-                [[ -n "${WIRELESS_IFACE:-}"          ]] && flags+=("--iface"          "$WIRELESS_IFACE")
-                [[ -n "${WIRELESS_EXPECTED_SSIDS:-}" ]] && flags+=("--expected-ssids" "$WIRELESS_EXPECTED_SSIDS")
-                [[ -n "${WIRELESS_SCAN_TIME:-}"      ]] && flags+=("--scan-time"      "$WIRELESS_SCAN_TIME")
-                [[ -n "${WIRELESS_CHANNEL:-}"        ]] && flags+=("--channel"        "$WIRELESS_CHANNEL")
-                [[ "${WIRELESS_DEAUTH_ENABLED:-0}" -eq 1 ]] && flags+=("--deauth")
-                [[ "${WIRELESS_PMKID_ENABLED:-0}"  -eq 1 ]] && flags+=("--pmkid")
+                [[ -n "${DB_TARGETS:-}"               ]] && flags+=("--targets" "$DB_TARGETS")
+                [[ "${DB_CRED_SPRAY_ENABLED:-0}" -eq 1 ]] && flags+=("--spray")
                 ;;
             23)
-                # Auth / SSO (23_auth_sso.sh)
+                # Vuln Corpus (23_vuln_corpus.sh)
                 flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ -n "${OAUTH_CLIENT_ID:-}"     ]] && flags+=("--oauth-client-id"     "$OAUTH_CLIENT_ID")
-                [[ -n "${OAUTH_CLIENT_SECRET:-}" ]] && flags+=("--oauth-client-secret" "$OAUTH_CLIENT_SECRET")
-                [[ -n "${OAUTH_AUTHORIZE_URL:-}" ]] && flags+=("--oauth-authorize-url" "$OAUTH_AUTHORIZE_URL")
-                [[ -n "${SAML_SSO_URL:-}"        ]] && flags+=("--saml-sso-url"        "$SAML_SSO_URL")
-                [[ -n "${OIDC_DISCOVERY_URL:-}"  ]] && flags+=("--oidc-discovery-url"  "$OIDC_DISCOVERY_URL")
-                [[ -n "${SSO_REDIRECT_URI:-}"    ]] && flags+=("--redirect-uri"         "$SSO_REDIRECT_URI")
-                [[ -n "${SSO_BEARER_TOKEN:-}"    ]] && flags+=("--token"                "$SSO_BEARER_TOKEN")
+                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
             24)
-                # API Deep (24_api_deep.sh)
-                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ -n "${BEARER_TOKEN:-}"             ]] && flags+=("--token"              "$BEARER_TOKEN")
-                [[ -n "${API_KEY:-}"                  ]] && flags+=("--api-key"            "$API_KEY")
-                [[ -n "${API_BASE:-}"                 ]] && flags+=("--api-base"           "$API_BASE")
-                [[ -n "${API_VERSION:-}"              ]] && flags+=("--api-version"        "$API_VERSION")
-                [[ -n "${GRAPHQL_URL:-}"              ]] && flags+=("--graphql-url"        "$GRAPHQL_URL")
-                [[ -n "${API_DEEP_BUSINESS_EP:-}"     ]] && flags+=("--business-endpoint"  "$API_DEEP_BUSINESS_EP")
-                [[ -n "${API_DEEP_ENUM_START:-}"      ]] && flags+=("--enum-start"         "$API_DEEP_ENUM_START")
-                [[ -n "${API_DEEP_ENUM_COUNT:-}"      ]] && flags+=("--enum-count"         "$API_DEEP_ENUM_COUNT")
-                for _p in ${API_DEEP_NOSQL_PARAMS:-}; do
-                    flags+=("--nosql-param" "$_p")
-                done
+                # Attack Chain AI (24_attack_chain.sh)
+                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
             25)
-                # Content Security (25_content_sec.sh)
-                flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ -n "${BEARER_TOKEN:-}"    ]] && flags+=("--token"  "$BEARER_TOKEN")
-                [[ -n "${COOKIE_HEADER:-}"   ]] && flags+=("--cookie" "$COOKIE_HEADER")
+                # Report Pack (25_report_pack.sh)
+                [[ -n "$OPT_PROJECT_ID" ]] && flags+=("--project-id" "$OPT_PROJECT_ID")
+                [[ "$OPT_RETEST" -eq 1  ]] && flags+=("--retest")
                 ;;
         esac
 
-        local step_names=([1]="DNS Recon" [2]="OSINT Recon" [3]="IP Analysis" [4]="Comprehensive Scan" [5]="TLS Scan" [6]="Web Enumeration" [7]="WPScan" [8]="Service Verify" [9]="App / API Review" [10]="AI / LLM Review" [11]="Cloud Testing" [12]="AD Testing" [13]="Active Fuzz" [14]="Vuln Corpus" [15]="Attack Chain AI" [16]="Report Pack" [17]="Network Infra" [18]="CI/CD DevOps" [19]="Database Audit" [20]="Secrets Scan" [21]="Lateral Movement" [22]="Wireless" [23]="Auth / SSO" [24]="API Deep" [25]="Content Sec")
+        local step_names=([1]="DNS Recon" [2]="OSINT Recon" [3]="IP Analysis" [4]="Comprehensive Scan" [5]="TLS Scan" [6]="Network Infra" [7]="Wireless" [8]="Web Enumeration" [9]="WPScan" [10]="Auth / SSO" [11]="Active Fuzz" [12]="Content Sec" [13]="Service Verify" [14]="App / API Review" [15]="API Deep" [16]="AI / LLM Review" [17]="Cloud Testing" [18]="CI/CD DevOps" [19]="Secrets Scan" [20]="AD Testing" [21]="Lateral Movement" [22]="Database Audit" [23]="Vuln Corpus" [24]="Attack Chain AI" [25]="Report Pack")
 
         if ! run_step "$n" "${step_names[$n]}" "${flags[@]+"${flags[@]}"}"; then
-            if [[ "$CONTINUE_ON_ERROR" -eq 1 ]]; then
+            if is_soft_step "$n"; then
+                log_warn "Step ${n} failed — continuing (optional step, non-blocking)"
+            elif [[ "$CONTINUE_ON_ERROR" -eq 1 ]]; then
                 log_warn "Step ${n} failed — continuing (--continue-on-error)"
             else
                 log_err "Suite aborted at step ${n}. Use --continue-on-error to proceed past failures."

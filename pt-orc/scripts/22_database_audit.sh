@@ -2,39 +2,39 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:19_NAV_TOC — Section index | nav,toc,index | L5-28
-# - MRK:19_T01 — T01 MySQL/MariaDB (port 3306) | t01,mysql,mariadb,3306 | LXXXX-XXXX
-# - MRK:19_T02 — T02 MSSQL (port 1433) | t02,mssql,sqlserver,1433 | LXXXX-XXXX
-# - MRK:19_T03 — T03 PostgreSQL (port 5432) | t03,postgresql,postgres,5432 | LXXXX-XXXX
-# - MRK:19_T04 — T04 Oracle (port 1521) | t04,oracle,tns,1521 | LXXXX-XXXX
-# - MRK:19_T05 — T05 Redis (port 6379) | t05,redis,6379 | LXXXX-XXXX
-# - MRK:19_T06 — T06 MongoDB (port 27017) | t06,mongodb,mongo,27017 | LXXXX-XXXX
-# - MRK:19_T07 — T07 Elasticsearch (port 9200) | t07,elasticsearch,elastic,9200 | LXXXX-XXXX
+# MRK:22_NAV_TOC — Section index | nav,toc,index | L5-28
+# - MRK:22_T01 — T01 MySQL/MariaDB (port 3306) | t01,mysql,mariadb,3306 | LXXXX-XXXX
+# - MRK:22_T02 — T02 MSSQL (port 1433) | t02,mssql,sqlserver,1433 | LXXXX-XXXX
+# - MRK:22_T03 — T03 PostgreSQL (port 5432) | t03,postgresql,postgres,5432 | LXXXX-XXXX
+# - MRK:22_T04 — T04 Oracle (port 1521) | t04,oracle,tns,1521 | LXXXX-XXXX
+# - MRK:22_T05 — T05 Redis (port 6379) | t05,redis,6379 | LXXXX-XXXX
+# - MRK:22_T06 — T06 MongoDB (port 27017) | t06,mongodb,mongo,27017 | LXXXX-XXXX
+# - MRK:22_T07 — T07 Elasticsearch (port 9200) | t07,elasticsearch,elastic,9200 | LXXXX-XXXX
 # NAV-LEN: 7 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-25
 
 # =============================================================================
 # 19_database_audit.sh — Database Service Exposure & Default Credential Audit
 # TechGuard Labs | PT-Orc Suite v0.8
 # =============================================================================
-# NAV: MRK:19_TOC (this block) | MRK:19_ROOT | MRK:19_CONF | MRK:19_LOG
-#      MRK:19_ARGS | MRK:19_CONFIRM | MRK:19_TARGETS
-#      MRK:19_FIND | MRK:19_UTILS | MRK:19_PROF
-#      MRK:19_T01 — T01 MySQL/MariaDB
-#      MRK:19_T02 — T02 MSSQL
-#      MRK:19_T03 — T03 PostgreSQL
-#      MRK:19_T04 — T04 Oracle
-#      MRK:19_T05 — T05 Redis
-#      MRK:19_T06 — T06 MongoDB
-#      MRK:19_T07 — T07 Elasticsearch
-#      MRK:19_TRUN | MRK:19_MAIN
+# NAV: MRK:22_TOC (this block) | MRK:22_ROOT | MRK:22_CONF | MRK:22_LOG
+#      MRK:22_ARGS | MRK:22_CONFIRM | MRK:22_TARGETS
+#      MRK:22_FIND | MRK:22_UTILS | MRK:22_PROF
+#      MRK:22_T01 — T01 MySQL/MariaDB
+#      MRK:22_T02 — T02 MSSQL
+#      MRK:22_T03 — T03 PostgreSQL
+#      MRK:22_T04 — T04 Oracle
+#      MRK:22_T05 — T05 Redis
+#      MRK:22_T06 — T06 MongoDB
+#      MRK:22_T07 — T07 Elasticsearch
+#      MRK:22_TRUN | MRK:22_MAIN
 # =============================================================================
 
-# - MRK:19_ROOT
+# - MRK:22_ROOT
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# - MRK:19_CONF
+# - MRK:22_CONF
 CONF_FILE="${SCRIPT_DIR}/pt-orc.conf"
 [[ -f "$CONF_FILE" ]] || { echo "[FATAL] pt-orc.conf not found at ${CONF_FILE}"; exit 1; }
 # shellcheck source=pt-orc.conf
@@ -53,7 +53,7 @@ DB_TARGETS="${DB_TARGETS:-}"
 DB_CRED_SPRAY_ENABLED="${DB_CRED_SPRAY_ENABLED:-0}"
 DB_TIMEOUT="${DB_TIMEOUT:-20}"
 
-# - MRK:19_LOG
+# - MRK:22_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
@@ -67,7 +67,7 @@ log_wrn() { printf "${_Y}[!]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_err() { printf "${_R}[-]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_dry() { printf "${_C}[DRY]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 
-# - MRK:19_ARGS
+# - MRK:22_ARGS
 _SKIP_CONFIRM=0
 _ONLY_TESTS=()
 _SKIP_TESTS=()
@@ -119,7 +119,7 @@ done
 # CLI --targets overrides conf DB_TARGETS
 [[ -n "$_CLI_TARGETS" ]] && DB_TARGETS="$_CLI_TARGETS"
 
-# - MRK:19_CONFIRM
+# - MRK:22_CONFIRM
 _confirm() {
     [[ "$_SKIP_CONFIRM" -eq 1 ]] && return 0
     local target_display="${DB_TARGETS:-${TARGET_IPS:-} ${TARGET_SUBNETS:-}}"
@@ -135,7 +135,7 @@ _confirm() {
     [[ "${_ans,,}" == "y" ]] || { log_err "Aborted by user."; exit 0; }
 }
 
-# - MRK:19_TARGETS
+# - MRK:22_TARGETS
 _validate_config() {
     local ok=1
     local combined="${DB_TARGETS:-}${TARGET_IPS:-}${TARGET_SUBNETS:-}"
@@ -246,7 +246,7 @@ _host_has_port() {
     [[ "$ports" =~ (^| )${port}( |$) ]]
 }
 
-# - MRK:19_FIND
+# - MRK:22_FIND
 FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "19-db-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
@@ -269,7 +269,7 @@ emit_finding() {
     log_wrn "FINDING [${sev^^}] ${title}"
 }
 
-# - MRK:19_UTILS
+# - MRK:22_UTILS
 _check_tool() {
     local tool="$1"
     command -v "$tool" &>/dev/null
@@ -302,7 +302,7 @@ _apply_cli_filters() {
     done
 }
 
-# - MRK:19_PROF
+# - MRK:22_PROF
 setup_profile() {
     local prof="${1:-standard}"
     for n in T01 T02 T03 T04 T05 T06 T07; do
@@ -329,7 +329,7 @@ setup_profile() {
 # TESTS
 # =============================================================================
 
-# - MRK:19_T01 — T01 MySQL/MariaDB (port 3306)
+# - MRK:22_T01 — T01 MySQL/MariaDB (port 3306)
 test_T01_mysql() {
     local host="$1"
     local ev_f; ev_f="$(_ev_file "mysql" "$host")"
@@ -438,7 +438,7 @@ test_T01_mysql() {
     log_ok "  [T01] MySQL audit complete → ${ev_f}"
 }
 
-# - MRK:19_T02 — T02 MSSQL (port 1433)
+# - MRK:22_T02 — T02 MSSQL (port 1433)
 test_T02_mssql() {
     local host="$1"
     local ev_f; ev_f="$(_ev_file "mssql" "$host")"
@@ -561,7 +561,7 @@ test_T02_mssql() {
     log_ok "  [T02] MSSQL audit complete → ${ev_f}"
 }
 
-# - MRK:19_T03 — T03 PostgreSQL (port 5432)
+# - MRK:22_T03 — T03 PostgreSQL (port 5432)
 test_T03_postgresql() {
     local host="$1"
     local ev_f; ev_f="$(_ev_file "postgresql" "$host")"
@@ -689,7 +689,7 @@ test_T03_postgresql() {
     log_ok "  [T03] PostgreSQL audit complete → ${ev_f}"
 }
 
-# - MRK:19_T04 — T04 Oracle (port 1521)
+# - MRK:22_T04 — T04 Oracle (port 1521)
 test_T04_oracle() {
     local host="$1"
     local ev_f; ev_f="$(_ev_file "oracle" "$host")"
@@ -806,7 +806,7 @@ test_T04_oracle() {
     log_ok "  [T04] Oracle audit complete → ${ev_f}"
 }
 
-# - MRK:19_T05 — T05 Redis (port 6379)
+# - MRK:22_T05 — T05 Redis (port 6379)
 test_T05_redis() {
     local host="$1"
     local ev_f; ev_f="$(_ev_file "redis" "$host")"
@@ -916,7 +916,7 @@ test_T05_redis() {
     log_ok "  [T05] Redis audit complete → ${ev_f}"
 }
 
-# - MRK:19_T06 — T06 MongoDB (port 27017)
+# - MRK:22_T06 — T06 MongoDB (port 27017)
 test_T06_mongodb() {
     local host="$1"
     local ev_f; ev_f="$(_ev_file "mongodb" "$host")"
@@ -1028,7 +1028,7 @@ test_T06_mongodb() {
     log_ok "  [T06] MongoDB audit complete → ${ev_f}"
 }
 
-# - MRK:19_T07 — T07 Elasticsearch (port 9200)
+# - MRK:22_T07 — T07 Elasticsearch (port 9200)
 test_T07_elasticsearch() {
     local host="$1"
     local ev_f; ev_f="$(_ev_file "elasticsearch" "$host")"
@@ -1138,7 +1138,7 @@ test_T07_elasticsearch() {
 }
 
 # =============================================================================
-# - MRK:19_TRUN
+# - MRK:22_TRUN
 # =============================================================================
 _run_tests() {
     local total_before="$_FIND_CTR"
@@ -1169,7 +1169,7 @@ _run_tests() {
 }
 
 # =============================================================================
-# - MRK:19_MAIN
+# - MRK:22_MAIN
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"

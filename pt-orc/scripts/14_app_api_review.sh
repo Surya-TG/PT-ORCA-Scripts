@@ -2,42 +2,42 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:09_NAV_TOC — Section index | nav,toc,index | L5-79
-# - MRK:09_ROOT — ROOT CHECK | root,check,euid | L80-89 | ⚠ no-insert-before
-# - MRK:09_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:09_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168 | ⚠ no-insert-before
-# - MRK:09_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198 | ⚠ no-insert-before
-# - MRK:09_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:09_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273 | ⚠ no-insert-before; propose-before-edit
-# - MRK:09_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306 | ⚠ no-insert-before; read-toc-first
-# - MRK:09_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332 | ⚠ no-insert-before; read-toc-first
-# - MRK:09_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397 | ⚠ no-insert-before
-# - MRK:09_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437 | ⚠ no-insert-before
-# - MRK:09_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502 | ⚠ read-toc-first
-# - MRK:09_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554 | ⚠ read-toc-first
-# - MRK:09_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633 | ⚠ read-toc-first
-# - MRK:09_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683 | ⚠ read-toc-first
-# - MRK:09_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737 | ⚠ read-toc-first
-# - MRK:09_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782 | ⚠ read-toc-first
-# - MRK:09_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836 | ⚠ read-toc-first
-# - MRK:09_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904 | ⚠ read-toc-first
-# - MRK:09_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004 | ⚠ read-toc-first
-# - MRK:09_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077 | ⚠ read-toc-first
-# - MRK:09_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160 | ⚠ read-toc-first
-# - MRK:09_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214 | ⚠ read-toc-first
-# - MRK:09_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269 | ⚠ read-toc-first
-# - MRK:09_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322 | ⚠ read-toc-first; deep-only
-# - MRK:09_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372 | ⚠ read-toc-first
-# - MRK:09_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413 | ⚠ read-toc-first
-# - MRK:09_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474 | ⚠ read-toc-first
-# - MRK:09_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527 | ⚠ read-toc-first
-# - MRK:09_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562 | ⚠ read-toc-first
-# - MRK:09_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633 | ⚠ read-toc-first
-# - MRK:09_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
-# - MRK:09_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX | ⚠ read-toc-first
-# - MRK:09_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX | ⚠ read-toc-first
-# - MRK:09_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
-# - MRK:09_MAIN — MAIN ENTRY POINT | main,entry,point,summary | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
+# MRK:14_NAV_TOC — Section index | nav,toc,index | L5-79
+# - MRK:14_ROOT — ROOT CHECK | root,check,euid | L80-89 | ⚠ no-insert-before
+# - MRK:14_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:14_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168 | ⚠ no-insert-before
+# - MRK:14_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198 | ⚠ no-insert-before
+# - MRK:14_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:14_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273 | ⚠ no-insert-before; propose-before-edit
+# - MRK:14_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306 | ⚠ no-insert-before; read-toc-first
+# - MRK:14_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332 | ⚠ no-insert-before; read-toc-first
+# - MRK:14_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397 | ⚠ no-insert-before
+# - MRK:14_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437 | ⚠ no-insert-before
+# - MRK:14_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502 | ⚠ read-toc-first
+# - MRK:14_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554 | ⚠ read-toc-first
+# - MRK:14_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633 | ⚠ read-toc-first
+# - MRK:14_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683 | ⚠ read-toc-first
+# - MRK:14_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737 | ⚠ read-toc-first
+# - MRK:14_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782 | ⚠ read-toc-first
+# - MRK:14_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836 | ⚠ read-toc-first
+# - MRK:14_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904 | ⚠ read-toc-first
+# - MRK:14_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004 | ⚠ read-toc-first
+# - MRK:14_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077 | ⚠ read-toc-first
+# - MRK:14_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160 | ⚠ read-toc-first
+# - MRK:14_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214 | ⚠ read-toc-first
+# - MRK:14_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269 | ⚠ read-toc-first
+# - MRK:14_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322 | ⚠ read-toc-first; deep-only
+# - MRK:14_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372 | ⚠ read-toc-first
+# - MRK:14_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413 | ⚠ read-toc-first
+# - MRK:14_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474 | ⚠ read-toc-first
+# - MRK:14_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527 | ⚠ read-toc-first
+# - MRK:14_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562 | ⚠ read-toc-first
+# - MRK:14_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633 | ⚠ read-toc-first
+# - MRK:14_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
+# - MRK:14_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX | ⚠ read-toc-first
+# - MRK:14_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX | ⚠ read-toc-first
+# - MRK:14_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
+# - MRK:14_MAIN — MAIN ENTRY POINT | main,entry,point,summary | LXXXX-XXXX | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 35 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-24
 # <!-- NAV-NEEDS-REINDEX: 2026-06-24 — T22 deserialization + T23 file upload bypass added -->
 # <!-- NAV-NEEDS-REINDEX: 2026-06-23 — T21 added; line ranges shifted -->
@@ -83,7 +83,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:09_ROOT — ROOT CHECK | root,check,euid | L80-89
+# MRK:14_ROOT — ROOT CHECK | root,check,euid | L80-89
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -93,7 +93,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:09_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145
+# MRK:14_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L90-145
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -150,7 +150,7 @@ tier_delay() { case "$1" in ghost) echo 2;; evasion) echo 3;; normal) echo 0;; l
 TLS_PORTS="443 8443 4443 9443 10443"
 
 # =============================================================================
-# MRK:09_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168
+# MRK:14_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -165,7 +165,7 @@ EV_TS="$(_ev_ts)"
 [[ "$EVIDENCE_BASE" != /* ]] && EVIDENCE_BASE="$(pwd)/${EVIDENCE_BASE}"
 mkdir -p "${EVIDENCE_BASE}/_sweep" "${SCRIPT_DIR}/working"
 LOG_FILE="${EVIDENCE_BASE}/_sweep/app_api_review_${SESSION_TS}.log"
-FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "09-appapi-findings" "jsonl")"
+FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "14-appapi-findings" "jsonl")"
 : > "$FINDINGS_FILE"
 
 log()     { local m="[$(_now)] $1";   echo -e "${BLUE}${m}${NC}" >&2;    echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
@@ -176,7 +176,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:09_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198
+# MRK:14_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-198
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -206,7 +206,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:09_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254
+# MRK:14_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L199-254
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -262,7 +262,7 @@ _get_web_hosts_csv() {
 }
 
 # =============================================================================
-# MRK:09_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273
+# MRK:14_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L255-273
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -281,7 +281,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:09_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306
+# MRK:14_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L274-306
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -314,7 +314,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:09_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332
+# MRK:14_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L307-332
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -327,7 +327,7 @@ emit_finding() {
     local fid="f-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local ev_id="ev-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"09_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"14_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":""}' \
         "$fid" \
         "$(echo "$title" | sed 's/"/\\"/g')" \
         "$sev" \
@@ -347,7 +347,7 @@ emit_package_finding() {
     local fid="f-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local ev_id="ev-09-${ip_slug}-$(printf '%03d' "${_FIND_CTR}")"
     local payload
-    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"09_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","package_name":"%s","ecosystem":"%s"}' \
+    payload=$(printf '{"id":"%s","title":"%s","severity":"%s","phase":"14_app_api","evidence_ids":["%s"],"description":"%s","recommendation":"%s","retest_status":"n/a","residual_risk":"","package_name":"%s","ecosystem":"%s"}' \
         "$fid" \
         "$(echo "$title"     | sed 's/"/\\"/g')" \
         "$sev" \
@@ -361,7 +361,7 @@ emit_package_finding() {
 }
 
 # =============================================================================
-# MRK:09_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397
+# MRK:14_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L333-397
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -426,7 +426,7 @@ _test_skip() {
 }
 
 # =============================================================================
-# MRK:09_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437
+# MRK:14_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L398-437
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -466,7 +466,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:09_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502
+# MRK:14_T01 — T01 HTTP METHOD ENUM | t01,http,method,enum,methods | L438-502
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -531,7 +531,7 @@ test_01_http_methods() {
 }
 
 # =============================================================================
-# MRK:09_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554
+# MRK:14_T02 — T02 SCHEMA DISCOVERY | t02,schema,discovery,swagger,openapi | L503-554
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -583,7 +583,7 @@ test_02_schema_discovery() {
 }
 
 # =============================================================================
-# MRK:09_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633
+# MRK:14_T03 — T03 AUTHENTICATION | t03,authentication,auth,bypass,basic | L555-633
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -662,7 +662,7 @@ test_03_authentication() {
 }
 
 # =============================================================================
-# MRK:09_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683
+# MRK:14_T04 — T04 RATE LIMITING | t04,rate,limiting,limit,throttle | L634-683
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -712,7 +712,7 @@ test_04_rate_limiting() {
 }
 
 # =============================================================================
-# MRK:09_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737
+# MRK:14_T05 — T05 CORS MISCONFIG | t05,cors,misconfig,origin,access | L684-737
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -766,7 +766,7 @@ test_05_cors() {
 }
 
 # =============================================================================
-# MRK:09_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782
+# MRK:14_T06 — T06 BOLA/IDOR | t06,bola,idor,object,reference | L738-782
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -811,7 +811,7 @@ test_06_bola_idor() {
 }
 
 # =============================================================================
-# MRK:09_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836
+# MRK:14_T07 — T07 MASS ASSIGNMENT | t07,mass,assignment,params | L783-836
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -865,7 +865,7 @@ test_07_mass_assignment() {
 }
 
 # =============================================================================
-# MRK:09_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904
+# MRK:14_T08 — T08 SECURITY HEADERS | t08,security,headers,csp,hsts | L837-904
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -933,7 +933,7 @@ test_08_security_headers() {
 }
 
 # =============================================================================
-# MRK:09_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004
+# MRK:14_T09 — T09 JWT ATTACKS | t09,jwt,attacks,token,rs256 | L905-1004
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1033,7 +1033,7 @@ test_09_jwt_attacks() {
 }
 
 # =============================================================================
-# MRK:09_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077
+# MRK:14_T10 — T10 GRAPHQL | t10,graphql,introspection,batch | L1005-1077
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1106,7 +1106,7 @@ test_10_graphql() {
 }
 
 # =============================================================================
-# MRK:09_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160
+# MRK:14_T11 — T11 SSRF | t11,ssrf,imds,aws,gcp | L1078-1160
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1189,7 +1189,7 @@ test_11_ssrf() {
 }
 
 # =============================================================================
-# MRK:09_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214
+# MRK:14_T12 — T12 XXE | t12,xxe,xml,entity,oob | L1161-1214
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1243,7 +1243,7 @@ test_12_xxe() {
 }
 
 # =============================================================================
-# MRK:09_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269
+# MRK:14_T13 — T13 SSTI | t13,ssti,template,injection | L1215-1269
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1298,7 +1298,7 @@ test_13_ssti() {
 }
 
 # =============================================================================
-# MRK:09_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322
+# MRK:14_T14 — T14 HTTP SMUGGLING | t14,http,smuggling,cl,te | L1270-1322
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
@@ -1351,7 +1351,7 @@ test_14_smuggling() {
 }
 
 # =============================================================================
-# MRK:09_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372
+# MRK:14_T15 — T15 HOST HEADER INJECTION | t15,host,header,injection,ssrf | L1323-1372
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1401,7 +1401,7 @@ test_15_host_header() {
 }
 
 # =============================================================================
-# MRK:09_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413
+# MRK:14_T16 — T16 API VERSIONING | t16,api,versioning,v1,v2 | L1373-1413
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1442,7 +1442,7 @@ test_16_versioning() {
 }
 
 # =============================================================================
-# MRK:09_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474
+# MRK:14_T17 — T17 SENSITIVE DATA EXPOSURE | t17,sensitive,data,exposure,pii | L1414-1474
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1503,7 +1503,7 @@ test_17_sensitive_data() {
 }
 
 # =============================================================================
-# MRK:09_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527
+# MRK:14_T18 — T18 BUSINESS LOGIC | t18,business,logic,workflow,flow | L1475-1527
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1556,7 +1556,7 @@ test_18_business_logic() {
 }
 
 # =============================================================================
-# MRK:09_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562
+# MRK:14_T19 — T19 WEBSOCKET DETECTION | t19,websocket,detection,ws,upgrade | L1528-1562
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1591,7 +1591,7 @@ test_19_websocket() {
 }
 
 # =============================================================================
-# MRK:09_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633
+# MRK:14_T20 — T20 TLS & TRANSPORT CHECKS | t20,tls,transport,checks,cipher | L1563-1633
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1662,7 +1662,7 @@ test_20_tls_transport() {
 }
 
 # =============================================================================
-# MRK:09_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
+# MRK:14_T21 — T21 PACKAGE MANIFEST EXPOSURE | t21,package,manifest,osv,ecosystem | L1636-XXXX | ⚠ read-toc-first
 # NAV-RULE: read-toc-first
 # Probes for exposed package manifests (package.json, requirements.txt, etc.)
 # Emits:
@@ -1800,7 +1800,7 @@ test_21_package_manifests() {
 }
 
 # =============================================================================
-# MRK:09_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX
+# MRK:14_T22 — T22 DESERIALIZATION ATTACK SURFACE | t22,deserial,java,php,dotnet,viewstate | LXXXX-XXXX
 # ⚠ read-toc-first
 # =============================================================================
 
@@ -1902,7 +1902,7 @@ test_22_deserialization() {
 }
 
 # =============================================================================
-# MRK:09_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX
+# MRK:14_T23 — T23 FILE UPLOAD BYPASS | t23,upload,bypass,magic,mime,double,ext | LXXXX-XXXX
 # ⚠ read-toc-first
 # =============================================================================
 
@@ -2007,7 +2007,7 @@ test_23_file_upload_bypass() {
 }
 
 # =============================================================================
-# MRK:09_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX
+# MRK:14_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -2083,7 +2083,7 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:09_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1707-1819
+# MRK:14_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1707-1819
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -2116,7 +2116,7 @@ main() {
     done
 
     # ── Markdown summary ─────────────────────────────────────────────────────
-    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "09-appapi-summary" "md")"
+    local summary_md="${SCRIPT_DIR}/working/$(ev_fname "14-appapi-summary" "md")"
     {
         echo "# App/API Review Summary — ${PROJECT_NAME:-unknown}"
         echo ""
@@ -2188,7 +2188,7 @@ main() {
     log_ok "Evidence: ${EVIDENCE_BASE}"
 
     if command -v trail_phase_end &>/dev/null; then
-        trail_phase_end "09_app_api" "${_FIND_CTR} findings" "$summary_md"
+        trail_phase_end "14_app_api" "${_FIND_CTR} findings" "$summary_md"
     fi
 
     # Print summary to stdout for pipeline consumption

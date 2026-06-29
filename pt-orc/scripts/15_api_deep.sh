@@ -2,29 +2,29 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:24_NAV_TOC — Section index | nav,toc,index | L5-57
-# - MRK:24_ROOT    — ROOT CHECK                    | root,check,euid                    | L58-67   | ⚠ no-insert-before
-# - MRK:24_CONF    — ENGAGEMENT CONFIGURATION      | conf,engagement,configuration      | L68-145  | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:24_LOG     — COLOURS AND LOGGING           | log,colours,logging                | L146-168 | ⚠ no-insert-before
-# - MRK:24_ARGS    — ARGUMENT PARSING              | args,argument,parsing              | L169-220 | ⚠ no-insert-before
-# - MRK:24_DB      — MSF DB HELPERS                | db,msf,helpers,web,ports           | L221-275 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:24_CONFIRM — SCOPE CONFIRMATION            | confirm,scope,confirmation         | L276-290 | ⚠ no-insert-before; propose-before-edit
-# - MRK:24_TARGETS — TARGET ASSEMBLY               | targets,target,assembly            | L291-325 | ⚠ no-insert-before; read-toc-first
-# - MRK:24_FIND    — FINDING WRITER                | find,finding,writer,jsonl,jq       | L326-350 | ⚠ no-insert-before; read-toc-first
-# - MRK:24_UTILS   — SHARED UTILITIES              | utils,shared,utilities,curl,proxy  | L351-420 | ⚠ no-insert-before
-# - MRK:24_PROF    — PROFILE SETUP                 | prof,profile,setup,quick,deep      | L421-465 | ⚠ no-insert-before
-# - MRK:24_T01     — T01 NOSQL INJECTION           | t01,nosql,mongodb,elasticsearch    | L466-570 | ⚠ read-toc-first
-# - MRK:24_T02     — T02 GRAPHQL ADVANCED          | t02,graphql,alias,depth,suggestion | L571-690 | ⚠ read-toc-first
-# - MRK:24_T03     — T03 WEBSOCKET ATTACKS         | t03,websocket,cswsh,origin,ws      | L691-790 | ⚠ read-toc-first
-# - MRK:24_T04     — T04 BUSINESS LOGIC DEEP       | t04,business,logic,price,race      | L791-910 | ⚠ read-toc-first; deep-only
-# - MRK:24_T05     — T05 HTTP PARAMETER POLLUTION  | t05,hpp,duplicate,array,collision  | L911-995 | ⚠ read-toc-first
-# - MRK:24_T06     — T06 API KEY SECURITY          | t06,apikey,entropy,url,scope       | L996-1080| ⚠ read-toc-first
-# - MRK:24_T07     — T07 CONTENT-TYPE CONFUSION    | t07,ctype,xml,form,mime,waf        | L1081-1155|⚠ read-toc-first
-# - MRK:24_T08     — T08 PROTOTYPE POLLUTION       | t08,proto,__proto__,constructor    | L1156-1240|⚠ read-toc-first
-# - MRK:24_T09     — T09 SCHEMA DRIFT & SHADOW API | t09,schema,shadow,zombie,grpc      | L1241-1370|⚠ read-toc-first
-# - MRK:24_T10     — T10 MASS OBJECT ENUMERATION   | t10,idor,enum,sequential,uuid      | L1371-1470|⚠ read-toc-first; deep-only
-# - MRK:24_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1471-1530|⚠ no-insert-before; read-toc-first
-# - MRK:24_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1531-1680|⚠ no-insert-before; read-toc-first
+# MRK:15_NAV_TOC — Section index | nav,toc,index | L5-57
+# - MRK:15_ROOT    — ROOT CHECK                    | root,check,euid                    | L58-67   | ⚠ no-insert-before
+# - MRK:15_CONF    — ENGAGEMENT CONFIGURATION      | conf,engagement,configuration      | L68-145  | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:15_LOG     — COLOURS AND LOGGING           | log,colours,logging                | L146-168 | ⚠ no-insert-before
+# - MRK:15_ARGS    — ARGUMENT PARSING              | args,argument,parsing              | L169-220 | ⚠ no-insert-before
+# - MRK:15_DB      — MSF DB HELPERS                | db,msf,helpers,web,ports           | L221-275 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:15_CONFIRM — SCOPE CONFIRMATION            | confirm,scope,confirmation         | L276-290 | ⚠ no-insert-before; propose-before-edit
+# - MRK:15_TARGETS — TARGET ASSEMBLY               | targets,target,assembly            | L291-325 | ⚠ no-insert-before; read-toc-first
+# - MRK:15_FIND    — FINDING WRITER                | find,finding,writer,jsonl,jq       | L326-350 | ⚠ no-insert-before; read-toc-first
+# - MRK:15_UTILS   — SHARED UTILITIES              | utils,shared,utilities,curl,proxy  | L351-420 | ⚠ no-insert-before
+# - MRK:15_PROF    — PROFILE SETUP                 | prof,profile,setup,quick,deep      | L421-465 | ⚠ no-insert-before
+# - MRK:15_T01     — T01 NOSQL INJECTION           | t01,nosql,mongodb,elasticsearch    | L466-570 | ⚠ read-toc-first
+# - MRK:15_T02     — T02 GRAPHQL ADVANCED          | t02,graphql,alias,depth,suggestion | L571-690 | ⚠ read-toc-first
+# - MRK:15_T03     — T03 WEBSOCKET ATTACKS         | t03,websocket,cswsh,origin,ws      | L691-790 | ⚠ read-toc-first
+# - MRK:15_T04     — T04 BUSINESS LOGIC DEEP       | t04,business,logic,price,race      | L791-910 | ⚠ read-toc-first; deep-only
+# - MRK:15_T05     — T05 HTTP PARAMETER POLLUTION  | t05,hpp,duplicate,array,collision  | L911-995 | ⚠ read-toc-first
+# - MRK:15_T06     — T06 API KEY SECURITY          | t06,apikey,entropy,url,scope       | L996-1080| ⚠ read-toc-first
+# - MRK:15_T07     — T07 CONTENT-TYPE CONFUSION    | t07,ctype,xml,form,mime,waf        | L1081-1155|⚠ read-toc-first
+# - MRK:15_T08     — T08 PROTOTYPE POLLUTION       | t08,proto,__proto__,constructor    | L1156-1240|⚠ read-toc-first
+# - MRK:15_T09     — T09 SCHEMA DRIFT & SHADOW API | t09,schema,shadow,zombie,grpc      | L1241-1370|⚠ read-toc-first
+# - MRK:15_T10     — T10 MASS OBJECT ENUMERATION   | t10,idor,enum,sequential,uuid      | L1371-1470|⚠ read-toc-first; deep-only
+# - MRK:15_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1471-1530|⚠ no-insert-before; read-toc-first
+# - MRK:15_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1531-1680|⚠ no-insert-before; read-toc-first
 # NAV-LEN: 24 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
 
 # =============================================================================
@@ -70,7 +70,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:24_ROOT — ROOT CHECK | root,check,euid | L58-67
+# MRK:15_ROOT — ROOT CHECK | root,check,euid | L58-67
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -80,7 +80,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:24_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration | L68-145
+# MRK:15_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration | L68-145
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -145,7 +145,7 @@ tier_delay() { case "$1" in ghost) echo 2;; evasion) echo 3;; normal) echo 0;; l
 TLS_PORTS="443 8443 4443 9443 10443"
 
 # =============================================================================
-# MRK:24_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168
+# MRK:15_LOG — COLOURS AND LOGGING | log,colours,logging | L146-168
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -171,7 +171,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:24_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-220
+# MRK:15_ARGS — ARGUMENT PARSING | args,argument,parsing | L169-220
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -202,7 +202,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:24_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L221-275
+# MRK:15_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L221-275
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -258,7 +258,7 @@ _get_web_hosts_csv() {
 }
 
 # =============================================================================
-# MRK:24_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L276-290
+# MRK:15_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L276-290
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -275,7 +275,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:24_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L291-325
+# MRK:15_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L291-325
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -308,7 +308,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:24_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L326-350
+# MRK:15_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L326-350
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -333,7 +333,7 @@ emit_finding() {
 }
 
 # =============================================================================
-# MRK:24_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L351-420
+# MRK:15_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L351-420
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -397,7 +397,7 @@ _test_skip() {
 }
 
 # =============================================================================
-# MRK:24_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L421-465
+# MRK:15_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L421-465
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -426,7 +426,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:24_T01 — T01 NOSQL INJECTION | t01,nosql,mongodb,elasticsearch | L466-570
+# MRK:15_T01 — T01 NOSQL INJECTION | t01,nosql,mongodb,elasticsearch | L466-570
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -554,7 +554,7 @@ test_24_t01_nosql() {
 }
 
 # =============================================================================
-# MRK:24_T02 — T02 GRAPHQL ADVANCED | t02,graphql,alias,depth,suggestion | L571-690
+# MRK:15_T02 — T02 GRAPHQL ADVANCED | t02,graphql,alias,depth,suggestion | L571-690
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -690,7 +690,7 @@ test_24_t02_gql_adv() {
 }
 
 # =============================================================================
-# MRK:24_T03 — T03 WEBSOCKET ATTACKS | t03,websocket,cswsh,origin,ws | L691-790
+# MRK:15_T03 — T03 WEBSOCKET ATTACKS | t03,websocket,cswsh,origin,ws | L691-790
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -803,7 +803,7 @@ test_24_t03_websocket() {
 }
 
 # =============================================================================
-# MRK:24_T04 — T04 BUSINESS LOGIC DEEP | t04,business,logic,price,race | L791-910
+# MRK:15_T04 — T04 BUSINESS LOGIC DEEP | t04,business,logic,price,race | L791-910
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
@@ -961,7 +961,7 @@ test_24_t04_bizlogic() {
 }
 
 # =============================================================================
-# MRK:24_T05 — T05 HTTP PARAMETER POLLUTION | t05,hpp,duplicate,array | L911-995
+# MRK:15_T05 — T05 HTTP PARAMETER POLLUTION | t05,hpp,duplicate,array | L911-995
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1054,7 +1054,7 @@ test_24_t05_hpp() {
 }
 
 # =============================================================================
-# MRK:24_T06 — T06 API KEY SECURITY | t06,apikey,entropy,url,scope | L996-1080
+# MRK:15_T06 — T06 API KEY SECURITY | t06,apikey,entropy,url,scope | L996-1080
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1136,7 +1136,7 @@ test_24_t06_apikey() {
 }
 
 # =============================================================================
-# MRK:24_T07 — T07 CONTENT-TYPE CONFUSION | t07,ctype,xml,form,mime | L1081-1155
+# MRK:15_T07 — T07 CONTENT-TYPE CONFUSION | t07,ctype,xml,form,mime | L1081-1155
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1231,7 +1231,7 @@ test_24_t07_ctype() {
 }
 
 # =============================================================================
-# MRK:24_T08 — T08 PROTOTYPE POLLUTION | t08,proto,__proto__,constructor | L1156-1240
+# MRK:15_T08 — T08 PROTOTYPE POLLUTION | t08,proto,__proto__,constructor | L1156-1240
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1332,7 +1332,7 @@ test_24_t08_proto() {
 }
 
 # =============================================================================
-# MRK:24_T09 — T09 SCHEMA DRIFT & SHADOW API | t09,schema,shadow,zombie,grpc | L1241-1370
+# MRK:15_T09 — T09 SCHEMA DRIFT & SHADOW API | t09,schema,shadow,zombie,grpc | L1241-1370
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1453,7 +1453,7 @@ test_24_t09_schema() {
 }
 
 # =============================================================================
-# MRK:24_T10 — T10 MASS OBJECT ENUMERATION | t10,idor,enum,sequential,uuid | L1371-1470
+# MRK:15_T10 — T10 MASS OBJECT ENUMERATION | t10,idor,enum,sequential,uuid | L1371-1470
 # NAV-RULE: read-toc-first; deep-only
 # =============================================================================
 
@@ -1563,7 +1563,7 @@ test_24_t10_enum() {
 }
 
 # =============================================================================
-# MRK:24_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1471-1530
+# MRK:15_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1471-1530
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1618,7 +1618,7 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:24_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1531-1680
+# MRK:15_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1531-1680
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 

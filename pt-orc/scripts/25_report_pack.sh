@@ -2,18 +2,18 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:16_NAV_TOC — Section index | nav,toc,index | L5-44
-# - MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:16_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111 | ⚠ no-insert-before
-# - MRK:16_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145 | ⚠ no-insert-before
-# - MRK:16_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174 | ⚠ no-insert-before
-# - MRK:16_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255 | ⚠ no-insert-before; read-toc-first
-# - MRK:16_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354 | ⚠ no-insert-before; read-toc-first
-# - MRK:16_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620 | ⚠ no-insert-before; read-toc-first
-# - MRK:16_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679 | ⚠ no-insert-before; read-toc-first
-# - MRK:16_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744 | ⚠ no-insert-before; read-toc-first
-# - MRK:16_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703 | ⚠ no-insert-before; read-toc-first
-# - MRK:16_MAIN — MAIN entry point | main,entry,point | L1704-1779 | ⚠ no-insert-before; read-toc-first
+# MRK:25_NAV_TOC — Section index | nav,toc,index | L5-44
+# - MRK:25_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:25_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111 | ⚠ no-insert-before
+# - MRK:25_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145 | ⚠ no-insert-before
+# - MRK:25_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174 | ⚠ no-insert-before
+# - MRK:25_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255 | ⚠ no-insert-before; read-toc-first
+# - MRK:25_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354 | ⚠ no-insert-before; read-toc-first
+# - MRK:25_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620 | ⚠ no-insert-before; read-toc-first
+# - MRK:25_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679 | ⚠ no-insert-before; read-toc-first
+# - MRK:25_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744 | ⚠ no-insert-before; read-toc-first
+# - MRK:25_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703 | ⚠ no-insert-before; read-toc-first
+# - MRK:25_MAIN — MAIN entry point | main,entry,point | L1704-1779 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 11 entries | Integrity-hash: 8a1b9c0b90a405f7 | Last-indexed: 2026-06-16T15:34:52Z
 
 # =============================================================================
@@ -42,7 +42,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:16_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88
+# MRK:25_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,edit,pt | L45-88
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -88,7 +88,7 @@ BASELINE_RUN_DIR=""     # set via --baseline <prior_run_dir>; enables retest dif
 RUN_DIR_ACTUAL=""       # set by write_output; consumed by generate_ai_report
 
 # =============================================================================
-# MRK:16_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111
+# MRK:25_LOG — COLOURS AND LOGGING | log,colours,logging | L89-111
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -111,7 +111,7 @@ log_info() { local m="[$(_now)]   $1";          echo -e "${CYAN}${m}${NC}" >&2; 
 log_find() { local m="[$(_now)] FINDING: $1";   echo -e "${BOLD}${RED}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:16_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145
+# MRK:25_ARGS — ARGUMENT PARSING | args,argument,parsing | L112-145
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -148,7 +148,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:16_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174
+# MRK:25_VALIDATE — VALIDATION | validate,validation,project,id,required | L146-174
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -177,7 +177,7 @@ log "Output dir:    ${OUTPUT_DIR}"
 [[ "$DRY_RUN" -eq 1 ]] && log_warn "DRY-RUN mode — no output files will be written"
 
 # =============================================================================
-# MRK:16_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255
+# MRK:25_SCOPE — BUILD SCOPE JSON | scope,build,json,targets,window | L175-255
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -258,11 +258,11 @@ build_scope_json() {
 }
 
 # =============================================================================
-# MRK:16_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354
+# MRK:25_EVIDENCE — BUILD EVIDENCE MANIFEST | evidence,build,manifest,walk,sha256 | L256-354
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
-# Global maps used by MRK:16_FINDINGS to link files to ev-NNN ids
+# Global maps used by MRK:25_FINDINGS to link files to ev-NNN ids
 declare -A EV_ID_BY_PATH    # absolute_path -> ev-NNN
 declare -A EV_ID_BY_BASE    # basename -> ev-NNN (last writer wins; sufficient for matching)
 
@@ -357,7 +357,7 @@ build_evidence_manifest() {
 }
 
 # =============================================================================
-# MRK:16_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620
+# MRK:25_FINDINGS — COLLECT FINDINGS | findings,collect,pattern,detect,jsonl | L355-620
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -619,7 +619,7 @@ collect_findings() {
 }
 
 # =============================================================================
-# MRK:16_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679
+# MRK:25_BUNDLE — BUILD REPORT BUNDLE | bundle,build,report,residual,risk | L621-679
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -678,7 +678,7 @@ build_report_bundle() {
 }
 
 # =============================================================================
-# MRK:16_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744
+# MRK:25_WRITE — WRITE OUTPUT FILES | write,output,export,dir | L680-744
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -746,7 +746,7 @@ write_output() {
 }
 
 # =============================================================================
-# MRK:16_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703
+# MRK:25_AI_REPORT — AI REPORT HTML/PDF/JSON | ai,report,html,pdf,json | L745-1703
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -3092,7 +3092,7 @@ PYTHON_EOF
 }
 
 # =============================================================================
-# MRK:16_MAIN — MAIN entry point | main,entry,point | L1704-1779
+# MRK:25_MAIN — MAIN entry point | main,entry,point | L1704-1779
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 

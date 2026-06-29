@@ -2,37 +2,37 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:06_NAV_TOC — Section index | nav,toc,index | L5-71
-# - MRK:06_ROOT — ROOT CHECK | root,check,euid | L72-81 | ⚠ no-insert-before
-# - MRK:06_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:06_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155 | ⚠ no-insert-before
-# - MRK:06_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183 | ⚠ no-insert-before
-# - MRK:06_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235 | ⚠ no-insert-before; propose-before-edit; read-toc-first
-# - MRK:06_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252 | ⚠ no-insert-before; propose-before-edit
-# - MRK:06_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368 | ⚠ no-insert-before
-# - MRK:06_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396 | ⚠ no-insert-before
-# - MRK:06_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468 | ⚠ read-toc-first
-# - MRK:06_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559 | ⚠ read-toc-first
-# - MRK:06_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620 | ⚠ read-toc-first
-# - MRK:06_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685 | ⚠ read-toc-first
-# - MRK:06_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757 | ⚠ read-toc-first
-# - MRK:06_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808 | ⚠ read-toc-first
-# - MRK:06_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900 | ⚠ read-toc-first
-# - MRK:06_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958 | ⚠ read-toc-first
-# - MRK:06_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024 | ⚠ read-toc-first
-# - MRK:06_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074 | ⚠ read-toc-first
-# - MRK:06_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141 | ⚠ read-toc-first
-# - MRK:06_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234 | ⚠ read-toc-first
-# - MRK:06_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275 | ⚠ read-toc-first
-# - MRK:06_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352 | ⚠ read-toc-first
-# - MRK:06_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430 | ⚠ read-toc-first
-# - MRK:06_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468 | ⚠ read-toc-first
-# - MRK:06_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516 | ⚠ read-toc-first
-# - MRK:06_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588 | ⚠ read-toc-first
-# - MRK:06_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654 | ⚠ no-insert-before; read-toc-first
-# - MRK:06_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765 | ⚠ no-insert-before; read-toc-first
+# MRK:08_NAV_TOC — Section index | nav,toc,index | L5-71
+# - MRK:08_ROOT — ROOT CHECK | root,check,euid | L72-81 | ⚠ no-insert-before
+# - MRK:08_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:08_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155 | ⚠ no-insert-before
+# - MRK:08_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183 | ⚠ no-insert-before
+# - MRK:08_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235 | ⚠ no-insert-before; propose-before-edit; read-toc-first
+# - MRK:08_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252 | ⚠ no-insert-before; propose-before-edit
+# - MRK:08_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280 | ⚠ no-insert-before; read-toc-first
+# - MRK:08_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327 | ⚠ no-insert-before; read-toc-first
+# - MRK:08_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368 | ⚠ no-insert-before
+# - MRK:08_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396 | ⚠ no-insert-before
+# - MRK:08_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468 | ⚠ read-toc-first
+# - MRK:08_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559 | ⚠ read-toc-first
+# - MRK:08_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620 | ⚠ read-toc-first
+# - MRK:08_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685 | ⚠ read-toc-first
+# - MRK:08_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757 | ⚠ read-toc-first
+# - MRK:08_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808 | ⚠ read-toc-first
+# - MRK:08_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900 | ⚠ read-toc-first
+# - MRK:08_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958 | ⚠ read-toc-first
+# - MRK:08_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024 | ⚠ read-toc-first
+# - MRK:08_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074 | ⚠ read-toc-first
+# - MRK:08_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141 | ⚠ read-toc-first
+# - MRK:08_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234 | ⚠ read-toc-first
+# - MRK:08_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275 | ⚠ read-toc-first
+# - MRK:08_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352 | ⚠ read-toc-first
+# - MRK:08_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430 | ⚠ read-toc-first
+# - MRK:08_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468 | ⚠ read-toc-first
+# - MRK:08_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516 | ⚠ read-toc-first
+# - MRK:08_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588 | ⚠ read-toc-first
+# - MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654 | ⚠ no-insert-before; read-toc-first
+# - MRK:08_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765 | ⚠ no-insert-before; read-toc-first
 # NAV-LEN: 30 entries | Integrity-hash: 9b32b1e69cccd051 | Last-indexed: 2026-06-16T08:30:52Z
 
 # =============================================================================
@@ -69,7 +69,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# MRK:06_ROOT — ROOT CHECK | root,check,euid | L72-81
+# MRK:08_ROOT — ROOT CHECK | root,check,euid | L72-81
 # NAV-RULE: no-insert-before
 # =============================================================================
 if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
@@ -79,7 +79,7 @@ if [[ "$EUID" -ne 0 ]] && [[ "${PTORC_ALLOW_NON_ROOT:-0}" != "1" ]]; then
 fi
 
 # =============================================================================
-# MRK:06_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132
+# MRK:08_CONF — ENGAGEMENT CONFIGURATION | conf,engagement,configuration,config,curl | L82-132
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -130,7 +130,7 @@ whatweb_aggression() { case "$1" in ghost|evasion) echo 1;; loud) echo 4;; *) ec
 TLS_PORTS="443 8443 4443 9443 10443"
 
 # =============================================================================
-# MRK:06_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155
+# MRK:08_LOG — COLOURS AND LOGGING | log,colours,logging | L133-155
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -154,7 +154,7 @@ log_info(){ local m="[$(_now)]   $1"; echo -e "${CYAN}${m}${NC}" >&2;    echo "$
 log_hi()  { local m="[$(_now)] ! $1"; echo -e "${MAGENTA}${m}${NC}" >&2; echo "${m}" >> "$LOG_FILE" 2>/dev/null || true; }
 
 # =============================================================================
-# MRK:06_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183
+# MRK:08_ARGS — ARGUMENT PARSING | args,argument,parsing | L156-183
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -182,7 +182,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:06_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235
+# MRK:08_DB — MSF DB HELPERS | db,msf,helpers,web,ports | L184-235
 # NAV-RULE: no-insert-before; propose-before-edit; read-toc-first
 # =============================================================================
 
@@ -234,7 +234,7 @@ _get_web_hosts_csv() {
 }
 
 # =============================================================================
-# MRK:06_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252
+# MRK:08_CONFIRM — SCOPE CONFIRMATION | confirm,scope,confirmation | L236-252
 # NAV-RULE: no-insert-before; propose-before-edit
 # =============================================================================
 
@@ -251,7 +251,7 @@ confirm_scope() {
 }
 
 # =============================================================================
-# MRK:06_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280
+# MRK:08_TARGETS — TARGET ASSEMBLY | targets,target,assembly | L253-280
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -285,7 +285,7 @@ assemble_targets() {
 }
 
 # =============================================================================
-# MRK:06_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327
+# MRK:08_FIND — FINDING WRITER | find,finding,writer,jsonl,jq | L281-327
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -332,7 +332,7 @@ write_web_exports() {
 }
 
 # =============================================================================
-# MRK:06_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368
+# MRK:08_UTILS — SHARED UTILITIES | utils,shared,utilities,curl,proxy | L328-368
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -373,7 +373,7 @@ _detect_tls() {
 }
 
 # =============================================================================
-# MRK:06_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396
+# MRK:08_PROF — PROFILE SETUP | prof,profile,setup,quick,deep | L369-396
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -401,7 +401,7 @@ setup_profile() {
 }
 
 # =============================================================================
-# MRK:06_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468
+# MRK:08_T01 — T01 HEADERS & FINGERPRINT | t01,headers,fingerprint,tech,ww | L397-468
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -473,7 +473,7 @@ test_01_headers_fingerprint() {
 }
 
 # =============================================================================
-# MRK:06_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559
+# MRK:08_T02 — T02 SECURITY HEADERS & CSP | t02,security,headers,csp,hsts | L469-559
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -564,7 +564,7 @@ test_02_security_headers() {
 }
 
 # =============================================================================
-# MRK:06_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620
+# MRK:08_T03 — T03 CORS MISCONFIG | t03,cors,misconfig,origin,access | L560-620
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -625,7 +625,7 @@ test_03_cors() {
 }
 
 # =============================================================================
-# MRK:06_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685
+# MRK:08_T04 — T04 WAF DETECTION | t04,waf,detection,firewall,fingerprint | L621-685
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -690,7 +690,7 @@ test_04_waf_detection() {
 }
 
 # =============================================================================
-# MRK:06_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757
+# MRK:08_T05 — T05 DIRECTORY DISCOVERY | t05,directory,discovery,gobuster,ffuf | L686-757
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -762,7 +762,7 @@ test_05_directory_discovery() {
 }
 
 # =============================================================================
-# MRK:06_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808
+# MRK:08_T06 — T06 NIKTO | t06,nikto,scanner,vuln | L758-808
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -813,7 +813,7 @@ test_06_nikto() {
 }
 
 # =============================================================================
-# MRK:06_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900
+# MRK:08_T07 — T07 JS ANALYSIS | t07,js,analysis,javascript,secrets | L809-900
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -905,7 +905,7 @@ test_07_js_analysis() {
 }
 
 # =============================================================================
-# MRK:06_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958
+# MRK:08_T08 — T08 API ENDPOINT DISCOVERY | t08,api,endpoint,discovery,endpoints | L901-958
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -963,7 +963,7 @@ test_08_api_discovery() {
 }
 
 # =============================================================================
-# MRK:06_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024
+# MRK:08_T09 — T09 SENSITIVE FILE EXPOSURE | t09,sensitive,exposure,backup,git | L959-1024
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1029,7 +1029,7 @@ test_09_sensitive_files() {
 }
 
 # =============================================================================
-# MRK:06_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074
+# MRK:08_T10 — T10 VHOST DISCOVERY | t10,vhost,discovery,virtual,host | L1025-1074
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1079,7 +1079,7 @@ test_10_vhost_discovery() {
 }
 
 # =============================================================================
-# MRK:06_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141
+# MRK:08_T11 — T11 403 BYPASS | t11,bypass,forbidden,path | L1075-1141
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1146,7 +1146,7 @@ test_11_403_bypass() {
 }
 
 # =============================================================================
-# MRK:06_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234
+# MRK:08_T12 — T12 COOKIE SECURITY | t12,cookie,security,secure,httponly | L1142-1234
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1239,7 +1239,7 @@ test_12_cookie_security() {
 }
 
 # =============================================================================
-# MRK:06_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275
+# MRK:08_T13 — T13 OPEN REDIRECT | t13,open,redirect,param,location | L1235-1275
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1280,7 +1280,7 @@ test_13_open_redirect() {
 }
 
 # =============================================================================
-# MRK:06_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352
+# MRK:08_T14 — T14 LOGIN PAGE ANALYSIS | t14,login,page,analysis,auth | L1276-1352
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1357,7 +1357,7 @@ test_14_login_analysis() {
 }
 
 # =============================================================================
-# MRK:06_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430
+# MRK:08_T15 — T15 CMS DETECTION | t15,cms,detection,wordpress,drupal | L1353-1430
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1435,7 +1435,7 @@ test_15_cms_detection() {
 }
 
 # =============================================================================
-# MRK:06_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468
+# MRK:08_T16 — T16 GRAPHQL | t16,graphql,introspection,batch | L1431-1468
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1473,7 +1473,7 @@ test_16_graphql() {
 }
 
 # =============================================================================
-# MRK:06_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516
+# MRK:08_T17 — T17 OAUTH2/OIDC | t17,oauth2,oidc,oauth,openid | L1469-1516
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1521,7 +1521,7 @@ test_17_oauth_oidc() {
 }
 
 # =============================================================================
-# MRK:06_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588
+# MRK:08_T18 — T18 CLIENT-SIDE SECURITY | t18,client,side,security,csp | L1517-1588
 # NAV-RULE: read-toc-first
 # =============================================================================
 
@@ -1593,7 +1593,7 @@ test_18_client_side_security() {
 }
 
 # =============================================================================
-# MRK:06_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654
+# MRK:08_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1589-1654
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1659,7 +1659,7 @@ test_target() {
 }
 
 # =============================================================================
-# MRK:06_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765
+# MRK:08_MAIN — MAIN ENTRY POINT | main,entry,point,summary | L1655-1765
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 

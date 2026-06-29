@@ -2,35 +2,35 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:20_NAV_TOC — Section index | nav,toc,index | L5-28
-# - MRK:20_T01 — T01 SMB SHARE SECRET SPIDER | t01,smb,share,secret,spider | L29-29
-# - MRK:20_T02 — T02 WEB EXPOSED SENSITIVE FILES | t02,web,exposed,sensitive,files | L30-30
-# - MRK:20_T03 — T03 GIT SECRET SCAN | t03,git,secret,scan | L31-31
-# - MRK:20_T04 — T04 DEBUG ENDPOINT SECRET EXPOSURE | t04,debug,endpoint,secret | L32-32
-# - MRK:20_T05 — T05 EXPOSED BACKUP AND DUMP FILES | t05,backup,dump,exposed | L33-33
+# MRK:19_NAV_TOC — Section index | nav,toc,index | L5-28
+# - MRK:19_T01 — T01 SMB SHARE SECRET SPIDER | t01,smb,share,secret,spider | L29-29
+# - MRK:19_T02 — T02 WEB EXPOSED SENSITIVE FILES | t02,web,exposed,sensitive,files | L30-30
+# - MRK:19_T03 — T03 GIT SECRET SCAN | t03,git,secret,scan | L31-31
+# - MRK:19_T04 — T04 DEBUG ENDPOINT SECRET EXPOSURE | t04,debug,endpoint,secret | L32-32
+# - MRK:19_T05 — T05 EXPOSED BACKUP AND DUMP FILES | t05,backup,dump,exposed | L33-33
 # NAV-LEN: 5 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-25
 
 # =============================================================================
 # 20_secrets_scan.sh — Secrets & Credential Exposure Scanning
 # TechGuard Labs | PT-Orc Suite v0.8
 # =============================================================================
-# NAV: MRK:20_TOC (this block) | MRK:20_ROOT | MRK:20_CONF | MRK:20_LOG
-#      MRK:20_ARGS | MRK:20_CONFIRM | MRK:20_TARGETS
-#      MRK:20_FIND | MRK:20_UTILS | MRK:20_PROF
-#      MRK:20_T01 — T01 SMB SHARE SECRET SPIDER
-#      MRK:20_T02 — T02 WEB EXPOSED SENSITIVE FILES
-#      MRK:20_T03 — T03 GIT SECRET SCAN
-#      MRK:20_T04 — T04 DEBUG ENDPOINT SECRET EXPOSURE
-#      MRK:20_T05 — T05 EXPOSED BACKUP AND DUMP FILES
-#      MRK:20_TRUN | MRK:20_MAIN
+# NAV: MRK:19_TOC (this block) | MRK:19_ROOT | MRK:19_CONF | MRK:19_LOG
+#      MRK:19_ARGS | MRK:19_CONFIRM | MRK:19_TARGETS
+#      MRK:19_FIND | MRK:19_UTILS | MRK:19_PROF
+#      MRK:19_T01 — T01 SMB SHARE SECRET SPIDER
+#      MRK:19_T02 — T02 WEB EXPOSED SENSITIVE FILES
+#      MRK:19_T03 — T03 GIT SECRET SCAN
+#      MRK:19_T04 — T04 DEBUG ENDPOINT SECRET EXPOSURE
+#      MRK:19_T05 — T05 EXPOSED BACKUP AND DUMP FILES
+#      MRK:19_TRUN | MRK:19_MAIN
 # =============================================================================
 
-# - MRK:20_ROOT
+# - MRK:19_ROOT
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# - MRK:20_CONF
+# - MRK:19_CONF
 CONF_FILE="${SCRIPT_DIR}/pt-orc.conf"
 [[ -f "$CONF_FILE" ]] || { echo "[FATAL] pt-orc.conf not found at ${CONF_FILE}"; exit 1; }
 # shellcheck source=pt-orc.conf
@@ -50,7 +50,7 @@ SECRETS_SMB_USER="${SECRETS_SMB_USER:-}"
 SECRETS_SMB_PASS="${SECRETS_SMB_PASS:-}"
 SECRETS_TIMEOUT="${SECRETS_TIMEOUT:-15}"
 
-# - MRK:20_LOG
+# - MRK:19_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
@@ -64,7 +64,7 @@ log_wrn() { printf "${_Y}[!]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_err() { printf "${_R}[-]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_dry() { printf "${_C}[DRY]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 
-# - MRK:20_ARGS
+# - MRK:19_ARGS
 _SKIP_CONFIRM=0
 _ONLY_TESTS=()
 _SKIP_TESTS=()
@@ -119,7 +119,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# - MRK:20_CONFIRM
+# - MRK:19_CONFIRM
 _confirm() {
     [[ "$_SKIP_CONFIRM" -eq 1 ]] && return 0
 
@@ -141,7 +141,7 @@ _confirm() {
     [[ "${_ans,,}" == "y" ]] || { log_err "Aborted by user."; exit 0; }
 }
 
-# - MRK:20_TARGETS
+# - MRK:19_TARGETS
 _validate_config() {
     local all_targets=""
     [[ -n "${SECRETS_SMB_TARGETS:-}" ]] && all_targets="$SECRETS_SMB_TARGETS"
@@ -178,7 +178,7 @@ _smb_targets() {
     printf '%s\n' "${out[@]+"${out[@]}"}"
 }
 
-# - MRK:20_FIND
+# - MRK:19_FIND
 FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "20-secrets-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
@@ -201,7 +201,7 @@ emit_finding() {
     log_wrn "FINDING [${sev^^}] ${title}"
 }
 
-# - MRK:20_UTILS
+# - MRK:19_UTILS
 _check_tool() {
     local tool="$1"
     command -v "$tool" &>/dev/null
@@ -239,7 +239,7 @@ _apply_cli_filters() {
     done
 }
 
-# - MRK:20_PROF
+# - MRK:19_PROF
 setup_profile() {
     local prof="${1:-standard}"
     for n in T01 T02 T03 T04 T05; do
@@ -269,7 +269,7 @@ _DISCOVERED_GIT_HOSTS=()
 # TESTS
 # =============================================================================
 
-# - MRK:20_T01 — T01 SMB SHARE SECRET SPIDER
+# - MRK:19_T01 — T01 SMB SHARE SECRET SPIDER
 test_T01_smb_secret_spider() {
     local ev_f; ev_f="$(_ev_file "t01-smb-spider")"
 
@@ -442,7 +442,7 @@ test_T01_smb_secret_spider() {
     log_ok "  T01 complete — ${_smb_share_ctr} host(s) with enumerable shares, ${_smb_readable_ctr} readable, ${_smb_cred_ctr} credential hit(s)"
 }
 
-# - MRK:20_T02 — T02 WEB EXPOSED SENSITIVE FILES
+# - MRK:19_T02 — T02 WEB EXPOSED SENSITIVE FILES
 test_T02_web_sensitive_files() {
     local ev_f; ev_f="$(_ev_file "t02-web-sensitive")"
 
@@ -561,7 +561,7 @@ test_T02_web_sensitive_files() {
     log_ok "  T02 complete — ${_t02_hit_ctr} sensitive file(s) exposed, ${_t02_cred_ctr} with credential content"
 }
 
-# - MRK:20_T03 — T03 GIT SECRET SCAN
+# - MRK:19_T03 — T03 GIT SECRET SCAN
 test_T03_git_secret_scan() {
     local ev_f; ev_f="$(_ev_file "t03-git-secrets")"
 
@@ -752,7 +752,7 @@ test_T03_git_secret_scan() {
     log_ok "  T03 complete — ${_t03_hit_ctr} repository finding(s), ${_t03_verified_ctr} verified secret(s)"
 }
 
-# - MRK:20_T04 — T04 DEBUG ENDPOINT SECRET EXPOSURE
+# - MRK:19_T04 — T04 DEBUG ENDPOINT SECRET EXPOSURE
 test_T04_debug_endpoints() {
     local ev_f; ev_f="$(_ev_file "t04-debug-endpoints")"
 
@@ -970,7 +970,7 @@ except Exception:
     log_ok "  T04 complete — ${_t04_debug_ctr} debug endpoint(s) open, ${_t04_cred_ctr} with credentials, ${_t04_schema_ctr} API schema(s) exposed"
 }
 
-# - MRK:20_T05 — T05 EXPOSED BACKUP AND DUMP FILES
+# - MRK:19_T05 — T05 EXPOSED BACKUP AND DUMP FILES
 test_T05_backup_dump_files() {
     local ev_f; ev_f="$(_ev_file "t05-backup-dumps")"
 
@@ -1247,7 +1247,7 @@ test_T05_backup_dump_files() {
 }
 
 # =============================================================================
-# - MRK:20_TRUN
+# - MRK:19_TRUN
 # =============================================================================
 _run_tests() {
     local find_before="$_FIND_CTR"
@@ -1265,7 +1265,7 @@ _run_tests() {
 }
 
 # =============================================================================
-# - MRK:20_MAIN
+# - MRK:19_MAIN
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"

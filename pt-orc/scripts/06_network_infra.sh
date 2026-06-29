@@ -2,35 +2,35 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:17_NAV_TOC — Section index | nav,toc,index | L5-20
-# - MRK:17_T01 — T01 SNMP COMMUNITY STRING SWEEP | t01,snmp,community,sweep,onesixtyone | L21-21
-# - MRK:17_T02 — T02 NETWORK DEVICE DEFAULT CREDENTIALS SPRAY | t02,default,creds,spray,hydra,ssh,telnet | L22-22
-# - MRK:17_T03 — T03 VLAN HOPPING PROBE (DTP / 802.1Q) | t03,vlan,hopping,dtp,8021q,yersinia | L23-23
-# - MRK:17_T04 — T04 PRINTER ENUMERATION (PJL/IPP/SNMP) | t04,printer,pjl,ipp,lpd,snmp | L24-24
-# - MRK:17_T05 — T05 NETWORK SEGMENTATION VALIDATION | t05,segmentation,reachability,isolation | L25-25
+# MRK:06_NAV_TOC — Section index | nav,toc,index | L5-20
+# - MRK:06_T01 — T01 SNMP COMMUNITY STRING SWEEP | t01,snmp,community,sweep,onesixtyone | L21-21
+# - MRK:06_T02 — T02 NETWORK DEVICE DEFAULT CREDENTIALS SPRAY | t02,default,creds,spray,hydra,ssh,telnet | L22-22
+# - MRK:06_T03 — T03 VLAN HOPPING PROBE (DTP / 802.1Q) | t03,vlan,hopping,dtp,8021q,yersinia | L23-23
+# - MRK:06_T04 — T04 PRINTER ENUMERATION (PJL/IPP/SNMP) | t04,printer,pjl,ipp,lpd,snmp | L24-24
+# - MRK:06_T05 — T05 NETWORK SEGMENTATION VALIDATION | t05,segmentation,reachability,isolation | L25-25
 # NAV-LEN: 5 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-25
 
 # =============================================================================
 # 17_network_infra.sh — Network Infrastructure Security Testing
 # TechGuard Labs | PT-Orc Suite v0.8
 # =============================================================================
-# NAV: MRK:17_TOC (this block) | MRK:17_ROOT | MRK:17_CONF | MRK:17_LOG
-#      MRK:17_ARGS | MRK:17_CONFIRM | MRK:17_TARGETS
-#      MRK:17_FIND | MRK:17_UTILS | MRK:17_PROF
-#      MRK:17_T01 — T01 SNMP COMMUNITY STRING SWEEP | t01,snmp,community,sweep | L21-21
-#      MRK:17_T02 — T02 NETWORK DEVICE DEFAULT CREDENTIALS SPRAY | t02,default,creds | L22-22
-#      MRK:17_T03 — T03 VLAN HOPPING PROBE | t03,vlan,dtp | L23-23
-#      MRK:17_T04 — T04 PRINTER ENUMERATION | t04,printer,pjl | L24-24
-#      MRK:17_T05 — T05 NETWORK SEGMENTATION VALIDATION | t05,segmentation | L25-25
-#      MRK:17_TRUN | MRK:17_MAIN
+# NAV: MRK:06_TOC (this block) | MRK:06_ROOT | MRK:06_CONF | MRK:06_LOG
+#      MRK:06_ARGS | MRK:06_CONFIRM | MRK:06_TARGETS
+#      MRK:06_FIND | MRK:06_UTILS | MRK:06_PROF
+#      MRK:06_T01 — T01 SNMP COMMUNITY STRING SWEEP | t01,snmp,community,sweep | L21-21
+#      MRK:06_T02 — T02 NETWORK DEVICE DEFAULT CREDENTIALS SPRAY | t02,default,creds | L22-22
+#      MRK:06_T03 — T03 VLAN HOPPING PROBE | t03,vlan,dtp | L23-23
+#      MRK:06_T04 — T04 PRINTER ENUMERATION | t04,printer,pjl | L24-24
+#      MRK:06_T05 — T05 NETWORK SEGMENTATION VALIDATION | t05,segmentation | L25-25
+#      MRK:06_TRUN | MRK:06_MAIN
 # =============================================================================
 
-# - MRK:17_ROOT
+# - MRK:06_ROOT
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# - MRK:17_CONF
+# - MRK:06_CONF
 CONF_FILE="${SCRIPT_DIR}/pt-orc.conf"
 [[ -f "$CONF_FILE" ]] || { echo "[FATAL] pt-orc.conf not found at ${CONF_FILE}"; exit 1; }
 # shellcheck source=pt-orc.conf
@@ -52,7 +52,7 @@ NETINFRA_SPRAY_ENABLED="${NETINFRA_SPRAY_ENABLED:-0}"
 NETINFRA_VLAN_IFACE="${NETINFRA_VLAN_IFACE:-}"
 NETINFRA_SEGMENT_PROBES="${NETINFRA_SEGMENT_PROBES:-}"
 
-# - MRK:17_LOG
+# - MRK:06_LOG
 _R='\033[0;31m'; _G='\033[0;32m'; _Y='\033[1;33m'; _B='\033[0;34m'; _C='\033[0;36m'; _W='\033[1;37m'; _N='\033[0m'
 SESSION_TS="$(date +%Y%m%d_%H%M%S)"
 EV_TS="$(date +'%Y-%m-%d-%H-%M-%S')"
@@ -66,7 +66,7 @@ log_wrn() { printf "${_Y}[!]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_err() { printf "${_R}[-]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 log_dry() { printf "${_C}[DRY]${_N} %s\n" "$*" | tee -a "$LOG_FILE"; }
 
-# - MRK:17_ARGS
+# - MRK:06_ARGS
 _SKIP_CONFIRM=0
 _ONLY_TESTS=()
 _SKIP_TESTS=()
@@ -116,7 +116,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# - MRK:17_CONFIRM
+# - MRK:06_CONFIRM
 _confirm() {
     [[ "$_SKIP_CONFIRM" -eq 1 ]] && return 0
     printf "\n${_Y}[CONFIRM]${_N} Network infrastructure testing. Profile: ${_W}%s${_N}\n" "$SCAN_PROFILE"
@@ -130,7 +130,7 @@ _confirm() {
     [[ "${_ans,,}" == "y" ]] || { log_err "Aborted by user."; exit 0; }
 }
 
-# - MRK:17_TARGETS
+# - MRK:06_TARGETS
 _resolve_targets() {
     # Priority: NETINFRA_TARGETS → TARGET_SUBNETS → TARGET_IPS
     local raw=""
@@ -166,7 +166,7 @@ _validate_config() {
     return 0
 }
 
-# - MRK:17_FIND
+# - MRK:06_FIND
 FINDINGS_FILE="${SCRIPT_DIR}/working/$(ev_fname "17-netinfra-findings" "jsonl")"
 _FIND_CTR=0
 : > "$FINDINGS_FILE"
@@ -189,7 +189,7 @@ emit_finding() {
     log_wrn "FINDING [${sev^^}] ${title}"
 }
 
-# - MRK:17_UTILS
+# - MRK:06_UTILS
 _check_tool() {
     local tool="$1"
     command -v "$tool" &>/dev/null
@@ -217,7 +217,7 @@ _apply_cli_filters() {
     done
 }
 
-# - MRK:17_PROF
+# - MRK:06_PROF
 setup_profile() {
     local prof="${1:-standard}"
     for n in T01 T02 T03 T04 T05; do
@@ -244,7 +244,7 @@ setup_profile() {
 # TESTS
 # =============================================================================
 
-# - MRK:17_T01 — T01 SNMP COMMUNITY STRING SWEEP
+# - MRK:06_T01 — T01 SNMP COMMUNITY STRING SWEEP
 test_T01_snmp_sweep() {
     local ev_f; ev_f="$(_ev_file "snmp_sweep")"
     local raw_targets; raw_targets="$(_resolve_targets)"
@@ -387,7 +387,7 @@ test_T01_snmp_sweep() {
     log_ok "  [T01] SNMP sweep complete — see ${ev_f}"
 }
 
-# - MRK:17_T02 — T02 NETWORK DEVICE DEFAULT CREDENTIALS SPRAY
+# - MRK:06_T02 — T02 NETWORK DEVICE DEFAULT CREDENTIALS SPRAY
 test_T02_default_creds() {
     local ev_f; ev_f="$(_ev_file "default_creds")"
     local raw_targets; raw_targets="$(_resolve_targets)"
@@ -533,7 +533,7 @@ test_T02_default_creds() {
     log_ok "  [T02] Default credential spray complete — see ${ev_f}"
 }
 
-# - MRK:17_T03 — T03 VLAN HOPPING PROBE (DTP / 802.1Q)
+# - MRK:06_T03 — T03 VLAN HOPPING PROBE (DTP / 802.1Q)
 test_T03_vlan_hopping() {
     local ev_f; ev_f="$(_ev_file "vlan_hopping")"
     local raw_targets; raw_targets="$(_resolve_targets)"
@@ -667,7 +667,7 @@ test_T03_vlan_hopping() {
     log_ok "  [T03] VLAN hopping probe complete — see ${ev_f}"
 }
 
-# - MRK:17_T04 — T04 PRINTER ENUMERATION
+# - MRK:06_T04 — T04 PRINTER ENUMERATION
 test_T04_printer_enum() {
     local ev_f; ev_f="$(_ev_file "printer_enum")"
     local raw_targets; raw_targets="$(_resolve_targets)"
@@ -845,7 +845,7 @@ test_T04_printer_enum() {
     log_ok "  [T04] Printer enumeration complete — see ${ev_f}"
 }
 
-# - MRK:17_T05 — T05 NETWORK SEGMENTATION VALIDATION
+# - MRK:06_T05 — T05 NETWORK SEGMENTATION VALIDATION
 test_T05_segmentation() {
     local ev_f; ev_f="$(_ev_file "segmentation")"
 
@@ -951,7 +951,7 @@ test_T05_segmentation() {
 }
 
 # =============================================================================
-# - MRK:17_TRUN
+# - MRK:06_TRUN
 # =============================================================================
 _run_tests() {
     local find_before="$_FIND_CTR"
@@ -969,7 +969,7 @@ _run_tests() {
 }
 
 # =============================================================================
-# - MRK:17_MAIN
+# - MRK:06_MAIN
 # =============================================================================
 main() {
     printf "\n${_W}╔══════════════════════════════════════════════════════╗${_N}\n"

@@ -2,13 +2,13 @@
 # L1 ORC-NAV — read MRK:NAV_TOC first; fetch MRK ranges precisely (no default line count)
 # L2 NAV:v1 → ./LOCAL-INDEX.md
 
-# MRK:15_NAV_TOC — Section index | nav,toc,index | L5-38
-# - MRK:15_CONF   — CONF + LOG + AI-LIB SOURCE          | conf,log,colors,session,lib  | L39-125
-# - MRK:15_ARGS   — ARGUMENT PARSING                    | args,cli,flags,depth         | L126-185
-# - MRK:15_FIND   — EMIT CHAIN FINDING                  | finding,jsonl,emit,chain     | L186-235
-# - MRK:15_LOAD   — LOAD ALL PRIOR FINDINGS             | load,collect,findings,glob   | L236-310
-# - MRK:15_SYNTH  — AI SYNTHESIS + HEURISTIC FALLBACK   | ai,synthesis,llm,heuristic   | L311-530
-# - MRK:15_MAIN   — MAIN                                | main,entry,summary           | L531-640
+# MRK:24_NAV_TOC — Section index | nav,toc,index | L5-38
+# - MRK:24_CONF   — CONF + LOG + AI-LIB SOURCE          | conf,log,colors,session,lib  | L39-125
+# - MRK:24_ARGS   — ARGUMENT PARSING                    | args,cli,flags,depth         | L126-185
+# - MRK:24_FIND   — EMIT CHAIN FINDING                  | finding,jsonl,emit,chain     | L186-235
+# - MRK:24_LOAD   — LOAD ALL PRIOR FINDINGS             | load,collect,findings,glob   | L236-310
+# - MRK:24_SYNTH  — AI SYNTHESIS + HEURISTIC FALLBACK   | ai,synthesis,llm,heuristic   | L311-530
+# - MRK:24_MAIN   — MAIN                                | main,entry,summary           | L531-640
 # NAV-LEN: 6 entries | Integrity-hash: 0000000000000000 | Last-indexed: 2026-06-22T00:00:00Z
 
 # =============================================================================
@@ -36,7 +36,7 @@
 set -uo pipefail
 
 # =============================================================================
-# MRK:15_CONF — CONF + LOG + AI-LIB SOURCE | conf,log,colors,session,lib | L39-125
+# MRK:24_CONF — CONF + LOG + AI-LIB SOURCE | conf,log,colors,session,lib | L39-125
 # NAV-RULE: no-insert-before
 # =============================================================================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -109,7 +109,7 @@ else
 fi
 
 # =============================================================================
-# MRK:15_ARGS — ARGUMENT PARSING | args,cli,flags,depth | L126-185
+# MRK:24_ARGS — ARGUMENT PARSING | args,cli,flags,depth | L126-185
 # NAV-RULE: no-insert-before
 # =============================================================================
 usage() {
@@ -131,7 +131,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # =============================================================================
-# MRK:15_FIND — EMIT CHAIN FINDING | finding,jsonl,emit,chain | L186-235
+# MRK:24_FIND — EMIT CHAIN FINDING | finding,jsonl,emit,chain | L186-235
 # NAV-RULE: no-insert-before
 # =============================================================================
 # emit_chain_finding — write one JSONL attack chain record.
@@ -156,7 +156,7 @@ emit_chain_finding() {
 }
 
 # =============================================================================
-# MRK:15_LOAD — LOAD ALL PRIOR FINDINGS | load,collect,findings,glob | L236-310
+# MRK:24_LOAD — LOAD ALL PRIOR FINDINGS | load,collect,findings,glob | L236-310
 # NAV-RULE: no-insert-before
 # =============================================================================
 # _load_all_findings — collect JSONL from all prior step findings files.
@@ -201,7 +201,7 @@ _compact_findings_for_prompt() {
 }
 
 # =============================================================================
-# MRK:15_SYNTH — AI SYNTHESIS + HEURISTIC FALLBACK | ai,synthesis,llm,heuristic | L311-530
+# MRK:24_SYNTH — AI SYNTHESIS + HEURISTIC FALLBACK | ai,synthesis,llm,heuristic | L311-530
 # NAV-RULE: no-insert-before
 # =============================================================================
 
@@ -444,7 +444,7 @@ _emit_ai_chains() {
 }
 
 # =============================================================================
-# MRK:15_MAIN — MAIN | main,entry,summary | L531-640
+# MRK:24_MAIN — MAIN | main,entry,summary | L531-640
 # NAV-RULE: no-insert-before
 # =============================================================================
 main() {
