@@ -604,6 +604,7 @@ test_T02_sqlmap() {
     # ── Run A: URL + GET params ──────────────────────────────────────────────
     log "T02: sqlmap GET scan → ${base_url}"
     local run_a_out="${out_dir}/get_scan.txt"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     sqlmap -u "$base_url" \
         "${common_flags[@]}" \
         --crawl="$crawl_depth" \
@@ -612,6 +613,7 @@ test_T02_sqlmap() {
     # ── Run B: POST forms (explicit crawl) ───────────────────────────────────
     log "T02: sqlmap forms crawl → ${base_url}"
     local run_b_out="${out_dir}/forms_scan.txt"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     sqlmap -u "$base_url" \
         "${common_flags[@]}" \
         --forms \
@@ -621,6 +623,7 @@ test_T02_sqlmap() {
     if [[ "$DEPTH" == "deep" && -n "$OPT_FUZZ_COOKIE" ]]; then
         log "T02: sqlmap cookie injection"
         local run_c_out="${out_dir}/cookie_scan.txt"
+        timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
         sqlmap -u "$base_url" \
             "${common_flags[@]}" \
             --cookie="$OPT_FUZZ_COOKIE" \
@@ -707,6 +710,7 @@ test_T03_dalfox() {
     esac
 
     log "T03: dalfox scanning ${base_url}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     dalfox url "$base_url" "${df_flags[@]}" &>> "$LOG_FILE" || true
 
     # Parse JSON output
@@ -808,6 +812,7 @@ test_T04_nuclei() {
     esac
 
     log "T04: nuclei scanning ${base_url} | severity=${OPT_NUCLEI_SEV}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     nuclei "${n_flags[@]}" &>> "$LOG_FILE" || true
 
     # Parse JSONL findings
@@ -891,6 +896,7 @@ test_T05_commix() {
     [[ "$TIER"  == "ghost"   ]] && cx_flags+=(--delay=2)
 
     log "T05: commix scanning ${base_url}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     commix "${cx_flags[@]}" 2>&1 | tee "$out_file" | grep -iE "vuln|inject|found" &>> "$LOG_FILE" || true
 
     # Parse output for confirmed injections
@@ -941,6 +947,7 @@ test_T06_arjun() {
     [[ "$DEPTH" == "deep"    ]] && arj_flags+=(--stable)
 
     log "T06: arjun param discovery → ${base_url}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     arjun "${arj_flags[@]}" &>> "$LOG_FILE" || true
 
     # Report discovered params
@@ -993,6 +1000,7 @@ test_T07_tplmap() {
     [[ -n "$OPT_FUZZ_PROXY"  ]] && tp_flags+=(--proxy "$OPT_FUZZ_PROXY")
 
     log "T07: tplmap SSTI probing → ${probe_url}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     tplmap "${tp_flags[@]}" 2>&1 | tee "$out_file" | grep -iE "engine|inject|found|vulnerable" &>> "$LOG_FILE" || true
 
     if grep -qiE "Server Side Template Injection|engine '.*'|tplmap identified" "$out_file" 2>/dev/null; then
@@ -1045,6 +1053,7 @@ test_T08_ghauri() {
     [[ "$TIER"  == "ghost"   ]] && gh_flags+=(--delay=2)
 
     log "T08: ghauri scanning ${base_url}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     ghauri "${gh_flags[@]}" 2>&1 | tee "$out_file" | grep -iE "vulnerable|inject|found" &>> "$LOG_FILE" || true
 
     if grep -qiE "parameter '.*' is (vulnerable|injectable)|ghauri identified" "$out_file" 2>/dev/null; then
@@ -1152,6 +1161,7 @@ WORDLIST
     [[ "$TIER" == "loud"     ]] && ff_flags+=(-t 150)
 
     log "T09: ffuf LFI fuzzing → ${fuzz_url}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     ffuf "${ff_flags[@]}" &>> "$LOG_FILE" || true
 
     # Parse JSON results for hits indicating file disclosure
@@ -1213,6 +1223,7 @@ test_T10_crlfuzz() {
     [[ "$TIER" == "ghost"    ]] && crlf_flags+=(-d 2)
 
     log "T10: crlfuzz scanning ${base_url}"
+    timeout -k 30 "$FUZZ_TIMEOUT_VAL" \
     crlfuzz "${crlf_flags[@]}" 2>&1 | tee "$out_file" | grep -iE "vuln|found|inject" &>> "$LOG_FILE" || true
 
     if grep -qiE "\[VULN\]|CRLF injection found|vulnerable" "$out_file" 2>/dev/null; then

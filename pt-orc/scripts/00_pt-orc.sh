@@ -411,26 +411,26 @@ print_summary() {
         [3]="IP Analysis"
         [4]="Comprehensive Scan"
         [5]="TLS Scan"
-        [6]="Web Enumeration"
-        [7]="WPScan"
-        [8]="Service Verify"
-        [9]="App / API Review"
-        [10]="AI / LLM Review"
-        [11]="Cloud Testing"
-        [12]="AD Testing"
-        [13]="Active Fuzz"
-        [14]="Vuln Corpus"
-        [15]="Attack Chain AI"
-        [16]="Report Pack"
-        [17]="Network Infra"
+        [6]="Network Infra"
+        [7]="Wireless"
+        [8]="Web Enumeration"
+        [9]="WPScan"
+        [10]="Auth / SSO"
+        [11]="Active Fuzz"
+        [12]="Content Sec"
+        [13]="Service Verify"
+        [14]="App / API Review"
+        [15]="API Deep"
+        [16]="AI / LLM Review"
+        [17]="Cloud Testing"
         [18]="CI/CD DevOps"
-        [19]="Database Audit"
-        [20]="Secrets Scan"
+        [19]="Secrets Scan"
+        [20]="AD Testing"
         [21]="Lateral Movement"
-        [22]="Wireless"
-        [23]="Auth / SSO"
-        [24]="API Deep"
-        [25]="Content Sec"
+        [22]="Database Audit"
+        [23]="Vuln Corpus"
+        [24]="Attack Chain AI"
+        [25]="Report Pack"
     )
     local line; line="$(printf '━%.0s' {1..60})"
 
@@ -629,7 +629,6 @@ main() {
             2)
                 # OSINT Recon (02_osint.sh)
                 flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 [[ -n "${OSINT_GITHUB_TOKEN:-}" ]] && flags+=("--github-token" "$OSINT_GITHUB_TOKEN")
                 [[ -n "${HIBP_API_KEY:-}" ]]        && flags+=("--hibp-key" "$HIBP_API_KEY")
                 ;;
@@ -735,7 +734,6 @@ main() {
                 flags+=("--profile" "$TESTING_DEPTH")
                 [[ -n "${CLOUD_PROVIDER:-}"      ]] && flags+=("--provider"      "$CLOUD_PROVIDER")
                 [[ -n "${CLOUD_BUCKET_PREFIX:-}" ]] && flags+=("--bucket-prefix" "$CLOUD_BUCKET_PREFIX")
-                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
             18)
                 # CI/CD DevOps (18_cicd_devops.sh)
@@ -778,11 +776,9 @@ main() {
             23)
                 # Vuln Corpus (23_vuln_corpus.sh)
                 flags+=("--profile" "$TESTING_DEPTH" "--tier" "$GLOBAL_TIER")
-                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
             24)
                 # Attack Chain AI (24_attack_chain.sh)
-                [[ "$AUTO_YES" -eq 1 ]] && flags+=("--yes")
                 ;;
             25)
                 # Report Pack (25_report_pack.sh)

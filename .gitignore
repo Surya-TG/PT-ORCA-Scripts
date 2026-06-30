@@ -37,3 +37,6 @@ scripts/targets.txt
 
 # MSF DB spool logs
 *.log
+
+# Tool scan outputs dumped directly into scripts/ (nikto, etc.)
+pt-orc/scripts/nikto_*.txt

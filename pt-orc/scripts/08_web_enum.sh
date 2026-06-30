@@ -368,7 +368,7 @@ _test_skip() {
 _detect_tls() {
     local ip="$1" port="$2"
     echo "$TLS_PORTS" | grep -qw "$port" && echo "https" && return
-    timeout 6 bash -c "echo | openssl s_client -connect '${ip}:${port}' -servername '${ip}' 2>/dev/null | grep -q 'SSL-Session'" \
+    timeout -k 5 6 bash -c "echo | openssl s_client -connect '${ip}:${port}' -servername '${ip}' 2>/dev/null | grep -q 'SSL-Session'" \
         >/dev/null 2>&1 && echo "https" || echo "http"
 }
 
@@ -440,7 +440,7 @@ test_01_headers_fingerprint() {
     # WhatWeb fingerprint
     local whatweb_out="${ev_dir}/$(ev_fname "whatweb" "txt" "${ip}-${port}")"
     if command -v whatweb &>/dev/null && [[ "${DRY_RUN:-0}" -eq 0 ]]; then
-        timeout "$WHATWEB_TIMEOUT" whatweb --color=never \
+        timeout -k 30 "$WHATWEB_TIMEOUT" whatweb --color=never \
             -a "$(whatweb_aggression "$TIER")" "${base_url}" \
             >> "$whatweb_out" 2>&1 || true
         log_ok "T01: WhatWeb → ${whatweb_out}"
@@ -637,7 +637,7 @@ test_04_waf_detection() {
 
     # wafw00f if available
     if command -v wafw00f &>/dev/null && [[ "${DRY_RUN:-0}" -eq 0 ]]; then
-        local waf_out; waf_out=$(timeout 30 wafw00f -a "${base_url}" 2>&1 || true)
+        local waf_out; waf_out=$(timeout -k 10 30 wafw00f -a "${base_url}" 2>&1 || true)
         echo "[T04] wafw00f: ${waf_out}" >> "$evfile"
         log_info "T04: wafw00f → ${waf_out:0:100}"
         if echo "$waf_out" | grep -qiE "(detected|protected by|is behind)"; then
@@ -716,7 +716,7 @@ test_05_directory_discovery() {
             echo "# Gobuster — ${base_url}"
             echo "# Wordlist: ${WORDLIST} | Extensions: ${GOBUSTER_EXT} | Threads: ${threads}"
             echo "---"
-            timeout "$GOBUSTER_TIMEOUT" gobuster dir \
+            timeout -k 30 "$GOBUSTER_TIMEOUT" gobuster dir \
                 -u "${base_url}" \
                 -w "${WORDLIST}" \
                 -x "${GOBUSTER_EXT}" \
@@ -749,7 +749,7 @@ test_05_directory_discovery() {
         {
             echo "# ffuf — ${base_url}"
             echo "---"
-            timeout "$FFUF_TIMEOUT" ffuf \
+            timeout -k 30 "$FFUF_TIMEOUT" ffuf \
                 -u "${base_url}/FUZZ" \
                 -w "$ffuf_wl" \
                 -mc 200,201,301,302,401,403 \
@@ -790,7 +790,7 @@ test_06_nikto() {
     {
         echo "# Nikto — ${base_url}"
         echo "---"
-        timeout "$NIKTO_TIMEOUT" nikto \
+        timeout -k 30 "$NIKTO_TIMEOUT" nikto \
             -h "${ip}" \
             -p "$port" \
             "${nikto_ssl_flag[@]+"${nikto_ssl_flag[@]}"}" \

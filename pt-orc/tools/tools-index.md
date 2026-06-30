@@ -11,6 +11,7 @@
 |------|---------|----------|
 | `INDEX.md` | 1 | `TOOLS_INDEX_ENTRY` |
 | `install-skills.sh` | 5 | `INSTALL_SKILLS_SETUP`, `INSTALL_SKILLS_SELECTION`, `INSTALL_SKILLS_HELPERS` |
+| `install-tools.sh` | — | apt/go/pip/git installer for all steps 01–25 tool dependencies |
 | `README.md` | 4 | `TOOLS_README_PROTOCOL`, `TOOLS_README_RULES`, `TOOLS_README_CONFLICT` |
 
 <!-- L2 NAV:v1 → ../../AUDIT-ORC-INDEX.md -->

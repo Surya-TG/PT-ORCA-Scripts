@@ -22,6 +22,34 @@
 # Follow-up commits will migrate MSF-workspace, tier, and target helpers here.
 # =============================================================================
 
+# Evidence/output file timestamp — dash-separated for filenames.
+# Defined outside the log guard so scripts that declare their own log_ok
+# before sourcing this lib (e.g. 09_wpscan.sh) still get these helpers.
+_ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
+
+# Build a TechGuard-standard evidence filename:
+#   {project}-{profile}-{name}[-{extra}]-{YYYY-MM-DD-HH-MM-SS}.{ext}
+# Usage: ev_fname <name> <ext> [<extra>]
+# e.g.:  ev_fname nikto txt "10.0.0.1-443"
+ev_fname() {
+    local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
+    local ts; ts="${EV_TS:-$(_ev_ts)}"
+    local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
+    if [[ -n "$extra" ]]; then
+        printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
+    else
+        printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
+    fi
+}
+
+# Find the most recently modified file matching a glob in WORKING_DIR.
+# Usage: find_latest_ev "TG-test-Demo-web-targets-*.txt"
+find_latest_ev() {
+    local pattern="${1:?find_latest_ev: pattern required}"
+    local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
+    find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
+}
+
 if ! declare -F log_ok >/dev/null 2>&1; then
     [[ -z "${RED:-}"    ]] && RED='\033[0;31m'
     [[ -z "${GREEN:-}"  ]] && GREEN='\033[0;32m'
@@ -32,32 +60,6 @@ if ! declare -F log_ok >/dev/null 2>&1; then
 
     _ts()  { date +'%Y%m%d_%H%M%S'; }
     _now() { date +'%Y-%m-%d %H:%M:%S'; }
-
-    # Evidence/output file timestamp — dash-separated for filenames
-    _ev_ts() { date +'%Y-%m-%d-%H-%M-%S'; }
-
-    # Build a TechGuard-standard evidence filename:
-    #   {project}-{profile}-{name}[-{extra}]-{YYYY-MM-DD-HH-MM-SS}.{ext}
-    # Usage: ev_fname <name> <ext> [<extra>]
-    # e.g.:  ev_fname nikto txt "10.0.0.1-443"
-    ev_fname() {
-        local name="${1:?ev_fname: name required}" ext="${2:?ev_fname: ext required}" extra="${3:-}"
-        local ts; ts="${EV_TS:-$(_ev_ts)}"
-        local pfx="${PROJ_SLUG:-project}-${ENGAGEMENT_PROFILE:-web}"
-        if [[ -n "$extra" ]]; then
-            printf '%s-%s-%s-%s.%s' "$pfx" "$name" "$extra" "$ts" "$ext"
-        else
-            printf '%s-%s-%s.%s' "$pfx" "$name" "$ts" "$ext"
-        fi
-    }
-
-    # Find the most recently modified file matching a glob in WORKING_DIR.
-    # Usage: find_latest_ev "TG-test-Demo-web-targets-*.txt"
-    find_latest_ev() {
-        local pattern="${1:?find_latest_ev: pattern required}"
-        local wdir="${WORKING_DIR:-${SCRIPT_DIR:-$(pwd)}/working}"
-        find "$wdir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | sort -r | head -1
-    }
 
     log()      { local m="[$(_now)] $1";         echo -e "${BLUE}${m}${NC}"   >&2; echo "${m}" >> "${LOG_FILE:-/dev/null}" 2>/dev/null || true; }
     log_ok()   { local m="[$(_now)] [OK] $1";    echo -e "${GREEN}${m}${NC}"  >&2; echo "${m}" >> "${LOG_FILE:-/dev/null}" 2>/dev/null || true; }
