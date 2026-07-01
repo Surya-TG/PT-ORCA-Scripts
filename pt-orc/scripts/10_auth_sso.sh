@@ -21,9 +21,11 @@
 # - MRK:10_T06     — T06 SAML ASSERTION PROBES     | t06,saml,assertion,signature,wrap  | L875-972| ⚠ read-toc-first; deep-only
 # - MRK:10_T07     — T07 SESSION MANAGEMENT        | t07,session,cookie,fixation,entropy| L973-1064|⚠ read-toc-first
 # - MRK:10_T08     — T08 SSO LOGOUT & REVOCATION   | t08,logout,revoke,signout,redirect | L1065-1148|⚠ read-toc-first
-# - MRK:10_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1149-1205|⚠ no-insert-before; read-toc-first
-# - MRK:10_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1206-1330|⚠ no-insert-before; read-toc-first
-# NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
+# - MRK:10_T09     — T09 2FA/MFA BYPASS            | t09,mfa,2fa,otp,bypass,totp        | LXXXX-XXXX|⚠ read-toc-first
+# - MRK:10_T10     — T10 ACCOUNT LOCKOUT & POLICY  | t10,lockout,password,bruteforce    | LXXXX-XXXX|⚠ read-toc-first
+# - MRK:10_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | LXXXX-XXXX|⚠ no-insert-before; read-toc-first
+# - MRK:10_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | LXXXX-XXXX|⚠ no-insert-before; read-toc-first
+# NAV-LEN: 24 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-07-01
 
 # =============================================================================
 # 10_auth_sso.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
@@ -246,7 +248,7 @@ get_web_hosts_from_db() {
 confirm_scope() {
     local hosts=("$@")
     log_warn "=== SCOPE CONFIRMATION — Auth/SSO Review v1.0 ==="
-    log_warn "Profile: ${PROFILE} | Tier: ${TIER} | Tests: T01-T08"
+    log_warn "Profile: ${PROFILE} | Tier: ${TIER} | Tests: T01-T10"
     log_warn "Targets (${#hosts[@]}):"
     for h in "${hosts[@]}"; do log_warn "  → $h"; done
     [[ "${AUTO_YES:-0}" -eq 1 ]] && { log_ok "Auto-confirmed (--yes)"; return 0; }
@@ -370,14 +372,14 @@ setup_profile() {
     case "$PROFILE" in
         quick)
             # Discovery + session headers only
-            for i in 2 3 4 6 8; do _T_ENABLED[$i]=0; done
+            for i in 2 3 4 6 8 9 10; do _T_ENABLED[$i]=0; done
             ;;
         standard)
             # All except deep-only SAML assertion probes (T06)
             _T_ENABLED[6]=0
             ;;
         deep)
-            # All tests including SAML assertion probes
+            # All tests including SAML assertion probes, MFA bypass, lockout
             ;;
         *)
             log_warn "Unknown profile '${PROFILE}' — using standard"
@@ -1125,7 +1127,289 @@ test_10_t08_logout() {
 }
 
 # =============================================================================
-# MRK:10_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1149-1205
+# MRK:10_T09 — T09 2FA/MFA BYPASS | t09,mfa,2fa,otp,bypass,totp | LXXXX-XXXX
+# NAV-RULE: read-toc-first
+# =============================================================================
+
+test_10_t09_mfa_bypass() {
+    local base_url="$1" ev_dir="$2" ip="$3" port="$4"
+    local evfile="${ev_dir}/$(ev_fname "sso-t09-mfa-bypass" "txt")"
+    log "T09: 2FA/MFA Bypass Surface — ${base_url}"
+    _SUMMARY_MFA=0
+    local -a auth_args
+    mapfile -t auth_args < <(_auth_args)
+
+    {
+        echo "=== T09: 2FA/MFA Bypass Surface ==="
+        echo "Target: ${base_url}"
+        echo "Date:   $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        echo ""
+
+        # --- OTP / verification endpoint discovery ---
+        echo "--- OTP Endpoint Discovery ---"
+        local mfa_ep="" found_ep=0
+        local -a mfa_candidates=(
+            "${base_url}/api/mfa/verify"
+            "${base_url}/api/2fa/verify"
+            "${base_url}/api/totp/verify"
+            "${base_url}/auth/mfa/verify"
+            "${base_url}/auth/2fa/verify"
+            "${base_url}/verify-otp"
+            "${base_url}/api/auth/otp"
+            "${base_url}/api/v1/mfa/verify"
+            "${base_url}/api/v2/mfa/verify"
+        )
+        for ep in "${mfa_candidates[@]}"; do
+            local hc
+            hc=$(_curl -s -o /dev/null -w "%{http_code}" -X POST "$ep" \
+                -H "Content-Type: application/json" \
+                -d '{"code":"000000"}' \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            echo "  ${ep} -> HTTP ${hc}"
+            if [[ "$hc" =~ ^(200|201|400|401|403|422)$ ]]; then
+                mfa_ep="$ep"
+                found_ep=1
+                log_info "T09: MFA endpoint candidate found: ${ep} (HTTP ${hc})"
+                break
+            fi
+        done
+        [[ $found_ep -eq 0 ]] && echo "  No MFA endpoint responded — skipping brute/manipulation checks"
+
+        # --- Rate-limit brute-force check (6 sequential bad codes) ---
+        if [[ $found_ep -eq 1 ]]; then
+            echo ""
+            echo "--- OTP Rate-Limit / Lockout Probe (6 sequential invalid codes) ---"
+            local got429=0 got423=0 final_code="" code_idx
+            for code_idx in 111111 222222 333333 444444 555555 666666; do
+                local rc
+                rc=$(_curl -s -o /dev/null -w "%{http_code}" -X POST "$mfa_ep" \
+                    -H "Content-Type: application/json" \
+                    -d "{\"code\":\"${code_idx}\"}" \
+                    "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+                echo "  code=${code_idx} -> HTTP ${rc}"
+                [[ "$rc" == "429" ]] && got429=1
+                [[ "$rc" == "423" ]] && got423=1
+                final_code="$rc"
+            done
+
+            if [[ $got429 -eq 0 && $got423 -eq 0 ]]; then
+                _SUMMARY_MFA=1
+                emit_finding "MEDIUM" \
+                    "MFA OTP — No Rate-Limiting Detected" \
+                    "The MFA verification endpoint ${mfa_ep} accepted 6 sequential bad OTP codes without returning HTTP 429 (Too Many Requests) or 423 (Locked). Last response code: ${final_code}. An attacker with a valid session token could brute-force time-based OTP codes (1,000,000 possibilities) without throttling." \
+                    "Implement per-session OTP attempt throttling (≤5 attempts), exponential backoff, and account lockout after threshold breaches. Log and alert on excessive MFA failures." \
+                    "mfa-ratelimit"
+            else
+                log_ok "T09: Rate-limiting observed (got 429/423) — brute-force mitigated"
+                echo "  PASS: rate-limit enforced"
+            fi
+        fi
+
+        # --- Response manipulation surface check ---
+        if [[ $found_ep -eq 1 ]]; then
+            echo ""
+            echo "--- Response Manipulation Surface Check ---"
+            local resp_body hc2
+            resp_body=$(_curl -s -w "\n%{http_code}" -X POST "$mfa_ep" \
+                -H "Content-Type: application/json" \
+                -d '{"code":"000000"}' \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            hc2=$(echo "$resp_body" | tail -1)
+            local body_only
+            body_only=$(echo "$resp_body" | head -n -1)
+            echo "  HTTP ${hc2}"
+            echo "  Body (first 400 chars): ${body_only:0:400}"
+
+            if echo "$body_only" | grep -qiE '"success"\s*:\s*false|"verified"\s*:\s*false|"valid"\s*:\s*false|"authenticated"\s*:\s*false'; then
+                _SUMMARY_MFA=1
+                emit_finding "HIGH" \
+                    "MFA Response Contains Boolean Success Flag — Manipulation Surface" \
+                    "The MFA endpoint at ${mfa_ep} returns a JSON boolean flag (success/verified/valid/authenticated: false) on failure. This pattern is susceptible to client-side response manipulation or proxy interception where an attacker intercepts the response and flips the flag to true, bypassing MFA entirely without knowing the correct OTP." \
+                    "Validate MFA status server-side via session state. Do not rely on client-submitted or easily intercepted boolean flags. Issue a signed, server-side token only after verified OTP validation." \
+                    "mfa-respmanip"
+            else
+                log_ok "T09: No obvious boolean flag in MFA response body"
+            fi
+        fi
+
+        # --- Backup code endpoint exposure check ---
+        echo ""
+        echo "--- Backup Code Endpoint Exposure ---"
+        local -a backup_candidates=(
+            "${base_url}/api/mfa/backup-codes"
+            "${base_url}/api/2fa/backup"
+            "${base_url}/api/auth/recovery-codes"
+            "${base_url}/api/account/backup-codes"
+            "${base_url}/auth/recovery"
+            "${base_url}/api/v1/mfa/recovery"
+        )
+        local backup_exposed=0
+        for ep in "${backup_candidates[@]}"; do
+            local hc
+            hc=$(_curl -s -o /dev/null -w "%{http_code}" -X GET "$ep" \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            echo "  GET ${ep} -> HTTP ${hc}"
+            if [[ "$hc" =~ ^(200|201)$ ]]; then
+                backup_exposed=1
+                _SUMMARY_MFA=1
+                emit_finding "MEDIUM" \
+                    "Backup/Recovery Code Endpoint Accessible Without Re-Auth" \
+                    "The backup code endpoint ${ep} returned HTTP ${hc} without requiring step-up authentication or re-confirmation of credentials. Exposed backup codes allow permanent MFA bypass if the primary credential is compromised." \
+                    "Require full re-authentication (password + primary factor) before displaying or regenerating backup/recovery codes. Apply rate-limiting and audit logging to this endpoint." \
+                    "mfa-backupcodes"
+                break
+            fi
+        done
+        [[ $backup_exposed -eq 0 ]] && log_ok "T09: No backup code endpoints returned 200/201 unauthenticated"
+
+        echo ""
+        echo "=== T09 COMPLETE — Summary flag: ${_SUMMARY_MFA} ==="
+    } | tee -a "$evfile" >&2
+
+    [[ "${_SUMMARY_MFA:-0}" -eq 0 ]] && log_ok "T09: No 2FA/MFA bypass surface detected in automated probes"
+}
+
+# =============================================================================
+# MRK:10_T10 — T10 ACCOUNT LOCKOUT & PASSWORD POLICY | t10,lockout,password,bruteforce | LXXXX-XXXX
+# NAV-RULE: read-toc-first
+# =============================================================================
+
+test_10_t10_account_lockout() {
+    local base_url="$1" ev_dir="$2" ip="$3" port="$4"
+    local evfile="${ev_dir}/$(ev_fname "sso-t10-account-lockout" "txt")"
+    log "T10: Account Lockout & Password Policy — ${base_url}"
+    _SUMMARY_LOCKOUT=0
+    local -a auth_args
+    mapfile -t auth_args < <(_auth_args)
+
+    {
+        echo "=== T10: Account Lockout & Password Policy ==="
+        echo "Target: ${base_url}"
+        echo "Date:   $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        echo ""
+
+        # --- Login endpoint discovery ---
+        echo "--- Login Endpoint Discovery ---"
+        local login_ep="" found_login=0
+        local -a login_candidates=(
+            "${base_url}/api/auth/login"
+            "${base_url}/api/login"
+            "${base_url}/api/v1/auth/login"
+            "${base_url}/api/v2/auth/login"
+            "${base_url}/auth/login"
+            "${base_url}/login"
+            "${base_url}/api/session"
+            "${base_url}/api/auth/signin"
+            "${base_url}/api/signin"
+        )
+        for ep in "${login_candidates[@]}"; do
+            local hc
+            hc=$(_curl -s -o /dev/null -w "%{http_code}" -X POST "$ep" \
+                -H "Content-Type: application/json" \
+                -d '{"username":"probe_orc_test_user","password":"WrongPass1!"}' \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            echo "  ${ep} -> HTTP ${hc}"
+            if [[ "$hc" =~ ^(200|400|401|403|422|429)$ ]]; then
+                login_ep="$ep"
+                found_login=1
+                log_info "T10: Login endpoint candidate: ${ep} (HTTP ${hc})"
+                break
+            fi
+        done
+
+        if [[ $found_login -eq 0 ]]; then
+            echo "  No login endpoint responded with recognisable code — skipping lockout probe"
+        fi
+
+        # --- Account lockout probe (8 failed attempts against nonexistent user) ---
+        if [[ $found_login -eq 1 ]]; then
+            echo ""
+            echo "--- Account Lockout Probe (8 failed attempts, nonexistent user) ---"
+            local got_lockout=0 attempt
+            for attempt in 1 2 3 4 5 6 7 8; do
+                local rc
+                rc=$(_curl -s -o /dev/null -w "%{http_code}" -X POST "$login_ep" \
+                    -H "Content-Type: application/json" \
+                    -d "{\"username\":\"orc_probe_nonexistent_x77z@probe.orc\",\"password\":\"WrongPass${attempt}!Orc\",\"email\":\"orc_probe@probe.orc\"}" \
+                    "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+                echo "  attempt=${attempt} -> HTTP ${rc}"
+                if [[ "$rc" =~ ^(423|429)$ ]]; then
+                    got_lockout=1
+                    log_ok "T10: Lockout/rate-limit triggered after ${attempt} attempts (HTTP ${rc})"
+                    break
+                fi
+            done
+
+            if [[ $got_lockout -eq 0 ]]; then
+                _SUMMARY_LOCKOUT=1
+                emit_finding "MEDIUM" \
+                    "No Account Lockout After 8 Failed Login Attempts" \
+                    "The login endpoint ${login_ep} accepted 8 sequential failed authentication attempts without returning HTTP 423 (Locked) or 429 (Too Many Requests). The absence of account lockout or progressive rate-limiting enables credential-stuffing and online brute-force attacks against valid accounts." \
+                    "Implement account lockout (e.g., soft-lock for 15 minutes after 5 failures) or progressive CAPTCHA challenges. Apply per-IP and per-account rate-limiting. Log and alert on repeated authentication failures." \
+                    "lockout-absent"
+            fi
+        fi
+
+        # --- Username enumeration via HTTP status delta ---
+        if [[ $found_login -eq 1 ]]; then
+            echo ""
+            echo "--- Username Enumeration via HTTP Status Delta ---"
+            local rc_existing rc_nonexistent
+            rc_existing=$(_curl -s -o /dev/null -w "%{http_code}" -X POST "$login_ep" \
+                -H "Content-Type: application/json" \
+                -d '{"username":"admin","password":"OrcProbeWrong!9z3"}' \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            rc_nonexistent=$(_curl -s -o /dev/null -w "%{http_code}" -X POST "$login_ep" \
+                -H "Content-Type: application/json" \
+                -d '{"username":"orc_does_not_exist_88qqz","password":"OrcProbeWrong!9z3"}' \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            echo "  admin (likely exists):       HTTP ${rc_existing}"
+            echo "  nonexistent_user:            HTTP ${rc_nonexistent}"
+
+            if [[ "$rc_existing" != "$rc_nonexistent" ]]; then
+                _SUMMARY_LOCKOUT=1
+                emit_finding "LOW" \
+                    "Username Enumeration via Distinct HTTP Response Codes" \
+                    "The login endpoint ${login_ep} returns HTTP ${rc_existing} for a plausible username ('admin') and HTTP ${rc_nonexistent} for a random nonexistent username. Differing status codes allow attackers to enumerate valid usernames prior to targeted credential attacks." \
+                    "Return a uniform HTTP status (401 Unauthorized) for all failed authentication attempts regardless of whether the username exists. Avoid response body or timing differences that distinguish valid from invalid usernames." \
+                    "username-enum"
+            else
+                log_ok "T10: Same HTTP code (${rc_existing}) for existing and nonexistent users — enumeration mitigated at status level"
+            fi
+        fi
+
+        # --- CAPTCHA / human-check surface note ---
+        if [[ $found_login -eq 1 ]]; then
+            echo ""
+            echo "--- CAPTCHA Surface Check ---"
+            local login_body
+            login_body=$(_curl -s -X POST "$login_ep" \
+                -H "Content-Type: application/json" \
+                -d '{"username":"orc_captcha_probe","password":"OrcProbe1!"}' \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null | head -c 800 || true)
+            echo "  Body excerpt: ${login_body:0:400}"
+            if echo "$login_body" | grep -qiE 'captcha|recaptcha|hcaptcha|turnstile|cf-challenge'; then
+                log_ok "T10: CAPTCHA challenge mechanism detected in login response"
+                echo "  CAPTCHA: PRESENT"
+            else
+                echo "  CAPTCHA: not detected in response body (may be JS-rendered)"
+                emit_finding "INFO" \
+                    "No CAPTCHA Detected on Login Endpoint (Automated Probe)" \
+                    "The login endpoint ${login_ep} did not return CAPTCHA challenge indicators in the response body during automated probe. If CAPTCHA is not enforced server-side, automated credential-stuffing attacks are not mitigated by a human-verification gate. Note: JS-rendered CAPTCHA may not be visible to this probe." \
+                    "Ensure server-side CAPTCHA validation (reCAPTCHA v3, hCaptcha, or Cloudflare Turnstile) is enforced on the login endpoint and is not bypassable by omitting the CAPTCHA token. Test with an empty or missing captcha field." \
+                    "lockout-captcha"
+            fi
+        fi
+
+        echo ""
+        echo "=== T10 COMPLETE — Summary flag: ${_SUMMARY_LOCKOUT} ==="
+    } | tee -a "$evfile" >&2
+
+    [[ "${_SUMMARY_LOCKOUT:-0}" -eq 0 ]] && log_ok "T10: No account lockout or enumeration issues detected in automated probes"
+}
+
+# =============================================================================
+# MRK:10_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1161,22 +1445,25 @@ test_target() {
     _OAUTH_DETECTED=0; _OAUTH_TOKEN_URL=""; _OAUTH_AUTHORIZE_EP=""; _OIDC_DISCOVERY_DOC=""
     _SUMMARY_OAUTH=0; _SUMMARY_FLOW=0; _SUMMARY_TOKEN=0
     _SUMMARY_SAML=0; _SUMMARY_SESSION=0; _SUMMARY_LOGOUT=0
+    _SUMMARY_MFA=0; _SUMMARY_LOCKOUT=0
     _FIND_AT_START="${_FIND_CTR}"
 
     # Dispatch tests — pattern: _test_skip N || test_10_tNN_*()
-    _test_skip 1 || test_10_t01_discovery     "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 2 || test_10_t02_oauth_flow    "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 3 || test_10_t03_token_abuse   "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 4 || test_10_t04_oidc          "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 5 || test_10_t05_saml_discovery "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 6 || test_10_t06_saml_probes   "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 7 || test_10_t07_session       "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 8 || test_10_t08_logout        "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 1  || test_10_t01_discovery      "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 2  || test_10_t02_oauth_flow     "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 3  || test_10_t03_token_abuse    "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 4  || test_10_t04_oidc           "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 5  || test_10_t05_saml_discovery "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 6  || test_10_t06_saml_probes    "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 7  || test_10_t07_session        "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 8  || test_10_t08_logout         "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 9  || test_10_t09_mfa_bypass     "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 10 || test_10_t10_account_lockout "$base_url" "$ev_dir" "$ip" "$port"
 
     local target_finds=$(( _FIND_CTR - _FIND_AT_START ))
     log_ok "Target ${base_url} complete — ${target_finds} finding(s)"
 
-    echo "SUMMARY_ROW|${ip}|${port}|${target_finds}|${_SUMMARY_OAUTH}|${_SUMMARY_FLOW}|${_SUMMARY_TOKEN}|${_SUMMARY_SAML}|${_SUMMARY_SESSION}|${_SUMMARY_LOGOUT}"
+    echo "SUMMARY_ROW|${ip}|${port}|${target_finds}|${_SUMMARY_OAUTH}|${_SUMMARY_FLOW}|${_SUMMARY_TOKEN}|${_SUMMARY_SAML}|${_SUMMARY_SESSION}|${_SUMMARY_LOGOUT}|${_SUMMARY_MFA}|${_SUMMARY_LOCKOUT}"
 }
 
 # =============================================================================
@@ -1220,7 +1507,7 @@ main() {
         echo "# Auth/SSO Review Summary — ${PROJECT_NAME:-unknown}"
         echo ""
         echo "**Date:** $(date +'%Y-%m-%d %H:%M:%S')"
-        echo "**Profile:** ${PROFILE} | **Tier:** ${TIER} | **Tests:** T01-T08"
+        echo "**Profile:** ${PROFILE} | **Tier:** ${TIER} | **Tests:** T01-T10"
         echo "**Targets:** ${#targets[@]}"
         [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && echo "**Proxy:** ${CURL_PROXY_ARGS[*]}"
         [[ -n "${OAUTH_CLIENT_ID:-}"  ]] && echo "**OAuth client_id:** ${OAUTH_CLIENT_ID}"
@@ -1237,20 +1524,24 @@ main() {
         echo "| T06 | SAML 2.0 §5 | SAML Assertion Probes (deep) | $([ "${_T_ENABLED[6]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped (deep only)") |"
         echo "| T07 | OWASP A02 | Session Management | $([ "${_T_ENABLED[7]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo "| T08 | RFC 7009 | SSO Logout & Token Revocation | $([ "${_T_ENABLED[8]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
+        echo "| T09 | OWASP WSTG-AUTHN-06 | 2FA/MFA Bypass Surface | $([ "${_T_ENABLED[9]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
+        echo "| T10 | OWASP WSTG-AUTHN-03 | Account Lockout & Password Policy | $([ "${_T_ENABLED[10]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo ""
         echo "## Per-Target Results"
         echo ""
-        echo "| Host | Port | Findings | OAuth EP | Flow Vulns | Token Abuse | SAML | Session | Logout |"
-        echo "|------|------|----------|----------|------------|-------------|------|---------|--------|"
+        echo "| Host | Port | Findings | OAuth EP | Flow Vulns | Token Abuse | SAML | Session | Logout | MFA | Lockout |"
+        echo "|------|------|----------|----------|------------|-------------|------|---------|--------|-----|---------|"
         for row in "${summary_rows[@]+"${summary_rows[@]}"}"; do
-            IFS='|' read -r _ rip rport rfinds roauth rflow rtoken rsaml rsess rlogout <<< "$row"
+            IFS='|' read -r _ rip rport rfinds roauth rflow rtoken rsaml rsess rlogout rmfa rlock <<< "$row"
             local fo; fo="$( [[ "${roauth:-0}"   -eq 1 ]] && echo "⚠ Yes"  || echo "—")"
             local ff; ff="$( [[ "${rflow:-0}"    -eq 1 ]] && echo "⚠ Yes"  || echo "OK")"
             local ft; ft="$( [[ "${rtoken:-0}"   -eq 1 ]] && echo "⚠ Yes"  || echo "OK")"
             local fs; fs="$( [[ "${rsaml:-0}"    -eq 1 ]] && echo "⚠ Yes"  || echo "—")"
             local fse; fse="$([[ "${rsess:-0}"   -eq 1 ]] && echo "⚠ Yes"  || echo "OK")"
             local fl; fl="$( [[ "${rlogout:-0}"  -eq 1 ]] && echo "⚠ Yes"  || echo "OK")"
-            echo "| ${rip} | ${rport} | ${rfinds} | ${fo} | ${ff} | ${ft} | ${fs} | ${fse} | ${fl} |"
+            local fmfa; fmfa="$([[ "${rmfa:-0}"  -eq 1 ]] && echo "⚠ Yes"  || echo "OK")"
+            local flock; flock="$([[ "${rlock:-0}" -eq 1 ]] && echo "⚠ Yes" || echo "OK")"
+            echo "| ${rip} | ${rport} | ${rfinds} | ${fo} | ${ff} | ${ft} | ${fs} | ${fse} | ${fl} | ${fmfa} | ${flock} |"
         done
         echo ""
         echo "## Total Findings: ${_FIND_CTR}"

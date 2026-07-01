@@ -21,9 +21,10 @@
 # - MRK:12_T06     — T06 HEADER INFO DISCLOSURE    | t06,header,debug,xaspnet,runtime   | L866-945 | ⚠ read-toc-first
 # - MRK:12_T07     — T07 COOKIE SECURITY DEEP      | t07,cookie,samesite,host,domain    | L946-1045|⚠ read-toc-first
 # - MRK:12_T08     — T08 MIXED CONTENT             | t08,mixed,http,active,passive      | L1046-1120|⚠ read-toc-first; deep-only
-# - MRK:12_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | L1121-1175|⚠ no-insert-before; read-toc-first
-# - MRK:12_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | L1176-1320|⚠ no-insert-before; read-toc-first
-# NAV-LEN: 22 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-06-27
+# - MRK:12_T09     — T09 WEB CACHE POISONING       | t09,cache,poison,unkeyed,header    | LXXXX-XXXX|⚠ read-toc-first; deep-only
+# - MRK:12_TRUN    — PER-TARGET DISPATCHER         | trun,target,dispatcher,test        | LXXXX-XXXX|⚠ no-insert-before; read-toc-first
+# - MRK:12_MAIN    — MAIN ENTRY POINT              | main,entry,point,summary           | LXXXX-XXXX|⚠ no-insert-before; read-toc-first
+# NAV-LEN: 23 entries | Integrity-hash: NEEDS-REINDEX | Last-indexed: 2026-07-01
 
 # =============================================================================
 # 12_content_sec.sh — TechGuard. [VAPT-Advanced v1.0 — 2026-06-27]
@@ -230,7 +231,7 @@ _get_web_hosts_csv() {
 confirm_scope() {
     local hosts=("$@")
     log_warn "=== SCOPE CONFIRMATION — Content Security Review v1.0 ==="
-    log_warn "Profile: ${PROFILE} | Tier: ${TIER} | Tests: T01-T08"
+    log_warn "Profile: ${PROFILE} | Tier: ${TIER} | Tests: T01-T09"
     log_warn "Targets (${#hosts[@]}):"
     for h in "${hosts[@]}"; do log_warn "  → $h"; done
     [[ "${AUTO_YES:-0}" -eq 1 ]] && { log_ok "Auto-confirmed (--yes)"; return 0; }
@@ -360,18 +361,18 @@ setup_profile() {
     case "$PROFILE" in
         quick)
             # T01 (CSP), T05 (cache), T06 (header info) — fast, header-only reads
-            for i in 2 3 4 7 8; do _T_ENABLED[$i]=0; done
+            for i in 2 3 4 7 8 9; do _T_ENABLED[$i]=0; done
             ;;
         standard)
-            # All except T08 (mixed content — fetches + HTML parsing)
-            _T_ENABLED[8]=0
+            # All except deep-only tests (T08 mixed content, T09 cache poisoning)
+            _T_ENABLED[8]=0; _T_ENABLED[9]=0
             ;;
         deep)
-            # All 8 tests enabled
+            # All 9 tests enabled
             ;;
         *)
             log_warn "Unknown profile '${PROFILE}' — using standard"
-            _T_ENABLED[8]=0
+            _T_ENABLED[8]=0; _T_ENABLED[9]=0
             ;;
     esac
     for s in "${SKIP_TESTS[@]+"${SKIP_TESTS[@]}"}"; do _T_ENABLED[$s]=0; done
@@ -1132,7 +1133,160 @@ test_12_t08_mixed() {
 }
 
 # =============================================================================
-# MRK:12_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | L1121-1175
+# MRK:12_T09 — T09 WEB CACHE POISONING | t09,cache,poison,unkeyed,header | LXXXX-XXXX
+# NAV-RULE: read-toc-first; deep-only
+# =============================================================================
+
+test_12_t09_cache_poison() {
+    local base_url="$1" ev_dir="$2" ip="$3" port="$4"
+    local evfile="${ev_dir}/$(ev_fname "contentsec-t09-cache-poison" "txt")"
+    log "T09: Web Cache Poisoning — ${base_url}"
+    _SUMMARY_CACHEP=0
+    local -a auth_args
+    mapfile -t auth_args < <(_auth_args)
+    local probe_id="orcprobe$$"
+
+    {
+        echo "=== T09: Web Cache Poisoning ==="
+        echo "Target:   ${base_url}"
+        echo "Date:     $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        echo "ProbeID:  ${probe_id}"
+        echo ""
+
+        # --- Unkeyed request-header injection ---
+        echo "--- Unkeyed Header Injection Probes ---"
+        declare -A unkeyed_headers=(
+            ["X-Forwarded-Host"]="${probe_id}.orc.test"
+            ["X-Forwarded-Scheme"]="http"
+            ["X-Original-URL"]="/${probe_id}"
+            ["X-Rewrite-URL"]="/${probe_id}"
+            ["X-Host"]="${probe_id}.orc.test"
+            ["X-Forwarded-Server"]="${probe_id}.orc.test"
+            ["X-HTTP-Method-Override"]="GET"
+        )
+        local header_poison=0
+        for hdr in "${!unkeyed_headers[@]}"; do
+            local val="${unkeyed_headers[$hdr]}"
+            local resp_body hc
+            resp_body=$(_curl -s -w "\n%{http_code}" -X GET "$base_url" \
+                -H "${hdr}: ${val}" \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null | head -c 4000 || true)
+            hc=$(echo "$resp_body" | tail -1)
+            local body_only
+            body_only=$(echo "$resp_body" | head -n -1)
+            echo "  Header: ${hdr}: ${val}"
+            echo "  HTTP ${hc} | Body reflects probe: $(echo "$body_only" | grep -c "${probe_id}" || true) occurrence(s)"
+
+            if echo "$body_only" | grep -qF "${probe_id}"; then
+                header_poison=1
+                _SUMMARY_CACHEP=1
+                emit_finding "HIGH" \
+                    "Web Cache Poisoning — Unkeyed Header Reflected: ${hdr}" \
+                    "The response body reflected the value of the ${hdr} header (probe: ${val}) on ${base_url}. If the response is cached without including ${hdr} in the cache key, an attacker can poison the cache entry by supplying a malicious value (e.g., an attacker-controlled host), causing all subsequent visitors to receive the poisoned response. This can lead to credential theft, XSS delivery, or open-redirect exploitation at scale." \
+                    "Include all headers that influence the response in the cache key (Vary: ${hdr}). Alternatively, strip or reject unrecognised forwarding headers at the CDN/load-balancer tier before they reach origin servers." \
+                    "cache-poison-hdr-${hdr,,}"
+            fi
+        done
+        [[ $header_poison -eq 0 ]] && log_ok "T09: No unkeyed header reflection detected"
+
+        # --- Unkeyed query-parameter reflection ---
+        echo ""
+        echo "--- Unkeyed Query-Parameter Reflection ---"
+        local -a utm_params=(utm_source utm_medium utm_campaign fbclid gclid _ cb v)
+        local param_poison=0
+        for param in "${utm_params[@]}"; do
+            local qurl="${base_url}?${param}=${probe_id}"
+            local resp_body hc
+            resp_body=$(_curl -s -w "\n%{http_code}" -X GET "$qurl" \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null | head -c 4000 || true)
+            hc=$(echo "$resp_body" | tail -1)
+            local body_only
+            body_only=$(echo "$resp_body" | head -n -1)
+            echo "  Param: ${param}=${probe_id} -> HTTP ${hc} | Reflects: $(echo "$body_only" | grep -c "${probe_id}" || true)"
+
+            if echo "$body_only" | grep -qF "${probe_id}"; then
+                param_poison=1
+                _SUMMARY_CACHEP=1
+                emit_finding "MEDIUM" \
+                    "Web Cache Poisoning — Unkeyed Query Parameter Reflected: ${param}" \
+                    "The response body reflected the value of query parameter '${param}' (probe: ${probe_id}) on ${base_url}. Caching proxies commonly strip tracking parameters (utm_*, fbclid, gclid) from cache keys while the origin still reflects them. An attacker can poison the shared cache entry for the clean URL by first requesting it with a malicious parameter value (e.g., javascript: URI), affecting all subsequent users who request the unparameterised URL." \
+                    "Configure the CDN/cache to normalise query strings and exclude tracking parameters from cache keys only when those parameters do not influence the response content. If they do influence the response, ensure they are included in the Vary header or cache key." \
+                    "cache-poison-param-${param}"
+            fi
+        done
+        [[ $param_poison -eq 0 ]] && log_ok "T09: No unkeyed query-parameter reflection detected"
+
+        # --- Host header poisoning at password-reset endpoint ---
+        echo ""
+        echo "--- Host Header Poisoning at Password-Reset Endpoint ---"
+        local -a reset_candidates=(
+            "${base_url}/forgot-password"
+            "${base_url}/password-reset"
+            "${base_url}/api/auth/forgot-password"
+            "${base_url}/api/password-reset"
+            "${base_url}/api/v1/auth/forgot-password"
+            "${base_url}/account/password-reset"
+        )
+        local reset_poison=0
+        for ep in "${reset_candidates[@]}"; do
+            local hc
+            hc=$(_curl -s -o /dev/null -w "%{http_code}" -X POST "$ep" \
+                -H "Host: ${probe_id}.orc.test" \
+                -H "Content-Type: application/json" \
+                -d '{"email":"probe@orc.test"}' \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            echo "  POST ${ep} with spoofed Host -> HTTP ${hc}"
+            if [[ "$hc" =~ ^(200|201|202|302)$ ]]; then
+                reset_poison=1
+                _SUMMARY_CACHEP=1
+                emit_finding "HIGH" \
+                    "Host Header Injection — Password-Reset Endpoint Accepted Spoofed Host" \
+                    "The password-reset endpoint ${ep} returned HTTP ${hc} when sent a spoofed Host header (${probe_id}.orc.test). If the application uses the Host header to construct the reset link sent via email, an attacker can manipulate the link so that when the victim clicks it, the reset token is sent to an attacker-controlled domain (password-reset poisoning)." \
+                    "Use an absolute base URL from server-side configuration (not the Host header) when constructing password-reset links. Validate and reject requests with Host headers that do not match the application's configured domain(s) at the load balancer or application layer." \
+                    "cache-poison-host-reset"
+                break
+            fi
+        done
+        [[ $reset_poison -eq 0 ]] && log_ok "T09: Password-reset endpoint did not accept spoofed Host header (or endpoint not found)"
+
+        # --- Cache deception path confusion ---
+        echo ""
+        echo "--- Cache Deception Path Confusion ---"
+        local -a deception_paths=(
+            "${base_url}/profile/${probe_id}.css"
+            "${base_url}/account/${probe_id}.js"
+            "${base_url}/dashboard/${probe_id}.png"
+            "${base_url}/settings/${probe_id}.jpg"
+            "${base_url}/api/user/${probe_id}.css"
+        )
+        local deception_found=0
+        for dp in "${deception_paths[@]}"; do
+            local hc
+            hc=$(_curl -s -o /dev/null -w "%{http_code}" -X GET "$dp" \
+                "${auth_args[@]+"${auth_args[@]}"}" 2>/dev/null || true)
+            echo "  GET ${dp} -> HTTP ${hc}"
+            if [[ "$hc" =~ ^(200|301|302)$ ]]; then
+                deception_found=1
+                _SUMMARY_CACHEP=1
+                emit_finding "MEDIUM" \
+                    "Potential Web Cache Deception — Authenticated Resource Served on Static-Extension Path" \
+                    "The path ${dp} (a static file extension appended to an authenticated resource path) returned HTTP ${hc}. Cache deception occurs when a caching proxy stores authenticated user-specific content because the path appears to be a static asset. An attacker who can trick an authenticated victim into visiting this URL could then retrieve the cached, authenticated response without credentials." \
+                    "Configure the CDN/cache to not cache responses based on path extension alone. Enforce Cache-Control: no-store on all authenticated resource responses regardless of URL. Apply authentication checks to all routes, including those ending in common static extensions." \
+                    "cache-deception-${hc}"
+                break
+            fi
+        done
+        [[ $deception_found -eq 0 ]] && log_ok "T09: No cache deception surface detected on static-extension paths"
+
+        echo ""
+        echo "=== T09 COMPLETE — Summary flag: ${_SUMMARY_CACHEP} ==="
+    } | tee -a "$evfile" >&2
+
+    [[ "${_SUMMARY_CACHEP:-0}" -eq 0 ]] && log_ok "T09: No web cache poisoning surface detected in automated probes"
+}
+
+# =============================================================================
+# MRK:12_TRUN — PER-TARGET DISPATCHER | trun,target,dispatcher,test | LXXXX-XXXX
 # NAV-RULE: no-insert-before; read-toc-first
 # =============================================================================
 
@@ -1164,23 +1318,24 @@ test_target() {
     _CSP_HEADER=""; _MAIN_HTML=""
     _SUMMARY_CSP=0; _SUMMARY_SRI=0;         _SUMMARY_CLICKJACK=0
     _SUMMARY_CROSSORIGIN=0; _SUMMARY_CACHE=0; _SUMMARY_HDRINFO=0
-    _SUMMARY_COOKIE=0; _SUMMARY_MIXED=0
+    _SUMMARY_COOKIE=0; _SUMMARY_MIXED=0; _SUMMARY_CACHEP=0
     _FIND_AT_START="${_FIND_CTR}"
 
     # Dispatch tests
-    _test_skip 1 || test_12_t01_csp         "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 2 || test_12_t02_sri         "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 3 || test_12_t03_clickjack   "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 4 || test_12_t04_crossorigin "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 5 || test_12_t05_cache       "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 6 || test_12_t06_hdrinfo     "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 7 || test_12_t07_cookie      "$base_url" "$ev_dir" "$ip" "$port"
-    _test_skip 8 || test_12_t08_mixed       "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 1 || test_12_t01_csp          "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 2 || test_12_t02_sri          "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 3 || test_12_t03_clickjack    "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 4 || test_12_t04_crossorigin  "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 5 || test_12_t05_cache        "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 6 || test_12_t06_hdrinfo      "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 7 || test_12_t07_cookie       "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 8 || test_12_t08_mixed        "$base_url" "$ev_dir" "$ip" "$port"
+    _test_skip 9 || test_12_t09_cache_poison "$base_url" "$ev_dir" "$ip" "$port"
 
     local target_finds=$(( _FIND_CTR - _FIND_AT_START ))
     log_ok "Target ${base_url} complete — ${target_finds} finding(s)"
 
-    echo "SUMMARY_ROW|${ip}|${port}|${target_finds}|${_SUMMARY_CSP}|${_SUMMARY_SRI}|${_SUMMARY_CLICKJACK}|${_SUMMARY_CROSSORIGIN}|${_SUMMARY_CACHE}|${_SUMMARY_HDRINFO}|${_SUMMARY_COOKIE}|${_SUMMARY_MIXED}"
+    echo "SUMMARY_ROW|${ip}|${port}|${target_finds}|${_SUMMARY_CSP}|${_SUMMARY_SRI}|${_SUMMARY_CLICKJACK}|${_SUMMARY_CROSSORIGIN}|${_SUMMARY_CACHE}|${_SUMMARY_HDRINFO}|${_SUMMARY_COOKIE}|${_SUMMARY_MIXED}|${_SUMMARY_CACHEP}"
 }
 
 # =============================================================================
@@ -1223,7 +1378,7 @@ main() {
         echo "# Content Security Review Summary — ${PROJECT_NAME:-unknown}"
         echo ""
         echo "**Date:** $(date +'%Y-%m-%d %H:%M:%S')"
-        echo "**Profile:** ${PROFILE} | **Tier:** ${TIER} | **Tests:** T01-T08"
+        echo "**Profile:** ${PROFILE} | **Tier:** ${TIER} | **Tests:** T01-T09"
         echo "**Targets:** ${#targets[@]}"
         [[ "${#CURL_PROXY_ARGS[@]}" -gt 0 ]] && echo "**Proxy:** ${CURL_PROXY_ARGS[*]}"
         echo ""
@@ -1239,22 +1394,24 @@ main() {
         echo "| T06 | Headers | Debug token / ASP.NET / Via / traceparent | quick+ | $([ "${_T_ENABLED[6]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo "| T07 | Cookies | __Secure-/__Host- prefix / Domain scope / Max-Age | standard+ | $([ "${_T_ENABLED[7]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped") |"
         echo "| T08 | Mixed Content | HTTP assets on HTTPS pages | deep only | $([ "${_T_ENABLED[8]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped (deep only)") |"
+        echo "| T09 | Cache Poisoning | Unkeyed header/param injection, host poisoning, deception | deep only | $([ "${_T_ENABLED[9]:-1}" -eq 1 ] && echo "✓ Run" || echo "— Skipped (deep only)") |"
         echo ""
         echo "## Per-Target Results"
         echo ""
-        echo "| Host | Port | Finds | CSP | SRI | Clickjack | CrossOrigin | Cache | HdrInfo | Cookie | Mixed |"
-        echo "|------|------|-------|-----|-----|-----------|-------------|-------|---------|--------|-------|"
+        echo "| Host | Port | Finds | CSP | SRI | Clickjack | CrossOrigin | Cache | HdrInfo | Cookie | Mixed | CacheP |"
+        echo "|------|------|-------|-----|-----|-----------|-------------|-------|---------|--------|-------|--------|"
         for row in "${summary_rows[@]+"${summary_rows[@]}"}"; do
-            IFS='|' read -r _ rip rport rfinds rcsp rsri rclk rcro rcache rhdr rcook rmix <<< "$row"
-            local fc; fc="$( [[ "${rcsp:-0}"   -eq 1 ]] && echo "⚠" || echo "—")"
-            local fs; fs="$( [[ "${rsri:-0}"   -eq 1 ]] && echo "⚠" || echo "—")"
-            local fk; fk="$( [[ "${rclk:-0}"   -eq 1 ]] && echo "⚠" || echo "—")"
-            local fo; fo="$( [[ "${rcro:-0}"   -eq 1 ]] && echo "⚠" || echo "—")"
-            local fa; fa="$( [[ "${rcache:-0}" -eq 1 ]] && echo "⚠" || echo "—")"
-            local fh; fh="$( [[ "${rhdr:-0}"   -eq 1 ]] && echo "⚠" || echo "—")"
-            local fco; fco="$([[ "${rcook:-0}" -eq 1 ]] && echo "⚠" || echo "—")"
-            local fm; fm="$( [[ "${rmix:-0}"   -eq 1 ]] && echo "⚠" || echo "—")"
-            echo "| ${rip} | ${rport} | ${rfinds} | ${fc} | ${fs} | ${fk} | ${fo} | ${fa} | ${fh} | ${fco} | ${fm} |"
+            IFS='|' read -r _ rip rport rfinds rcsp rsri rclk rcro rcache rhdr rcook rmix rcachep <<< "$row"
+            local fc; fc="$( [[ "${rcsp:-0}"    -eq 1 ]] && echo "⚠" || echo "—")"
+            local fs; fs="$( [[ "${rsri:-0}"    -eq 1 ]] && echo "⚠" || echo "—")"
+            local fk; fk="$( [[ "${rclk:-0}"    -eq 1 ]] && echo "⚠" || echo "—")"
+            local fo; fo="$( [[ "${rcro:-0}"    -eq 1 ]] && echo "⚠" || echo "—")"
+            local fa; fa="$( [[ "${rcache:-0}"  -eq 1 ]] && echo "⚠" || echo "—")"
+            local fh; fh="$( [[ "${rhdr:-0}"    -eq 1 ]] && echo "⚠" || echo "—")"
+            local fco; fco="$([[ "${rcook:-0}"  -eq 1 ]] && echo "⚠" || echo "—")"
+            local fm; fm="$( [[ "${rmix:-0}"    -eq 1 ]] && echo "⚠" || echo "—")"
+            local fcp; fcp="$([[ "${rcachep:-0}" -eq 1 ]] && echo "⚠" || echo "—")"
+            echo "| ${rip} | ${rport} | ${rfinds} | ${fc} | ${fs} | ${fk} | ${fo} | ${fa} | ${fh} | ${fco} | ${fm} | ${fcp} |"
         done
         echo ""
         echo "## Total Findings: ${_FIND_CTR}"
@@ -1267,7 +1424,7 @@ main() {
         echo ""
         echo "---"
         echo "*Generated by PT-Orc 12_content_sec.sh v1.0 — TechGuard Labs*"
-        echo "*Profile: ${PROFILE} | CSP/SRI/Clickjacking/CORP-COEP-COOP/Cache/Headers/Cookies/MixedContent*"
+        echo "*Profile: ${PROFILE} | CSP/SRI/Clickjacking/CORP-COEP-COOP/Cache/Headers/Cookies/MixedContent/CachePoisoning*"
     } > "$summary_md"
 
     log_ok "Summary: ${summary_md}"
